@@ -97,9 +97,14 @@ mvn spring-boot:run
 ## Build
 
 ```bash
+# 샘플 12문항 (/sample) — Railway는 Maven만 돌릴 수 있으므로 빌드 산출물 커밋 또는 배포 전 실행
+npm run build:sample
+
 mvn -DskipTests package
 git diff --check
 ```
+
+- `GET /sample` — 12문항 샘플 설문 (정적 `static/sample/`, `SecurityConfig`에서 `/sample/**` permitAll 필요)
 
 ## Main APIs
 
