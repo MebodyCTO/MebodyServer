@@ -24,4 +24,9 @@ public class WebPageController {
   public String terms() {
     return "forward:/terms.html";
   }
+
+  @GetMapping("/sample")
+  public String sample() {
+    return "forward:/sample/index.html";
+  }
 }

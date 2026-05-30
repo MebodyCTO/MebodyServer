@@ -40,6 +40,8 @@ public class SecurityConfig {
                 "/admin.html",
                 "/privacy",
                 "/terms",
+                "/sample",
+                "/sample/**",
                 "/privacy.html",
                 "/terms.html",
                 "/assets/**",

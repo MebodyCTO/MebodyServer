@@ -2,6 +2,7 @@
   "name": "mebody-server",
   "private": true,
   "scripts": {
-    "vercel-build": "node scripts/vercel-inject-api-base.js"
+    "build:sample": "npm install --prefix sample-questionnaire && npm run build --prefix sample-questionnaire",
+    "vercel-build": "npm run build:sample && node scripts/vercel-inject-api-base.js"
   }
 }

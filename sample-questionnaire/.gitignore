@@ -1,0 +1,7 @@
+node_modules
+dist
+.env
+.env.local
+*.local
+
+# src/assets 미디어는 커밋 (번들용). public/animations 은 중복이면 제거 가능
