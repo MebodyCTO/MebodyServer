@@ -4,10 +4,11 @@ import com.mebody.common.security.SupabaseProperties;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.crypto.spec.SecretKeySpec;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,28 +27,46 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableConfigurationProperties(SupabaseProperties.class)
 public class SecurityConfig {
+
+  /**
+   * 홈·/sample·정적 HTML — JWT 없이 접근 (oauth2ResourceServer 미적용).
+   * oauth2와 permitAll만 쓰면 /sample 이 401 Bearer 가 나는 경우가 있어 분리합니다.
+   */
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  @Order(1)
+  public SecurityFilterChain publicWebFilterChain(HttpSecurity http) throws Exception {
+    http
+        .securityMatcher(
+            "/",
+            "/admin",
+            "/index.html",
+            "/admin.html",
+            "/privacy",
+            "/terms",
+            "/sample",
+            "/sample/**",
+            "/privacy.html",
+            "/terms.html",
+            "/assets/**",
+            "/favicon.ico",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/api-docs/**",
+            "/actuator/health")
+        .csrf(csrf -> csrf.disable())
+        .cors(Customizer.withDefaults())
+        .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+    return http.build();
+  }
+
+  @Bean
+  @Order(2)
+  public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
     http
         .csrf(csrf -> csrf.disable())
         .cors(Customizer.withDefaults())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/",
-                "/admin",
-                "/index.html",
-                "/admin.html",
-                "/privacy",
-                "/terms",
-                "/sample",
-                "/sample/**",
-                "/privacy.html",
-                "/terms.html",
-                "/assets/**",
-                "/favicon.ico"
-            ).permitAll()
-            .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/api-docs/**", "/actuator/health").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/public/config").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/public/auth/signup").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll()
