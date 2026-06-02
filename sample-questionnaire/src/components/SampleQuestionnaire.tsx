@@ -40,6 +40,8 @@ export function SampleQuestionnaire({ onComplete }: SampleQuestionnaireProps) {
 
   const totalQuestions = questions.length
   const currentQuestion = questions[currentIndex]
+  const nextQuestion = questions[currentIndex + 1]
+  const nextNextQuestion = questions[currentIndex + 2]
 
   const handleAnswer = useCallback(
     async (value: AnswerMap[string]) => {
@@ -74,6 +76,8 @@ export function SampleQuestionnaire({ onComplete }: SampleQuestionnaireProps) {
       <QuestionMediaLayout
         stepKey={currentQuestion.question_code}
         question={currentQuestion}
+        nextQuestion={nextQuestion}
+        nextNextQuestion={nextNextQuestion}
       >
         <QuestionCard question={currentQuestion} onAnswer={handleAnswer} />
       </QuestionMediaLayout>

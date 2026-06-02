@@ -1,40 +1,22 @@
-import { useCallback, useState } from 'react'
-import { DotLottieReact } from '@lottiefiles/dotlottie-react'
-import { LOCAL_CHARACTER } from '../assets/localMedia'
+import { useEffect, useState } from 'react'
 
 interface LottieCharacterProps {
-  lottieSrc?: string
-  gifSrc?: string
+  mediaKey: string
+  gifSrc: string
   className?: string
 }
 
-type DotLottieInstance = {
-  addEventListener: (name: string, fn: () => void) => void
-  isLoaded?: boolean
-}
-
 /**
- * PNG 즉시 표시 → GIF 로드 시 애니메이션 → Lottie 로드 시 크로스페이드
+ * GIF 단일 표시 정책:
+ * - 현재 문항 GIF가 준비되기 전에는 스켈레톤 노출
+ * - 다른 문항 이미지 노출 금지
  */
-export function LottieCharacter({
-  lottieSrc,
-  gifSrc,
-  className = '',
-}: LottieCharacterProps) {
+export function LottieCharacter({ mediaKey, gifSrc, className = '' }: LottieCharacterProps) {
   const [gifReady, setGifReady] = useState(false)
-  const [lottieReady, setLottieReady] = useState(false)
-  const resolvedLottie = lottieSrc ?? LOCAL_CHARACTER.lottie
-  const resolvedGif = gifSrc ?? LOCAL_CHARACTER.gif
 
-  const onLottieRef = useCallback((instance: DotLottieInstance | null) => {
-    if (!instance) return
-    const onLoad = () => setLottieReady(true)
-    instance.addEventListener('load', onLoad)
-    if (instance.isLoaded) setLottieReady(true)
-  }, [])
-
-  const showPng = !gifReady && !lottieReady
-  const showGif = gifReady && !lottieReady
+  useEffect(() => {
+    setGifReady(false)
+  }, [mediaKey, gifSrc])
 
   return (
     <div
@@ -42,42 +24,21 @@ export function LottieCharacter({
       style={{ minHeight: 280, aspectRatio: '1 / 1' }}
       data-lottie-character
     >
+      {!gifReady ? (
+        <div className="absolute inset-0 m-auto h-full w-full animate-pulse rounded-3xl bg-emerald-50" />
+      ) : null}
       <img
-        src={LOCAL_CHARACTER.png}
-        alt=""
-        decoding="sync"
-        loading="eager"
-        fetchPriority="high"
-        className={`absolute inset-0 m-auto h-full w-full object-contain transition-opacity duration-200 ${
-          showPng ? 'opacity-100' : 'opacity-0'
-        }`}
-      />
-
-      <img
-        src={resolvedGif}
+        src={gifSrc}
         alt=""
         decoding="async"
         loading="eager"
-        className={`absolute inset-0 m-auto h-full w-full object-contain transition-opacity duration-300 ${
-          showGif ? 'opacity-100' : 'opacity-0'
+        fetchPriority="high"
+        className={`absolute inset-0 m-auto h-full w-full object-contain transition-opacity duration-150 ${
+          gifReady ? 'opacity-100' : 'opacity-0'
         }`}
         onLoad={() => setGifReady(true)}
         onError={() => setGifReady(false)}
       />
-
-      <div
-        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
-          lottieReady ? 'opacity-100' : 'opacity-0'
-        }`}
-      >
-        <DotLottieReact
-          src={resolvedLottie}
-          loop
-          autoplay
-          dotLottieRefCallback={onLottieRef}
-          className="h-full w-full max-h-[320px] max-w-[320px]"
-        />
-      </div>
     </div>
   )
 }
