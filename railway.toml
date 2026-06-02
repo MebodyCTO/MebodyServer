@@ -2,6 +2,7 @@
 builder = "NIXPACKS"
 
 [deploy]
-healthcheckPath = "/actuator/health"
+# Spring Boot Actuator 미사용 — "/" (홈)으로 프로브
+healthcheckPath = "/"
 healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
