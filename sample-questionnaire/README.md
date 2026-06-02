@@ -12,6 +12,16 @@ npm run dev            # http://localhost:5174/sample/
 
 캐릭터는 `src/assets/character.gif` + `character.lottie` 를 **Vite 번들**로 즉시 표시합니다 (DB 불필요).
 
+## 12문항 개별 Lottie/GIF 파일명 규칙
+
+문항별 미디어는 아래 경로를 사용합니다.
+
+- `public/sample-media/lottie/q01.lottie` ... `q12.lottie`
+- `public/sample-media/gif/q01.gif` ... `q12.gif`
+
+문항 매핑은 `q01`(1번) ~ `q12`(12번)으로 고정되어 있습니다.
+파일이 없으면 기본 캐릭터(`src/assets/character.*`)로 fallback됩니다.
+
 DB 연동 시 `.env`에 추가:
 
 ```

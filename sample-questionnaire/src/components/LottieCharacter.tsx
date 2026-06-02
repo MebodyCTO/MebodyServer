@@ -4,6 +4,7 @@ import { LOCAL_CHARACTER } from '../assets/localMedia'
 
 interface LottieCharacterProps {
   lottieSrc?: string
+  gifSrc?: string
   className?: string
 }
 
@@ -15,10 +16,15 @@ type DotLottieInstance = {
 /**
  * PNG 즉시 표시 → GIF 로드 시 애니메이션 → Lottie 로드 시 크로스페이드
  */
-export function LottieCharacter({ lottieSrc, className = '' }: LottieCharacterProps) {
+export function LottieCharacter({
+  lottieSrc,
+  gifSrc,
+  className = '',
+}: LottieCharacterProps) {
   const [gifReady, setGifReady] = useState(false)
   const [lottieReady, setLottieReady] = useState(false)
   const resolvedLottie = lottieSrc ?? LOCAL_CHARACTER.lottie
+  const resolvedGif = gifSrc ?? LOCAL_CHARACTER.gif
 
   const onLottieRef = useCallback((instance: DotLottieInstance | null) => {
     if (!instance) return
@@ -48,7 +54,7 @@ export function LottieCharacter({ lottieSrc, className = '' }: LottieCharacterPr
       />
 
       <img
-        src={LOCAL_CHARACTER.gif}
+        src={resolvedGif}
         alt=""
         decoding="async"
         loading="eager"
@@ -56,6 +62,7 @@ export function LottieCharacter({ lottieSrc, className = '' }: LottieCharacterPr
           showGif ? 'opacity-100' : 'opacity-0'
         }`}
         onLoad={() => setGifReady(true)}
+        onError={() => setGifReady(false)}
       />
 
       <div

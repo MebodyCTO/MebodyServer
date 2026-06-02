@@ -19,6 +19,8 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -29,40 +31,25 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
   /**
-   * 홈·/sample·정적 HTML — JWT 없이 접근 (oauth2ResourceServer 미적용).
-   * oauth2와 permitAll만 쓰면 /sample 이 401 Bearer 가 나는 경우가 있어 분리합니다.
+   * /api/** 가 아닌 모든 요청(홈, /sample, 정적 HTML) — JWT·Bearer 없이 허용.
    */
   @Bean
   @Order(1)
   public SecurityFilterChain publicWebFilterChain(HttpSecurity http) throws Exception {
     http
-        .securityMatcher(
-            "/",
-            "/admin",
-            "/index.html",
-            "/admin.html",
-            "/privacy",
-            "/terms",
-            "/sample",
-            "/sample/**",
-            "/privacy.html",
-            "/terms.html",
-            "/assets/**",
-            "/favicon.ico",
-            "/swagger-ui.html",
-            "/swagger-ui/**",
-            "/api-docs/**",
-            "/actuator/health")
+        .securityMatcher(new NegatedRequestMatcher(new AntPathRequestMatcher("/api/**")))
         .csrf(csrf -> csrf.disable())
         .cors(Customizer.withDefaults())
         .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
     return http.build();
   }
 
+  /** API만 JWT 검증 */
   @Bean
   @Order(2)
   public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
     http
+        .securityMatcher("/api/**")
         .csrf(csrf -> csrf.disable())
         .cors(Customizer.withDefaults())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

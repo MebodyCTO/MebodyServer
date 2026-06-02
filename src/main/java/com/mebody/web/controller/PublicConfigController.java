@@ -14,16 +14,13 @@ public class PublicConfigController {
   private static final String DEFAULT_APP_URL = "https://mebody-jjh.vercel.app";
 
   private final SupabaseProperties supabaseProperties;
-  private final String frontendOrigin;
   private final String configuredAppUrl;
 
   public PublicConfigController(
       SupabaseProperties supabaseProperties,
-      @Value("${mebody.frontend-origin}") String frontendOrigin,
       @Value("${mebody.app-url:}") String appUrl
   ) {
     this.supabaseProperties = supabaseProperties;
-    this.frontendOrigin = frontendOrigin;
     this.configuredAppUrl = appUrl;
   }
 
@@ -40,13 +37,7 @@ public class PublicConfigController {
     if (configuredAppUrl != null && !configuredAppUrl.isBlank()) {
       return configuredAppUrl.trim();
     }
-    return firstOrigin(frontendOrigin);
-  }
-
-  private String firstOrigin(String origins) {
-    if (origins == null || origins.isBlank()) return DEFAULT_APP_URL;
-    String[] split = origins.split(",");
-    return split.length == 0 || split[0].isBlank() ? DEFAULT_APP_URL : split[0].trim();
+    return DEFAULT_APP_URL;
   }
 
   private String valueOrEmpty(String value) {
