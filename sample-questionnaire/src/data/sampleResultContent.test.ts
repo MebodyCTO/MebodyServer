@@ -25,5 +25,6 @@ describe('sampleResultContent', () => {
     expect(content?.hasUncertainAxis).toBe(false)
     expect(content?.neckResult).toBe('F')
     expect(content?.shortSummary).toContain('목이 앞으로')
+    expect(content?.guideText).toContain('회원가입')
   })
 })

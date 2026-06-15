@@ -42,12 +42,30 @@ body {
   animation: slideUpIn 320ms ease-out forwards;
 }
 
+@keyframes scrollHintBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.animate-scroll-hint-bounce {
+  animation: scrollHintBounce 1.6s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-slide-in {
     animation: none;
   }
 
   .animate-slide-up-in {
+    animation: none;
+  }
+
+  .animate-scroll-hint-bounce {
     animation: none;
   }
 }
