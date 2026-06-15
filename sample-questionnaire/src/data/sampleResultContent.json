@@ -1,0 +1,1066 @@
+[
+  {
+    "resultCode": "CLLF",
+    "neckResult": "C",
+    "shoulderResult": "L",
+    "pelvisResult": "L",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 왼쪽을 향하는 움직임 경향이 나타나며, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있는 패턴으로, 안정성 중심 루틴을 더해보면 도움이 될 수 있어요.",
+    "guideText": "왼쪽 어깨와 등 부근에 불편감이 느껴진다면, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 2차 정밀 체크를 통해 하체와 골반의 움직임 경향을 더 구체적으로 파악하고, 왼쪽 어깨 관리에 도움이 될 수 있는 안정성 중심의 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "CLLM",
+    "neckResult": "C",
+    "shoulderResult": "L",
+    "pelvisResult": "L",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "flexibility"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 왼쪽을 향하는 움직임 경향도 나타납니다. 하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체 방향은 움직임 경향 전체를 파악하는 중요한 정보예요. 뻣뻣한지 유연한지에 따라 루틴의 방향이 달라지고, 이게 확정되면 어깨와 목 경향도 더 구체적으로 확인할 수 있어요. 2차 체크로 하체 방향을 확정하고, 완전한 16코드 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "CLLS",
+    "neckResult": "C",
+    "shoulderResult": "L",
+    "pelvisResult": "L",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 왼쪽을 향하는 움직임 경향이 나타나고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 왼쪽 어깨·등·골반 부근에 불편감이 있다면 이 패턴과 관련이 있을 수 있어요.",
+    "guideText": "왼쪽 어깨·등·골반 부근에 불편감이 함께 느껴진다면, 움직임 경향이 전체적으로 연결되어 있을 수 있어요. 2차 정밀 체크를 하면 왼쪽 경향의 연결 흐름을 더 구체적으로 파악하고, 골반부터 어깨까지 순서에 맞는 맞춤 루틴을 받을 수 있어요. 지금 회원가입하고 왼쪽 경향 관리를 시작해보세요."
+  },
+  {
+    "resultCode": "CLMF",
+    "neckResult": "C",
+    "shoulderResult": "L",
+    "pelvisResult": "M",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "pelvis"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 하체는 유연성이 좋은 편으로 보이며, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있습니다. 골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "골반이 어느 쪽을 향하는지는 움직임 경향을 파악하는 핵심 정보예요. 골반 방향이 확정되면 하체·어깨·목 순서의 루틴 방향이 더 구체적으로 맞춰집니다. 2차 정밀 체크로 골반 방향을 확정하고, 내 몸에 맞는 루틴을 완성해보세요."
+  },
+  {
+    "resultCode": "CLMM",
+    "neckResult": "C",
+    "shoulderResult": "L",
+    "pelvisResult": "M",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "pelvis",
+      "flexibility"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "움직임 경향 파악에 중요한 골반과 하체 방향이 아직 미확정이에요. 골반과 하체가 확정되면 루틴의 우선순위와 방향이 더 구체적으로 맞춰질 수 있어요. 2차 정밀 체크를 통해 움직임 경향을 더 자세히 확인하고, 체계적인 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "CLMS",
+    "neckResult": "C",
+    "shoulderResult": "L",
+    "pelvisResult": "M",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "pelvis"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 하체는 움직임이 다소 제한적인 편으로 보입니다. 골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "골반이 어느 쪽을 향하는지는 움직임 경향을 파악하는 핵심 정보예요. 골반 방향이 확정되면 하체·어깨·목 순서의 루틴 방향이 더 구체적으로 맞춰집니다. 2차 정밀 체크로 골반 방향을 확정하고, 내 몸에 맞는 루틴을 완성해보세요."
+  },
+  {
+    "resultCode": "CLRF",
+    "neckResult": "C",
+    "shoulderResult": "L",
+    "pelvisResult": "R",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 오른쪽을 향하는 움직임 경향이 나타나며, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있는 패턴으로, 왼쪽 어깨에 불편감이 있다면 참고 정보로 확인해볼 수 있어요.",
+    "guideText": "왼쪽 어깨 부근에 불편감이 느껴진다면, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 2차 정밀 체크로 하체와 골반의 움직임 경향을 더 구체적으로 파악하고, 왼쪽 어깨 경향에 도움이 될 수 있는 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "CLRM",
+    "neckResult": "C",
+    "shoulderResult": "L",
+    "pelvisResult": "R",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "flexibility"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 오른쪽을 향하는 움직임 경향도 나타납니다. 하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체 방향은 움직임 경향 전체를 파악하는 중요한 정보예요. 뻣뻣한지 유연한지에 따라 루틴의 방향이 달라지고, 이게 확정되면 어깨와 목 경향도 더 구체적으로 확인할 수 있어요. 2차 체크로 하체 방향을 확정하고, 완전한 16코드 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "CLRS",
+    "neckResult": "C",
+    "shoulderResult": "L",
+    "pelvisResult": "R",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 오른쪽을 향하는 움직임 경향이 나타나고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 왼쪽 어깨나 견갑골 주변에 불편감이 있다면 이 패턴과 연관이 있을 수 있어요.",
+    "guideText": "왼쪽 어깨 부근에 불편감이 느껴진다면, 골반과 하체의 움직임 경향이 영향을 줄 수 있어요. 2차 정밀 체크를 하면 골반과 하체의 움직임 상태를 더 구체적으로 파악하고, 왼쪽 어깨 경향에 도움이 될 수 있는 순서에 맞는 루틴을 받을 수 있어요."
+  },
+  {
+    "resultCode": "CMLF",
+    "neckResult": "C",
+    "shoulderResult": "M",
+    "pelvisResult": "L",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 하체는 유연성이 좋은 편으로 보이며, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있습니다. 어깨 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "어깨 방향이 확정되면 상체 움직임 경향을 더 구체적으로 파악할 수 있어요. 오른쪽이 올라가는지, 왼쪽이 올라가는지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크로 어깨 방향을 확정하고, 내 경향에 맞는 루틴을 바로 받아보세요."
+  },
+  {
+    "resultCode": "CMLM",
+    "neckResult": "C",
+    "shoulderResult": "M",
+    "pelvisResult": "L",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder",
+      "flexibility"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 어깨·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체와 어깨 방향이 아직 미확정이에요. 하체 방향이 확정되면 나머지 축의 루틴 순서도 더 구체적으로 맞춰집니다. 2차 정밀 체크로 두 축을 확정하고, 내 경향에 맞는 완전한 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "CMLS",
+    "neckResult": "C",
+    "shoulderResult": "M",
+    "pelvisResult": "L",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 하체는 움직임이 다소 제한적인 편으로 보입니다. 어깨 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "어깨 방향이 확정되면 상체 움직임 경향을 더 구체적으로 파악할 수 있어요. 오른쪽이 올라가는지, 왼쪽이 올라가는지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크로 어깨 방향을 확정하고, 내 경향에 맞는 루틴을 바로 받아보세요."
+  },
+  {
+    "resultCode": "CMMF",
+    "neckResult": "C",
+    "shoulderResult": "M",
+    "pelvisResult": "M",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder",
+      "pelvis"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 어깨·골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "어깨·골반 방향이 아직 미확정이에요. 이 두 축이 확정되면 지금 확인된 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 완전한 16코드를 완성하고, 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "CMMM",
+    "neckResult": "C",
+    "shoulderResult": "M",
+    "pelvisResult": "M",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder",
+      "pelvis",
+      "flexibility"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향입니다. 어깨·골반·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목이 비교적 중립에 가까운 경향이 확인됐어요. 골반·어깨·하체 방향이 함께 확정되면 목과 다른 축의 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 나머지 3개 축을 확정하면, 목부터 하체까지 연결된 맞춤 루틴이 완성돼요."
+  },
+  {
+    "resultCode": "CMMS",
+    "neckResult": "C",
+    "shoulderResult": "M",
+    "pelvisResult": "M",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder",
+      "pelvis"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 어깨·골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "어깨·골반 방향이 아직 미확정이에요. 이 두 축이 확정되면 지금 확인된 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 완전한 16코드를 완성하고, 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "CMRF",
+    "neckResult": "C",
+    "shoulderResult": "M",
+    "pelvisResult": "R",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 하체는 유연성이 좋은 편으로 보이며, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있습니다. 어깨 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "어깨 방향이 확정되면 상체 움직임 경향을 더 구체적으로 파악할 수 있어요. 오른쪽이 올라가는지, 왼쪽이 올라가는지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크로 어깨 방향을 확정하고, 내 경향에 맞는 루틴을 바로 받아보세요."
+  },
+  {
+    "resultCode": "CMRM",
+    "neckResult": "C",
+    "shoulderResult": "M",
+    "pelvisResult": "R",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder",
+      "flexibility"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 어깨·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체와 어깨 방향이 아직 미확정이에요. 하체 방향이 확정되면 나머지 축의 루틴 순서도 더 구체적으로 맞춰집니다. 2차 정밀 체크로 두 축을 확정하고, 내 경향에 맞는 완전한 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "CMRS",
+    "neckResult": "C",
+    "shoulderResult": "M",
+    "pelvisResult": "R",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 하체는 움직임이 다소 제한적인 편으로 보입니다. 어깨 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "어깨 방향이 확정되면 상체 움직임 경향을 더 구체적으로 파악할 수 있어요. 오른쪽이 올라가는지, 왼쪽이 올라가는지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크로 어깨 방향을 확정하고, 내 경향에 맞는 루틴을 바로 받아보세요."
+  },
+  {
+    "resultCode": "CRLF",
+    "neckResult": "C",
+    "shoulderResult": "R",
+    "pelvisResult": "L",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 왼쪽을 향하는 움직임 경향이 나타나며, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있는 패턴으로, 오른쪽 어깨와 팔에 불편감이 있다면 참고 정보로 확인해볼 수 있어요.",
+    "guideText": "오른쪽 어깨 부근에 불편감이 느껴진다면, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 2차 정밀 체크를 하면 하체와 골반의 움직임 경향을 더 구체적으로 파악하고, 오른쪽 어깨 경향에 도움이 될 수 있는 안정성 중심의 맞춤 루틴을 받을 수 있어요."
+  },
+  {
+    "resultCode": "CRLM",
+    "neckResult": "C",
+    "shoulderResult": "R",
+    "pelvisResult": "L",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "flexibility"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 왼쪽을 향하는 움직임 경향도 나타납니다. 하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체 방향은 움직임 경향 전체를 파악하는 중요한 정보예요. 뻣뻣한지 유연한지에 따라 루틴의 방향이 달라지고, 이게 확정되면 어깨와 목 경향도 더 구체적으로 확인할 수 있어요. 2차 체크로 하체 방향을 확정하고, 완전한 16코드 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "CRLS",
+    "neckResult": "C",
+    "shoulderResult": "R",
+    "pelvisResult": "L",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 왼쪽을 향하는 움직임 경향이 나타나고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 오른쪽 어깨와 팔을 많이 쓰는 생활 습관에서 오른쪽 상체에 불편감이 생길 수 있어요.",
+    "guideText": "오른쪽 어깨와 팔 부근에 불편감이 느껴진다면, 골반과 하체의 움직임 경향이 영향을 줄 수 있어요. 2차 정밀 체크를 하면 골반과 하체의 움직임 상태를 더 구체적으로 파악하고, 오른쪽 어깨 경향에 도움이 될 수 있는 맞춤 루틴을 받을 수 있어요."
+  },
+  {
+    "resultCode": "CRMF",
+    "neckResult": "C",
+    "shoulderResult": "R",
+    "pelvisResult": "M",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "pelvis"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 하체는 유연성이 좋은 편으로 보이며, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있습니다. 골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "골반이 어느 쪽을 향하는지는 움직임 경향을 파악하는 핵심 정보예요. 골반 방향이 확정되면 하체·어깨·목 순서의 루틴 방향이 더 구체적으로 맞춰집니다. 2차 정밀 체크로 골반 방향을 확정하고, 내 몸에 맞는 루틴을 완성해보세요."
+  },
+  {
+    "resultCode": "CRMM",
+    "neckResult": "C",
+    "shoulderResult": "R",
+    "pelvisResult": "M",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "pelvis",
+      "flexibility"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "움직임 경향 파악에 중요한 골반과 하체 방향이 아직 미확정이에요. 골반과 하체가 확정되면 루틴의 우선순위와 방향이 더 구체적으로 맞춰질 수 있어요. 2차 정밀 체크를 통해 움직임 경향을 더 자세히 확인하고, 체계적인 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "CRMS",
+    "neckResult": "C",
+    "shoulderResult": "R",
+    "pelvisResult": "M",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "pelvis"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 하체는 움직임이 다소 제한적인 편으로 보입니다. 골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "골반이 어느 쪽을 향하는지는 움직임 경향을 파악하는 핵심 정보예요. 골반 방향이 확정되면 하체·어깨·목 순서의 루틴 방향이 더 구체적으로 맞춰집니다. 2차 정밀 체크로 골반 방향을 확정하고, 내 몸에 맞는 루틴을 완성해보세요."
+  },
+  {
+    "resultCode": "CRRF",
+    "neckResult": "C",
+    "shoulderResult": "R",
+    "pelvisResult": "R",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 오른쪽을 향하는 움직임 경향이 나타나며, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있는 패턴으로, 한쪽으로 무게가 쏠리는 불편감이 있다면 참고 정보로 확인해볼 수 있어요.",
+    "guideText": "오른쪽 어깨와 등 부근에 불편감이 느껴진다면, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 2차 정밀 체크로 하체와 골반의 움직임 경향을 더 구체적으로 파악하면, 어깨 경향에 도움이 될 수 있는 맞춤 루틴을 받을 수 있어요."
+  },
+  {
+    "resultCode": "CRRM",
+    "neckResult": "C",
+    "shoulderResult": "R",
+    "pelvisResult": "R",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "flexibility"
+    ],
+    "shortSummary": "목은 비교적 중립에 가까운 경향이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 오른쪽을 향하는 움직임 경향도 나타납니다. 하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체 방향은 움직임 경향 전체를 파악하는 중요한 정보예요. 뻣뻣한지 유연한지에 따라 루틴의 방향이 달라지고, 이게 확정되면 어깨와 목 경향도 더 구체적으로 확인할 수 있어요. 2차 체크로 하체 방향을 확정하고, 완전한 16코드 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "CRRS",
+    "neckResult": "C",
+    "shoulderResult": "R",
+    "pelvisResult": "R",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목은 비교적 중립에 가까운 경향입니다. 오른쪽 어깨가 상대적으로 높게 관찰되고, 골반은 오른쪽을 향하는 움직임 경향이 나타나며, 하체는 움직임이 다소 제한적인 편으로 보입니다. 오른손을 많이 쓰거나 앉아서 일하는 생활 습관에서 자주 나타날 수 있는 패턴이에요.",
+    "guideText": "오른쪽 어깨와 팔 부근에 불편감이 느껴진다면, 하체와 골반의 움직임 경향이 영향을 줄 수 있어요. 2차 정밀 체크를 하면 하체와 골반의 움직임 상태를 더 구체적으로 파악하고, 오른쪽 어깨 경향에 도움이 될 수 있는 맞춤 루틴을 순서대로 받을 수 있어요."
+  },
+  {
+    "resultCode": "FLLF",
+    "neckResult": "F",
+    "shoulderResult": "L",
+    "pelvisResult": "L",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 왼쪽을 향하는 움직임 경향이 나타나며, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있는 패턴으로, 안정성 중심 루틴을 더해보면 도움이 될 수 있어요.",
+    "guideText": "왼쪽 어깨와 목 부근에 불편감이 느껴진다면, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 2차 정밀 체크를 하면 지금 내 몸의 움직임 경향을 더 구체적으로 파악하고, 어깨와 목 관리에 도움이 될 수 있는 안정성 중심의 맞춤 루틴을 바로 받아볼 수 있어요."
+  },
+  {
+    "resultCode": "FLLM",
+    "neckResult": "F",
+    "shoulderResult": "L",
+    "pelvisResult": "L",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "flexibility"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 왼쪽을 향하는 움직임 경향도 나타납니다. 하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체 방향은 움직임 경향 전체를 파악하는 중요한 정보예요. 뻣뻣한지 유연한지에 따라 루틴의 방향이 달라지고, 이게 확정되면 어깨와 목 경향도 더 구체적으로 확인할 수 있어요. 2차 체크로 하체 방향을 확정하고, 완전한 16코드 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "FLLS",
+    "neckResult": "F",
+    "shoulderResult": "L",
+    "pelvisResult": "L",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 왼쪽을 향하는 움직임 경향이 나타나고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 왼쪽 목·어깨·골반 부근에 불편감이 있다면 이 패턴과 연관이 있을 수 있어요.",
+    "guideText": "왼쪽 목·어깨·허리 부근에 불편감이 느껴진다면, 움직임 경향이 전체적으로 연결되어 있을 수 있어요. 2차 정밀 체크를 하면 골반과 하체, 어깨의 움직임 경향이 어떻게 연결되는지 파악할 수 있고, 순서에 맞는 맞춤 루틴으로 전신 관리에 도움이 될 수 있어요."
+  },
+  {
+    "resultCode": "FLMF",
+    "neckResult": "F",
+    "shoulderResult": "L",
+    "pelvisResult": "M",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "pelvis"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 하체는 유연성이 좋은 편으로 보이며, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있습니다. 골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "골반이 어느 쪽을 향하는지는 움직임 경향을 파악하는 핵심 정보예요. 골반 방향이 확정되면 하체·어깨·목 순서의 루틴 방향이 더 구체적으로 맞춰집니다. 2차 정밀 체크로 골반 방향을 확정하고, 내 몸에 맞는 루틴을 완성해보세요."
+  },
+  {
+    "resultCode": "FLMM",
+    "neckResult": "F",
+    "shoulderResult": "L",
+    "pelvisResult": "M",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "pelvis",
+      "flexibility"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "움직임 경향 파악에 중요한 골반과 하체 방향이 아직 미확정이에요. 골반과 하체가 확정되면 루틴의 우선순위와 방향이 더 구체적으로 맞춰질 수 있어요. 2차 정밀 체크를 통해 움직임 경향을 더 자세히 확인하고, 체계적인 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "FLMS",
+    "neckResult": "F",
+    "shoulderResult": "L",
+    "pelvisResult": "M",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "pelvis"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 하체는 움직임이 다소 제한적인 편으로 보입니다. 골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "골반이 어느 쪽을 향하는지는 움직임 경향을 파악하는 핵심 정보예요. 골반 방향이 확정되면 하체·어깨·목 순서의 루틴 방향이 더 구체적으로 맞춰집니다. 2차 정밀 체크로 골반 방향을 확정하고, 내 몸에 맞는 루틴을 완성해보세요."
+  },
+  {
+    "resultCode": "FLRF",
+    "neckResult": "F",
+    "shoulderResult": "L",
+    "pelvisResult": "R",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 오른쪽을 향하는 움직임 경향이 나타나며, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있는 패턴으로, 한쪽으로 무게가 쏠리는 불편감이 있다면 참고 정보로 확인해볼 수 있어요.",
+    "guideText": "몸이 유연한 편인데 한쪽으로 쏠리는 느낌이 있다면, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 2차 정밀 체크를 통해 골반과 하체의 움직임 경향을 더 구체적으로 파악하면, 어깨와 목 경향에 도움이 될 수 있는 맞춤 루틴을 받을 수 있어요."
+  },
+  {
+    "resultCode": "FLRM",
+    "neckResult": "F",
+    "shoulderResult": "L",
+    "pelvisResult": "R",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "flexibility"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 오른쪽을 향하는 움직임 경향도 나타납니다. 하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체 방향은 움직임 경향 전체를 파악하는 중요한 정보예요. 뻣뻣한지 유연한지에 따라 루틴의 방향이 달라지고, 이게 확정되면 어깨와 목 경향도 더 구체적으로 확인할 수 있어요. 2차 체크로 하체 방향을 확정하고, 완전한 16코드 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "FLRS",
+    "neckResult": "F",
+    "shoulderResult": "L",
+    "pelvisResult": "R",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 왼쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 오른쪽을 향하는 움직임 경향이 나타나고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 왼쪽 어깨와 목 주변에 불편감이 있다면 이 패턴과 연관이 있을 수 있어요.",
+    "guideText": "왼쪽 어깨 부근에 불편감이 느껴진다면, 골반과 하체의 움직임 경향이 영향을 줄 수 있어요. 2차 정밀 체크를 하면 골반과 하체의 움직임 상태를 더 구체적으로 파악하고, 왼쪽 어깨 경향에 도움이 될 수 있는 맞춤 루틴을 받을 수 있어요. 지금 바로 시작해보세요."
+  },
+  {
+    "resultCode": "FMLF",
+    "neckResult": "F",
+    "shoulderResult": "M",
+    "pelvisResult": "L",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 하체는 유연성이 좋은 편으로 보이며, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있습니다. 어깨 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "어깨 방향이 확정되면 상체 움직임 경향을 더 구체적으로 파악할 수 있어요. 오른쪽이 올라가는지, 왼쪽이 올라가는지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크로 어깨 방향을 확정하고, 내 경향에 맞는 루틴을 바로 받아보세요."
+  },
+  {
+    "resultCode": "FMLM",
+    "neckResult": "F",
+    "shoulderResult": "M",
+    "pelvisResult": "L",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder",
+      "flexibility"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 어깨·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체와 어깨 방향이 아직 미확정이에요. 하체 방향이 확정되면 나머지 축의 루틴 순서도 더 구체적으로 맞춰집니다. 2차 정밀 체크로 두 축을 확정하고, 내 경향에 맞는 완전한 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "FMLS",
+    "neckResult": "F",
+    "shoulderResult": "M",
+    "pelvisResult": "L",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 하체는 움직임이 다소 제한적인 편으로 보입니다. 어깨 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "어깨 방향이 확정되면 상체 움직임 경향을 더 구체적으로 파악할 수 있어요. 오른쪽이 올라가는지, 왼쪽이 올라가는지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크로 어깨 방향을 확정하고, 내 경향에 맞는 루틴을 바로 받아보세요."
+  },
+  {
+    "resultCode": "FMMF",
+    "neckResult": "F",
+    "shoulderResult": "M",
+    "pelvisResult": "M",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder",
+      "pelvis"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 어깨·골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "어깨·골반 방향이 아직 미확정이에요. 이 두 축이 확정되면 지금 확인된 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 완전한 16코드를 완성하고, 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "FMMM",
+    "neckResult": "F",
+    "shoulderResult": "M",
+    "pelvisResult": "M",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder",
+      "pelvis",
+      "flexibility"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보입니다. 어깨·골반·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목이 앞으로 향하는 경향이 확인됐어요. 골반·어깨·하체 방향이 함께 확정되면 목과 다른 축의 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 나머지 3개 축을 확정하면, 목부터 하체까지 연결된 맞춤 루틴이 완성돼요."
+  },
+  {
+    "resultCode": "FMMS",
+    "neckResult": "F",
+    "shoulderResult": "M",
+    "pelvisResult": "M",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder",
+      "pelvis"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 어깨·골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "어깨·골반 방향이 아직 미확정이에요. 이 두 축이 확정되면 지금 확인된 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 완전한 16코드를 완성하고, 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "FMRF",
+    "neckResult": "F",
+    "shoulderResult": "M",
+    "pelvisResult": "R",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 하체는 유연성이 좋은 편으로 보이며, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있습니다. 어깨 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "어깨 방향이 확정되면 상체 움직임 경향을 더 구체적으로 파악할 수 있어요. 오른쪽이 올라가는지, 왼쪽이 올라가는지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크로 어깨 방향을 확정하고, 내 경향에 맞는 루틴을 바로 받아보세요."
+  },
+  {
+    "resultCode": "FMRM",
+    "neckResult": "F",
+    "shoulderResult": "M",
+    "pelvisResult": "R",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder",
+      "flexibility"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 어깨·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체와 어깨 방향이 아직 미확정이에요. 하체 방향이 확정되면 나머지 축의 루틴 순서도 더 구체적으로 맞춰집니다. 2차 정밀 체크로 두 축을 확정하고, 내 경향에 맞는 완전한 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "FMRS",
+    "neckResult": "F",
+    "shoulderResult": "M",
+    "pelvisResult": "R",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "shoulder"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 하체는 움직임이 다소 제한적인 편으로 보입니다. 어깨 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "어깨 방향이 확정되면 상체 움직임 경향을 더 구체적으로 파악할 수 있어요. 오른쪽이 올라가는지, 왼쪽이 올라가는지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크로 어깨 방향을 확정하고, 내 경향에 맞는 루틴을 바로 받아보세요."
+  },
+  {
+    "resultCode": "FRLF",
+    "neckResult": "F",
+    "shoulderResult": "R",
+    "pelvisResult": "L",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 왼쪽을 향하는 움직임 경향이 나타나며, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있는 패턴으로, 안정성 중심 루틴을 더해보면 도움이 될 수 있어요.",
+    "guideText": "몸이 잘 늘어나는 편인데 목·어깨 부근에 불편감이 느껴진다면, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 2차 정밀 체크를 하면 안정성 수준을 더 구체적으로 파악하고, 골반과 하체 경향에 맞는 루틴을 받아볼 수 있어요."
+  },
+  {
+    "resultCode": "FRLM",
+    "neckResult": "F",
+    "shoulderResult": "R",
+    "pelvisResult": "L",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "flexibility"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 왼쪽을 향하는 움직임 경향도 나타납니다. 하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체 방향은 움직임 경향 전체를 파악하는 중요한 정보예요. 뻣뻣한지 유연한지에 따라 루틴의 방향이 달라지고, 이게 확정되면 어깨와 목 경향도 더 구체적으로 확인할 수 있어요. 2차 체크로 하체 방향을 확정하고, 완전한 16코드 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "FRLS",
+    "neckResult": "F",
+    "shoulderResult": "R",
+    "pelvisResult": "L",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 왼쪽을 향하는 움직임 경향이 나타나고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 한쪽 팔을 많이 쓰거나 오래 앉아 있는 생활 습관에서 자주 나타날 수 있는 패턴이에요.",
+    "guideText": "오른쪽 어깨 부근에 불편감이 느껴진다면, 골반과 하체의 움직임 경향이 영향을 줄 수 있어요. 2차 정밀 체크를 하면 골반과 하체의 움직임 상태를 더 구체적으로 파악하고, 어깨 경향에 도움이 될 수 있는 루틴 순서를 맞춤으로 받아볼 수 있어요."
+  },
+  {
+    "resultCode": "FRMF",
+    "neckResult": "F",
+    "shoulderResult": "R",
+    "pelvisResult": "M",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "pelvis"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 하체는 유연성이 좋은 편으로 보이며, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있습니다. 골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "골반이 어느 쪽을 향하는지는 움직임 경향을 파악하는 핵심 정보예요. 골반 방향이 확정되면 하체·어깨·목 순서의 루틴 방향이 더 구체적으로 맞춰집니다. 2차 정밀 체크로 골반 방향을 확정하고, 내 몸에 맞는 루틴을 완성해보세요."
+  },
+  {
+    "resultCode": "FRMM",
+    "neckResult": "F",
+    "shoulderResult": "R",
+    "pelvisResult": "M",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "pelvis",
+      "flexibility"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "움직임 경향 파악에 중요한 골반과 하체 방향이 아직 미확정이에요. 골반과 하체가 확정되면 루틴의 우선순위와 방향이 더 구체적으로 맞춰질 수 있어요. 2차 정밀 체크를 통해 움직임 경향을 더 자세히 확인하고, 체계적인 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "FRMS",
+    "neckResult": "F",
+    "shoulderResult": "R",
+    "pelvisResult": "M",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "pelvis"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 하체는 움직임이 다소 제한적인 편으로 보입니다. 골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "골반이 어느 쪽을 향하는지는 움직임 경향을 파악하는 핵심 정보예요. 골반 방향이 확정되면 하체·어깨·목 순서의 루틴 방향이 더 구체적으로 맞춰집니다. 2차 정밀 체크로 골반 방향을 확정하고, 내 몸에 맞는 루틴을 완성해보세요."
+  },
+  {
+    "resultCode": "FRRF",
+    "neckResult": "F",
+    "shoulderResult": "R",
+    "pelvisResult": "R",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 오른쪽을 향하는 움직임 경향이 나타나며, 하체는 유연성이 좋은 편으로 보입니다. 유연하면서도 움직임을 받쳐주는 요소도 함께 살펴볼 수 있는 패턴이에요. 스트레칭 외에 안정성 중심 루틴을 더해보면 도움이 될 수 있어요.",
+    "guideText": "몸이 유연한 편인데도 목과 어깨 부근에 불편감이 느껴진다면, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 2차 정밀 체크를 하면 유연성과 안정성 중 어느 쪽을 먼저 살펴볼지 파악할 수 있고, 오른쪽 어깨와 목에 도움이 될 수 있는 루틴을 바로 받아볼 수 있어요."
+  },
+  {
+    "resultCode": "FRRM",
+    "neckResult": "F",
+    "shoulderResult": "R",
+    "pelvisResult": "R",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "flexibility"
+    ],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 오른쪽을 향하는 움직임 경향도 나타납니다. 하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체 방향은 움직임 경향 전체를 파악하는 중요한 정보예요. 뻣뻣한지 유연한지에 따라 루틴의 방향이 달라지고, 이게 확정되면 어깨와 목 경향도 더 구체적으로 확인할 수 있어요. 2차 체크로 하체 방향을 확정하고, 완전한 16코드 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "FRRS",
+    "neckResult": "F",
+    "shoulderResult": "R",
+    "pelvisResult": "R",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": false,
+    "uncertainAxes": [],
+    "shortSummary": "목이 앞으로 향하는 경향이 보이고, 오른쪽 어깨가 상대적으로 높게 관찰됩니다. 골반은 오른쪽을 향하는 움직임 경향이 나타나고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 오래 앉아 있거나 오른손을 많이 쓰는 생활 습관에서 자주 나타날 수 있는 패턴이에요.",
+    "guideText": "목이나 오른쪽 어깨 부근에 불편감이 느껴진다면, 하체와 골반의 움직임 경향이 영향을 줄 수 있어요. 2차 정밀 체크를 하면 어디서부터 움직임을 살펴볼지, 생활 속에서 참고해볼 수 있는 자세 습관이 무엇인지 확인해볼 수 있어요. 지금 회원가입하고 내 몸의 움직임 경향을 확인해보세요."
+  },
+  {
+    "resultCode": "MLLF",
+    "neckResult": "M",
+    "shoulderResult": "L",
+    "pelvisResult": "L",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck"
+    ],
+    "shortSummary": "왼쪽 어깨가 상대적으로 높게 관찰되고, 골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 하체는 유연성이 좋은 편으로 보이며, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있습니다. 목 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목 방향이 확정되면 나만의 완전한 16코드가 완성돼요. 목이 앞으로 향하는지, 중립에 가까운지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크는 거울 앞에서 몇 가지 움직임을 확인하는 것으로 시작해요. 지금 회원가입하고 완전한 코드와 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MLLM",
+    "neckResult": "M",
+    "shoulderResult": "L",
+    "pelvisResult": "L",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "flexibility"
+    ],
+    "shortSummary": "왼쪽 어깨가 상대적으로 높게 관찰되고, 골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 목·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체와 목 방향이 아직 미확정이에요. 하체 방향이 확정되면 나머지 축의 루틴 순서도 더 구체적으로 맞춰집니다. 2차 정밀 체크로 두 축을 확정하고, 내 경향에 맞는 완전한 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MLLS",
+    "neckResult": "M",
+    "shoulderResult": "L",
+    "pelvisResult": "L",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck"
+    ],
+    "shortSummary": "왼쪽 어깨가 상대적으로 높게 관찰되고, 골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 하체는 움직임이 다소 제한적인 편으로 보입니다. 목 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목 방향이 확정되면 나만의 완전한 16코드가 완성돼요. 목이 앞으로 향하는지, 중립에 가까운지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크는 거울 앞에서 몇 가지 움직임을 확인하는 것으로 시작해요. 지금 회원가입하고 완전한 코드와 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MLMF",
+    "neckResult": "M",
+    "shoulderResult": "L",
+    "pelvisResult": "M",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "pelvis"
+    ],
+    "shortSummary": "왼쪽 어깨가 상대적으로 높게 관찰되고, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 목·골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목·골반 방향이 아직 미확정이에요. 이 두 축이 확정되면 지금 확인된 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 완전한 16코드를 완성하고, 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MLMM",
+    "neckResult": "M",
+    "shoulderResult": "L",
+    "pelvisResult": "M",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "pelvis",
+      "flexibility"
+    ],
+    "shortSummary": "왼쪽 어깨가 상대적으로 높게 관찰됩니다. 목·골반·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "왼쪽 어깨가 상대적으로 높게 나타나는 경향이 확인됐어요. 목·골반·하체 방향이 함께 확정되면 어깨 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 나머지 3개 축을 확정하고, 어깨 경향에 도움이 될 수 있는 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MLMS",
+    "neckResult": "M",
+    "shoulderResult": "L",
+    "pelvisResult": "M",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "pelvis"
+    ],
+    "shortSummary": "왼쪽 어깨가 상대적으로 높게 관찰되고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 목·골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목·골반 방향이 아직 미확정이에요. 이 두 축이 확정되면 지금 확인된 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 완전한 16코드를 완성하고, 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MLRF",
+    "neckResult": "M",
+    "shoulderResult": "L",
+    "pelvisResult": "R",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck"
+    ],
+    "shortSummary": "왼쪽 어깨가 상대적으로 높게 관찰되고, 골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 하체는 유연성이 좋은 편으로 보이며, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있습니다. 목 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목 방향이 확정되면 나만의 완전한 16코드가 완성돼요. 목이 앞으로 향하는지, 중립에 가까운지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크는 거울 앞에서 몇 가지 움직임을 확인하는 것으로 시작해요. 지금 회원가입하고 완전한 코드와 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MLRM",
+    "neckResult": "M",
+    "shoulderResult": "L",
+    "pelvisResult": "R",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "flexibility"
+    ],
+    "shortSummary": "왼쪽 어깨가 상대적으로 높게 관찰되고, 골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 목·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체와 목 방향이 아직 미확정이에요. 하체 방향이 확정되면 나머지 축의 루틴 순서도 더 구체적으로 맞춰집니다. 2차 정밀 체크로 두 축을 확정하고, 내 경향에 맞는 완전한 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MLRS",
+    "neckResult": "M",
+    "shoulderResult": "L",
+    "pelvisResult": "R",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck"
+    ],
+    "shortSummary": "왼쪽 어깨가 상대적으로 높게 관찰되고, 골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 하체는 움직임이 다소 제한적인 편으로 보입니다. 목 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목 방향이 확정되면 나만의 완전한 16코드가 완성돼요. 목이 앞으로 향하는지, 중립에 가까운지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크는 거울 앞에서 몇 가지 움직임을 확인하는 것으로 시작해요. 지금 회원가입하고 완전한 코드와 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MMLF",
+    "neckResult": "M",
+    "shoulderResult": "M",
+    "pelvisResult": "L",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "shoulder"
+    ],
+    "shortSummary": "골반은 왼쪽을 향하는 움직임 경향이 나타나고, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 목·어깨 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목과 어깨 방향은 상체 움직임 경향을 파악하는 핵심 정보예요. 이 두 축이 확정되면 상체 루틴 방향이 훨씬 구체적으로 맞춰집니다. 2차 정밀 체크로 두 축을 확정하고, 상체 관리에 도움이 될 수 있는 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MMLM",
+    "neckResult": "M",
+    "shoulderResult": "M",
+    "pelvisResult": "L",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "shoulder",
+      "flexibility"
+    ],
+    "shortSummary": "골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 목·어깨·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "골반은 왼쪽을 향하는 움직임 경향이 확인됐어요. 목·어깨·하체 방향이 함께 확정되면 각 축의 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 나머지 3개 축을 확정하면, 순서에 맞는 맞춤 루틴이 완성돼요."
+  },
+  {
+    "resultCode": "MMLS",
+    "neckResult": "M",
+    "shoulderResult": "M",
+    "pelvisResult": "L",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "shoulder"
+    ],
+    "shortSummary": "골반은 왼쪽을 향하는 움직임 경향이 나타나고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 목·어깨 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목과 어깨 방향은 상체 움직임 경향을 파악하는 핵심 정보예요. 이 두 축이 확정되면 상체 루틴 방향이 훨씬 구체적으로 맞춰집니다. 2차 정밀 체크로 두 축을 확정하고, 상체 관리에 도움이 될 수 있는 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MMMF",
+    "neckResult": "M",
+    "shoulderResult": "M",
+    "pelvisResult": "M",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "shoulder",
+      "pelvis"
+    ],
+    "shortSummary": "하체는 유연성이 좋은 편으로 보이고, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 목·어깨·골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체는 유연성이 좋은 편으로 보이는 경향이 확인됐어요. 목·어깨·골반 방향이 함께 확정되면 각 축의 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 나머지 3개 축을 확정하고, 완전한 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MMMM",
+    "neckResult": "M",
+    "shoulderResult": "M",
+    "pelvisResult": "M",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "shoulder",
+      "pelvis",
+      "flexibility"
+    ],
+    "shortSummary": "모든 축이 아직 미확정 상태예요. 1차 12문항만으로는 방향을 특정하기 어려운 경우로, 2차 정밀 체크를 통해 내 몸의 움직임 경향을 더 자세히 확인할 수 있어요.",
+    "guideText": "모든 축이 미확정 상태예요. 1차 12문항은 빠르게 방향을 잡는 체크라, 답변이 어느 한쪽으로 모이지 않으면 M(미확정)으로 표시됩니다. 2차 정밀 체크는 실제 움직임과 자세를 기반으로 하기 때문에 더 구체적인 경향을 확인할 수 있어요. 지금 회원가입하고 나만의 완전한 16코드와 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MMMS",
+    "neckResult": "M",
+    "shoulderResult": "M",
+    "pelvisResult": "M",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "shoulder",
+      "pelvis"
+    ],
+    "shortSummary": "하체는 움직임이 다소 제한적인 편으로 보입니다. 목·어깨·골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체는 움직임이 다소 제한적인 편으로 보이는 경향이 확인됐어요. 목·어깨·골반 방향이 함께 확정되면 각 축의 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 나머지 3개 축을 확정하고, 완전한 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MMRF",
+    "neckResult": "M",
+    "shoulderResult": "M",
+    "pelvisResult": "R",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "shoulder"
+    ],
+    "shortSummary": "골반은 오른쪽을 향하는 움직임 경향이 나타나고, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 목·어깨 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목과 어깨 방향은 상체 움직임 경향을 파악하는 핵심 정보예요. 이 두 축이 확정되면 상체 루틴 방향이 훨씬 구체적으로 맞춰집니다. 2차 정밀 체크로 두 축을 확정하고, 상체 관리에 도움이 될 수 있는 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MMRM",
+    "neckResult": "M",
+    "shoulderResult": "M",
+    "pelvisResult": "R",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "shoulder",
+      "flexibility"
+    ],
+    "shortSummary": "골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 목·어깨·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "골반은 오른쪽을 향하는 움직임 경향이 확인됐어요. 목·어깨·하체 방향이 함께 확정되면 각 축의 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 나머지 3개 축을 확정하면, 순서에 맞는 맞춤 루틴이 완성돼요."
+  },
+  {
+    "resultCode": "MMRS",
+    "neckResult": "M",
+    "shoulderResult": "M",
+    "pelvisResult": "R",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "shoulder"
+    ],
+    "shortSummary": "골반은 오른쪽을 향하는 움직임 경향이 나타나고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 목·어깨 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목과 어깨 방향은 상체 움직임 경향을 파악하는 핵심 정보예요. 이 두 축이 확정되면 상체 루틴 방향이 훨씬 구체적으로 맞춰집니다. 2차 정밀 체크로 두 축을 확정하고, 상체 관리에 도움이 될 수 있는 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MRLF",
+    "neckResult": "M",
+    "shoulderResult": "R",
+    "pelvisResult": "L",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck"
+    ],
+    "shortSummary": "오른쪽 어깨가 상대적으로 높게 관찰되고, 골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 하체는 유연성이 좋은 편으로 보이며, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있습니다. 목 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목 방향이 확정되면 나만의 완전한 16코드가 완성돼요. 목이 앞으로 향하는지, 중립에 가까운지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크는 거울 앞에서 몇 가지 움직임을 확인하는 것으로 시작해요. 지금 회원가입하고 완전한 코드와 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MRLM",
+    "neckResult": "M",
+    "shoulderResult": "R",
+    "pelvisResult": "L",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "flexibility"
+    ],
+    "shortSummary": "오른쪽 어깨가 상대적으로 높게 관찰되고, 골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 목·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체와 목 방향이 아직 미확정이에요. 하체 방향이 확정되면 나머지 축의 루틴 순서도 더 구체적으로 맞춰집니다. 2차 정밀 체크로 두 축을 확정하고, 내 경향에 맞는 완전한 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MRLS",
+    "neckResult": "M",
+    "shoulderResult": "R",
+    "pelvisResult": "L",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck"
+    ],
+    "shortSummary": "오른쪽 어깨가 상대적으로 높게 관찰되고, 골반은 왼쪽을 향하는 움직임 경향이 나타납니다. 하체는 움직임이 다소 제한적인 편으로 보입니다. 목 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목 방향이 확정되면 나만의 완전한 16코드가 완성돼요. 목이 앞으로 향하는지, 중립에 가까운지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크는 거울 앞에서 몇 가지 움직임을 확인하는 것으로 시작해요. 지금 회원가입하고 완전한 코드와 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MRMF",
+    "neckResult": "M",
+    "shoulderResult": "R",
+    "pelvisResult": "M",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "pelvis"
+    ],
+    "shortSummary": "오른쪽 어깨가 상대적으로 높게 관찰되고, 하체는 유연성이 좋은 편으로 보입니다. 움직임을 받쳐주는 요소도 함께 살펴볼 수 있어요. 목·골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목·골반 방향이 아직 미확정이에요. 이 두 축이 확정되면 지금 확인된 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 완전한 16코드를 완성하고, 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MRMM",
+    "neckResult": "M",
+    "shoulderResult": "R",
+    "pelvisResult": "M",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "pelvis",
+      "flexibility"
+    ],
+    "shortSummary": "오른쪽 어깨가 상대적으로 높게 관찰됩니다. 목·골반·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "오른쪽 어깨가 상대적으로 높게 나타나는 경향이 확인됐어요. 목·골반·하체 방향이 함께 확정되면 어깨 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 나머지 3개 축을 확정하고, 어깨 경향에 도움이 될 수 있는 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MRMS",
+    "neckResult": "M",
+    "shoulderResult": "R",
+    "pelvisResult": "M",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "pelvis"
+    ],
+    "shortSummary": "오른쪽 어깨가 상대적으로 높게 관찰되고, 하체는 움직임이 다소 제한적인 편으로 보입니다. 목·골반 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목·골반 방향이 아직 미확정이에요. 이 두 축이 확정되면 지금 확인된 경향이 어떻게 연결되는지 더 구체적으로 파악할 수 있어요. 2차 정밀 체크로 완전한 16코드를 완성하고, 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MRRF",
+    "neckResult": "M",
+    "shoulderResult": "R",
+    "pelvisResult": "R",
+    "lowerBodyResult": "F",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck"
+    ],
+    "shortSummary": "오른쪽 어깨가 상대적으로 높게 관찰되고, 골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 하체는 유연성이 좋은 편으로 보이며, 움직임을 받쳐주는 요소도 함께 살펴볼 수 있습니다. 목 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목 방향이 확정되면 나만의 완전한 16코드가 완성돼요. 목이 앞으로 향하는지, 중립에 가까운지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크는 거울 앞에서 몇 가지 움직임을 확인하는 것으로 시작해요. 지금 회원가입하고 완전한 코드와 맞춤 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MRRM",
+    "neckResult": "M",
+    "shoulderResult": "R",
+    "pelvisResult": "R",
+    "lowerBodyResult": "M",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck",
+      "flexibility"
+    ],
+    "shortSummary": "오른쪽 어깨가 상대적으로 높게 관찰되고, 골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 목·하체 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "하체와 목 방향이 아직 미확정이에요. 하체 방향이 확정되면 나머지 축의 루틴 순서도 더 구체적으로 맞춰집니다. 2차 정밀 체크로 두 축을 확정하고, 내 경향에 맞는 완전한 루틴을 받아보세요."
+  },
+  {
+    "resultCode": "MRRS",
+    "neckResult": "M",
+    "shoulderResult": "R",
+    "pelvisResult": "R",
+    "lowerBodyResult": "S",
+    "hasUncertainAxis": true,
+    "uncertainAxes": [
+      "neck"
+    ],
+    "shortSummary": "오른쪽 어깨가 상대적으로 높게 관찰되고, 골반은 오른쪽을 향하는 움직임 경향이 나타납니다. 하체는 움직임이 다소 제한적인 편으로 보입니다. 목 방향은 1차 12문항만으로는 특정하기 어려워 2차 정밀 체크에서 더 자세히 확인할 수 있어요.",
+    "guideText": "목 방향이 확정되면 나만의 완전한 16코드가 완성돼요. 목이 앞으로 향하는지, 중립에 가까운지에 따라 루틴의 방향이 달라집니다. 2차 정밀 체크는 거울 앞에서 몇 가지 움직임을 확인하는 것으로 시작해요. 지금 회원가입하고 완전한 코드와 맞춤 루틴을 받아보세요."
+  }
+]

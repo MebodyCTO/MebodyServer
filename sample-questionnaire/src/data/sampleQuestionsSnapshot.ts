@@ -28,6 +28,8 @@ export interface SampleQuestion {
 export const SAMPLE_QUESTION_SET = 'sample_subjective_v1'
 const QUESTION_MEDIA_PREFIX = 'q'
 const toMediaKey = (n: number) => `${QUESTION_MEDIA_PREFIX}${String(n).padStart(2, '0')}`
+/** 1축 목 문항(1~3번)은 동일 GIF(q01) 사용 */
+const NECK_AXIS_MEDIA_KEY = toMediaKey(1)
 
 export const SAMPLE_QUESTIONS_SNAPSHOT: SampleQuestion[] = [
   {
@@ -64,7 +66,7 @@ export const SAMPLE_QUESTIONS_SNAPSHOT: SampleQuestion[] = [
     option_2: '잘 모르겠다',
     option_3: '그런 말을 들어본 적 없고 자세가 바르다는 말을 듣는 편이다',
     media_type: 'lottie',
-    media_url: toMediaKey(2),
+    media_url: NECK_AXIS_MEDIA_KEY,
     is_scored: true,
     is_precheck: false,
     is_active: true,
@@ -84,7 +86,7 @@ export const SAMPLE_QUESTIONS_SNAPSHOT: SampleQuestion[] = [
     option_2: '잘 모르겠다',
     option_3: '어깨 위에 비교적 잘 올라와 있는 편이다',
     media_type: 'lottie',
-    media_url: toMediaKey(3),
+    media_url: NECK_AXIS_MEDIA_KEY,
     is_scored: true,
     is_precheck: false,
     is_active: true,

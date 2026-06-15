@@ -16,7 +16,8 @@ echo "Profile: balanced (max 800px, fps=22, palette dithering)"
 for key in q01 q02 q03 q04 q05 q06 q07 q08 q09 q10 q11 q12; do
   case "${key}" in
     q01) orig="1-1" ;;
-    q02|q03) orig="1-2,1-3" ;;
+    q02) orig="1-1" ;;
+    q03) orig="1-1" ;;
     q04) orig="2-1" ;;
     q05) orig="2-2" ;;
     q06) orig="2-3" ;;

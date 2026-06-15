@@ -7,14 +7,24 @@ export interface QuestionMedia {
 
 /**
  * media_url가 q01~q12 같은 키이면 문항별 파일 경로를 생성한다.
- * 파일 배치:
- * - public/sample-media/lottie/q01.lottie ... q12.lottie
- * - public/sample-media/gif/q01.gif ... q12.gif
+ * 1~3번(목 축)은 동일 GIF(q01)를 사용한다.
  */
+const GIF_KEY_ALIAS: Record<string, string> = {
+  q02: 'q01',
+  q03: 'q01',
+}
+
+function normalizeGifKey(key: string): string {
+  const lower = key.toLowerCase()
+  return GIF_KEY_ALIAS[lower] ?? lower
+}
+
 function buildFromKey(key: string): QuestionMedia {
+  const normalized = key.toLowerCase()
+  const gifKey = normalizeGifKey(normalized)
   return {
-    lottie: `${import.meta.env.BASE_URL}sample-media/lottie/${key}.lottie`,
-    gif: `${import.meta.env.BASE_URL}sample-media/gif/${key}.gif`,
+    lottie: `${import.meta.env.BASE_URL}sample-media/lottie/${normalized}.lottie`,
+    gif: `${import.meta.env.BASE_URL}sample-media/gif/${gifKey}.gif`,
   }
 }
 

@@ -1,43 +1,180 @@
 import { APP_URL, HOMEPAGE_URL } from '../config/urls'
-import { QuestionnaireShell } from './QuestionnaireShell'
+import { AXIS_GREEN_THEME } from '../data/axisTheme'
+import { getSampleResultContent } from '../data/sampleResultContent'
+import type { SampleCompletionPayload } from '../types/sampleCompletion'
+import { getSampleAxisScoreBreakdown } from '../utils/sampleAxisBreakdown'
+import type { AxisKey } from '../utils/sampleBodyCodeCalculator'
+import { SAMPLE_QUESTIONS_SNAPSHOT } from '../data/sampleQuestionsSnapshot'
 import { FadeSlidePanel } from './FadeSlidePanel'
 
-export function SampleCompleteScreen() {
+interface SampleCompleteScreenProps {
+  result: SampleCompletionPayload
+  onRestart: () => void
+}
+
+const AXIS_ORDER: { key: AxisKey; label: string; title: string }[] = [
+  { key: 'neck', label: '목', title: '목 방향' },
+  { key: 'shoulder', label: '어깨', title: '어깨 높이' },
+  { key: 'pelvis', label: '골반', title: '골반 회전' },
+  { key: 'flexibility', label: '하체', title: '하체 유연성' },
+]
+
+function AxisBar({
+  title,
+  data,
+}: {
+  title: string
+  data: { labelLeft: string; labelRight: string; percentLeft: number; isUncertain: boolean }
+}) {
   return (
-    <QuestionnaireShell current={12} total={12}>
-      <FadeSlidePanel className="flex flex-1 flex-col items-center justify-center px-8 py-12 text-center">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-4 py-2">
-          <span className="text-xs font-black tracking-[0.16em] text-emerald-700">SAMPLE</span>
+    <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <p className="text-sm font-bold text-gray-800">{title}</p>
+        {data.isUncertain ? (
+          <span className="shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-800">
+            M · 방향 미확정
+          </span>
+        ) : (
+          <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
+            예상
+          </span>
+        )}
+      </div>
+
+      <div
+        className="relative mb-2 h-3 overflow-hidden rounded-full"
+        style={{ backgroundColor: AXIS_GREEN_THEME.track }}
+      >
+        {data.isUncertain ? (
+          <div
+            className="h-full w-full opacity-60"
+            style={{
+              backgroundImage:
+                'repeating-linear-gradient(90deg, #E8DCC8 0, #E8DCC8 6px, transparent 6px, transparent 12px)',
+            }}
+          />
+        ) : (
+          <div
+            className="h-full rounded-full transition-all"
+            style={{
+              width: `${data.percentLeft}%`,
+              backgroundColor: AXIS_GREEN_THEME.primary,
+            }}
+          />
+        )}
+      </div>
+
+      <div className="flex justify-between gap-2 text-[11px] leading-snug">
+        <span className={data.isUncertain ? 'text-gray-500' : 'font-medium text-emerald-700'}>
+          {data.labelLeft}
+        </span>
+        <span className="text-right text-gray-400">{data.labelRight}</span>
+      </div>
+    </div>
+  )
+}
+
+export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreenProps) {
+  const content = getSampleResultContent(result.code)
+  const breakdown = getSampleAxisScoreBreakdown(
+    result.answers,
+    SAMPLE_QUESTIONS_SNAPSHOT,
+    result.axisChars,
+  )
+  const chars = result.code.split('')
+  const showUncertainCard = content?.hasUncertainAxis ?? result.code.includes('M')
+
+  return (
+    <FadeSlidePanel className="flex max-h-[min(90vh,820px)] flex-col overflow-hidden rounded-3xl bg-[#F7F4EE] shadow-xl">
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="bg-gradient-to-br from-teal-500 to-teal-600 px-6 pb-8 pt-6 text-white">
+          <p className="mb-5 text-center text-sm font-medium text-white/90">나의 MEBODY 코드</p>
+          <div className="mb-4 flex justify-center gap-3 sm:gap-4">
+            {chars.map((char, index) => {
+              const isUncertain = char === 'M'
+              return (
+                <div key={`${char}-${index}`} className="flex flex-col items-center gap-1.5">
+                  <div
+                    className={`flex h-14 w-14 items-center justify-center rounded-full text-xl font-black sm:h-16 sm:w-16 sm:text-2xl ${
+                      isUncertain
+                        ? 'border-2 border-dashed border-white/70 bg-white/10 text-white'
+                        : 'bg-white text-teal-600 shadow-md'
+                    }`}
+                  >
+                    {char}
+                  </div>
+                  <span className="text-[11px] font-medium text-white/85">
+                    {AXIS_ORDER[index]?.label}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+          <p className="text-center text-sm font-semibold tracking-wide text-white/95">
+            {result.code} · 1차 간이 결과
+          </p>
         </div>
 
-        <p
-          className="mb-10 max-w-sm text-xl font-bold leading-relaxed text-gray-900 sm:text-2xl"
-          style={{ wordBreak: 'keep-all' }}
+        <div className="space-y-4 px-4 py-5">
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <p className="mb-2 text-xs font-bold text-teal-600">한 줄 이해</p>
+            <p className="text-sm leading-relaxed text-gray-800" style={{ wordBreak: 'keep-all' }}>
+              {content?.shortSummary ??
+                '결과 설명을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'}
+            </p>
+          </div>
+
+          <div>
+            <p className="mb-3 px-1 text-xs font-medium text-gray-500">축별 결과 · 12문항 기반</p>
+            <div className="space-y-3">
+              {AXIS_ORDER.map(({ key, title }) => (
+                <AxisBar key={key} title={title} data={breakdown[key]} />
+              ))}
+            </div>
+          </div>
+
+          {showUncertainCard ? (
+            <div className="rounded-2xl border border-dashed border-teal-300 bg-amber-50/60 p-4">
+              <p className="mb-2 text-sm font-bold text-teal-800">
+                {content?.uncertainAxes?.length
+                  ? `${content.uncertainAxes
+                      .map((axis) => AXIS_ORDER.find((item) => item.key === axis)?.label)
+                      .filter(Boolean)
+                      .join(' · ')} 방향이 아직 미확정이에요.`
+                  : '일부 축 방향이 아직 미확정이에요.'}
+              </p>
+              <p className="text-xs leading-relaxed text-gray-700" style={{ wordBreak: 'keep-all' }}>
+                {content?.guideText ??
+                  '12문항만으로는 방향을 특정하기 어려운 축이 있습니다. 앱에서 2차 정밀 문항을 통해 더 자세히 확인할 수 있어요.'}
+              </p>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="shrink-0 space-y-2 border-t border-gray-200 bg-white p-4">
+        <a
+          href={HOMEPAGE_URL}
+          rel="noopener noreferrer"
+          className="block rounded-2xl border-2 border-gray-200 bg-white py-3.5 text-center text-sm font-semibold text-gray-800 transition-all hover:border-gray-400 active:scale-[0.98]"
         >
-          샘플문항입니다.
-          <br />
-          몸 상태가 궁금하시군요?
-          <br />
-          확실한 코드를 알아보시겠습니까?
-        </p>
-
-        <div className="flex w-full max-w-xs flex-col gap-3">
-          <a
-            href={HOMEPAGE_URL}
-            rel="noopener noreferrer"
-            className="rounded-2xl border-2 border-gray-200 bg-white py-4 text-center text-base font-semibold text-gray-800 transition-all hover:border-gray-400 active:scale-[0.98]"
-          >
-            홈으로
-          </a>
-          <a
-            href={APP_URL}
-            rel="noopener noreferrer"
-            className="rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-4 text-center text-base font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all hover:brightness-105 active:scale-[0.98]"
-          >
-            앱 다운로드
-          </a>
-        </div>
-      </FadeSlidePanel>
-    </QuestionnaireShell>
+          홈으로
+        </a>
+        <a
+          href={APP_URL}
+          rel="noopener noreferrer"
+          className="block rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3.5 text-center text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all hover:brightness-105 active:scale-[0.98]"
+        >
+          앱 다운로드
+        </a>
+        <button
+          type="button"
+          onClick={onRestart}
+          className="w-full rounded-2xl py-2 text-center text-sm font-medium text-gray-500 transition-colors hover:text-gray-700"
+        >
+          돌아가기
+        </button>
+      </div>
+    </FadeSlidePanel>
   )
 }

@@ -27,8 +27,27 @@ body {
   animation: fadeSlideIn 280ms ease-out forwards;
 }
 
+@keyframes slideUpIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up-in {
+  animation: slideUpIn 320ms ease-out forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-slide-in {
+    animation: none;
+  }
+
+  .animate-slide-up-in {
     animation: none;
   }
 }

@@ -1,9 +1,12 @@
 import { Check } from 'lucide-react'
 import type { SampleQuestion } from '../data/sampleQuestionsSnapshot'
 import type { AnswerValue } from '../utils/sampleBodyCodeCalculator'
+import type { QuestionPhase } from '../data/sampleQuestionGuides'
 
 interface QuestionCardProps {
   question: SampleQuestion
+  phase: QuestionPhase
+  selectedAnswer?: AnswerValue
   onAnswer: (value: AnswerValue) => void
 }
 
@@ -14,12 +17,13 @@ const axisShortLabels: Record<SampleQuestion['axis'], string> = {
   flexibility: '하체',
 }
 
-export function QuestionCard({ question, onAnswer }: QuestionCardProps) {
+export function QuestionCard({ question, phase, selectedAnswer, onAnswer }: QuestionCardProps) {
   const options: { value: AnswerValue; label: string; muted?: boolean }[] = [
     { value: '①', label: question.option_1 },
     { value: '②', label: question.option_2, muted: true },
     { value: '③', label: question.option_3 },
   ]
+  const isGuidePhase = phase === 'guide'
 
   return (
     <>
@@ -33,44 +37,56 @@ export function QuestionCard({ question, onAnswer }: QuestionCardProps) {
       </div>
 
       <h2
-        className="mb-8 text-xl font-bold leading-relaxed text-gray-900 sm:text-2xl"
+        className={`font-bold leading-relaxed text-gray-900 ${isGuidePhase ? 'mb-5 text-lg sm:text-xl' : 'mb-8 text-xl sm:text-2xl'}`}
         style={{ wordBreak: 'keep-all' }}
       >
         {question.question_text}
       </h2>
 
       <div className="space-y-3">
-        {options.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => onAnswer(option.value)}
-            className={`group flex w-full items-center justify-between rounded-2xl border-2 px-5 py-5 text-left font-semibold transition-all active:scale-[0.98] ${
-              option.muted
-                ? 'border-gray-200 text-gray-600 hover:border-gray-400 hover:bg-gray-50'
-                : 'border-gray-200 text-gray-900 hover:border-emerald-500 hover:bg-emerald-50'
-            }`}
-          >
-            <span className="pr-3 text-base leading-snug" style={{ wordBreak: 'keep-all' }}>
-              {option.label}
-            </span>
-            <div
-              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
-                option.muted
-                  ? 'border-gray-300 group-hover:border-gray-400'
-                  : 'border-gray-300 group-hover:border-emerald-500 group-hover:bg-emerald-500'
-              }`}
+        {options.map((option) => {
+          const isSelected = selectedAnswer === option.value
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onAnswer(option.value)}
+              className={`group flex w-full items-center justify-between rounded-2xl border-2 px-5 text-left font-semibold transition-all active:scale-[0.98] ${
+                isGuidePhase ? 'py-4' : 'py-5'
+              } ${
+                isSelected
+                  ? 'border-emerald-500 bg-emerald-50 text-gray-900'
+                  : option.muted
+                  ? 'border-gray-200 text-gray-600 hover:border-gray-400 hover:bg-gray-50'
+                  : 'border-gray-200 text-gray-900 hover:border-emerald-500 hover:bg-emerald-50'
+              } ${isGuidePhase && !isSelected ? 'opacity-75' : ''}`}
             >
-              <Check
-                className={`h-5 w-5 transition-colors ${
-                  option.muted
-                    ? 'text-transparent'
-                    : 'text-transparent group-hover:text-white'
+              <span className="pr-3 text-base leading-snug" style={{ wordBreak: 'keep-all' }}>
+                {option.label}
+              </span>
+              <div
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
+                  isSelected
+                    ? 'border-emerald-500 bg-emerald-500'
+                    : option.muted
+                    ? 'border-gray-300 group-hover:border-gray-400'
+                    : 'border-gray-300 group-hover:border-emerald-500 group-hover:bg-emerald-500'
                 }`}
-              />
-            </div>
-          </button>
-        ))}
+              >
+                <Check
+                  className={`h-5 w-5 transition-colors ${
+                    isSelected
+                      ? 'text-white'
+                      : option.muted
+                      ? 'text-transparent'
+                      : 'text-transparent group-hover:text-white'
+                  }`}
+                />
+              </div>
+            </button>
+          )
+        })}
       </div>
     </>
   )

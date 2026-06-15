@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "generate:results": "node scripts/import-sample-result-tsv.mjs",
+    "restore:gifs": "node scripts/restore-missing-gifs.mjs"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.13.5",
@@ -22,6 +25,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "tailwindcss": "^4.1.3",
     "typescript": "^5.7.3",
-    "vite": "^6.0.7"
+    "vite": "^6.0.7",
+    "vitest": "^3.0.5"
   }
 }
