@@ -7,7 +7,9 @@ import type { SampleCompletionPayload } from '../types/sampleCompletion'
 import { getSampleAxisScoreBreakdown } from '../utils/sampleAxisBreakdown'
 import type { AxisKey } from '../utils/sampleBodyCodeCalculator'
 import { SAMPLE_QUESTIONS_SNAPSHOT } from '../data/sampleQuestionsSnapshot'
+import { preloadResultCharacters } from '../utils/preloadResultCharacters'
 import { FadeSlidePanel } from './FadeSlidePanel'
+import { ResultCharacterHero } from './ResultCharacterHero'
 
 interface SampleCompleteScreenProps {
   result: SampleCompletionPayload
@@ -100,6 +102,10 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
   }, [])
 
   useEffect(() => {
+    preloadResultCharacters(result.code)
+  }, [result.code])
+
+  useEffect(() => {
     checkScrollPosition()
     const el = scrollRef.current
     if (!el) return
@@ -125,6 +131,7 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto" onScroll={checkScrollPosition}>
         <div className="relative bg-gradient-to-br from-teal-500 to-teal-600 px-6 pb-8 pt-6 text-white">
           <p className="mb-5 text-center text-sm font-medium text-white/90">나의 MEBODY 코드</p>
+          <ResultCharacterHero resultCode={result.code} />
           <div className="mb-4 flex justify-center gap-3 sm:gap-4">
             {chars.map((char, index) => {
               const isUncertain = char === 'M'

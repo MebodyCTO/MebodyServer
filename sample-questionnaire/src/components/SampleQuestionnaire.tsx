@@ -13,6 +13,7 @@ import {
 import { calculateSampleBodyCode, type AnswerMap } from '../utils/sampleBodyCodeCalculator'
 import type { SampleCompletionPayload } from '../types/sampleCompletion'
 import { preloadAllSampleGifs, preloadSampleGif } from '../utils/preloadSampleGifs'
+import { preloadResultCharacters } from '../utils/preloadResultCharacters'
 import { resolveQuestionMedia } from '../assets/questionMedia'
 import { QuestionnaireShell } from './QuestionnaireShell'
 import { QuestionMediaLayout } from './QuestionMediaLayout'
@@ -77,6 +78,7 @@ export function SampleQuestionnaire({ onComplete }: SampleQuestionnaireProps) {
     async (nextAnswers: AnswerMap) => {
       setIsSubmitting(true)
       const { code, axisChars } = calculateSampleBodyCode(nextAnswers, questions)
+      preloadResultCharacters(code)
       submitSampleResponse(nextAnswers, code).catch(() => {})
       onComplete({ code, axisChars, answers: nextAnswers })
     },
