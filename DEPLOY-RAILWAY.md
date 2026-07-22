@@ -11,6 +11,23 @@
 
 ## Railway에서 할 일
 
+### 0. Free 플랜: Serverless 필수
+
+에러:
+
+```text
+Free plan deployments must be serverless. Please go to your service settings and turn on the serverless flag.
+```
+
+해결:
+
+1. Railway → **mebody-server** 서비스 → **Settings**
+2. **Deploy** / **Scale** 섹션에서 **Serverless** 켜기
+3. 일반 Redeploy가 아니라 **Cmd/Ctrl + K** → **Deploy latest commit**
+4. 이미 켜져 있는데도 실패하면: Serverless **끄기 → 배포 1회(실패 가능) → 다시 켜기 → Deploy latest commit**
+
+참고: Free 플랜은 리전 로컬 시간 **08:00–20:00 peak**에 배포가 막힐 수 있습니다. 그때는 peak 밖 시간에 재배포하거나 Hobby로 올리면 됩니다.
+
 ### 1. GitHub 연결 확인
 
 **Settings → Source**
@@ -44,15 +61,35 @@ java -jar target/mebody-server-0.1.0.jar
 ```env
 MEBODY_APP_URL=https://mebody-jjh.vercel.app
 FRONTEND_ORIGIN=https://mebody-jjh.vercel.app,http://localhost:3000
-SUPABASE_JWT_SECRET=...  (또는 SUPABASE_JWKS_URL)
-SUPABASE_DB_URL=...
-SUPABASE_DB_USERNAME=...
+SUPABASE_JWKS_URL=https://YOUR_PROJECT.supabase.co/auth/v1/.well-known/jwks.json
+# Direct(db.*)는 IPv6-only인 경우가 많음 → Session/Transaction pooler 사용
+SUPABASE_DB_URL=jdbc:postgresql://aws-1-REGION.pooler.supabase.com:6543/postgres?sslmode=require
+SUPABASE_DB_USERNAME=postgres.YOUR_PROJECT_REF
 SUPABASE_DB_PASSWORD=...
-SUPABASE_URL=...
+SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 SUPABASE_ANON_KEY=...
 ```
 
 `MEBODY_APP_URL`이 비어 있으면 예전 코드에서 앱 링크가 `127.0.0.1:3000`으로 나갈 수 있습니다.
+
+### 5. Healthcheck failure
+
+증상: Build/Deploy 성공 후 **Network → Healthcheck failure**.  
+엣지 응답이 `Application not found` / `x-railway-fallback: true` 이면 **앱이 살아 있지 않은 상태**입니다.
+
+확인 순서:
+
+1. **Deploy Logs**(Build Logs 아님)에서 `Started MebodyApplication` / JDBC `FATAL` / `Connection` 에러 여부
+2. Variables의 `SUPABASE_DB_URL`이 **pooler**인지 (Direct `db.*.supabase.co`면 실패하기 쉬움)
+3. 당장 막히면 Settings에서 Healthcheck path를 **비우거나**, `railway.toml`의 `healthcheckPath = null`로 비활성 후 재배포
+4. 안정화되면 `healthcheckPath = "/health"` 로 다시 켜기
+5. `PORT`는 Railway가 주입 — 코드는 `server.port=${PORT:...}`, `server.address=0.0.0.0` 사용
+
+대시보드 즉시 우회:
+
+1. Service → **Settings** → Healthcheck path **삭제/비우기**
+2. **Cmd+K → Deploy latest commit**
+3. Deploy Logs에 `Started MebodyApplication` 나오는지 확인
 
 ## 배포 성공 확인
 

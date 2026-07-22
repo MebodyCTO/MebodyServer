@@ -2,7 +2,11 @@
 builder = "NIXPACKS"
 
 [deploy]
-# Spring Boot Actuator 미사용 — "/" (홈)으로 프로브
-healthcheckPath = "/"
-healthcheckTimeout = 120
+# Free plan serverless
+sleepApplication = true
+startCommand = "java -jar target/mebody-server-0.1.0.jar"
+# 당분간 healthcheck 비활성 — 앱 기동/Deploy Logs 먼저 확인용
+# 안정화 후 "/health" 로 다시 켜세요
+healthcheckPath = null
+healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
