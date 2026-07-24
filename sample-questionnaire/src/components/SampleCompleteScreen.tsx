@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { APP_URL, HOMEPAGE_URL } from '../config/urls'
+import { APP_SIGNUP_URL, HOMEPAGE_URL } from '../config/urls'
 import { AXIS_GREEN_THEME } from '../data/axisTheme'
 import { getSampleResultContent } from '../data/sampleResultContent'
 import type { SampleCompletionPayload } from '../types/sampleCompletion'
@@ -207,16 +207,16 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
 
           {content?.guideText ? (
             <a
-              href={APP_URL}
+              href={APP_SIGNUP_URL}
               rel="noopener noreferrer"
               className="block rounded-2xl border border-teal-100 bg-white p-5 shadow-sm transition-all hover:border-teal-300 hover:shadow-md active:scale-[0.99]"
             >
-              <p className="mb-2 text-xs font-bold text-teal-600">앱에서 더 자세히 확인하기</p>
+              <p className="mb-2 text-xs font-bold text-teal-600">회원가입하고 이어서 확인하기</p>
               <p className="text-sm leading-relaxed text-gray-800" style={{ wordBreak: 'keep-all' }}>
                 {content.guideText}
               </p>
               <span className="mt-4 block rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3.5 text-center text-sm font-semibold text-white shadow-lg shadow-emerald-500/20">
-                앱 다운로드
+                회원 가입
               </span>
             </a>
           ) : null}
