@@ -12,7 +12,7 @@ interface QuestionnaireShellProps {
 /** 12문항·완료 화면 공통 상단(홈·브랜드·프로그레스) */
 export function QuestionnaireShell({ current, total, children }: QuestionnaireShellProps) {
   return (
-    <div className="overflow-hidden rounded-3xl bg-white shadow-xl" style={{ minHeight: '100dvh' }}>
+    <div className="mebody-app-surface overflow-hidden rounded-3xl shadow-xl" style={{ minHeight: '100dvh' }}>
       <div className="flex h-full flex-col">
         <div className="flex items-center justify-between px-6 pt-6">
           <a
@@ -28,7 +28,7 @@ export function QuestionnaireShell({ current, total, children }: QuestionnaireSh
             className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 shadow-sm transition-all hover:border-emerald-300 hover:shadow-md active:scale-[0.98]"
             aria-label="MEBODY 앱 다운로드"
           >
-            <Sparkles size={16} color="#059669" />
+            <Sparkles size={16} color="#014725" />
             <span className="text-xs font-black tracking-wide text-gray-800">MEBODY</span>
           </a>
         </div>

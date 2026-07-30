@@ -23,7 +23,7 @@ export default function App() {
   }, [])
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+    <div className="mebody-desktop-backdrop flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md">
         <FadeSlidePanel key={screen}>
           {screen === 'questionnaire' ? (

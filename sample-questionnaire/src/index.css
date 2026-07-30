@@ -1,5 +1,26 @@
 @import 'tailwindcss';
 
+/* MEBODY brand — cream #FFFFF3 / green #014725
+   ROLLBACK: delete @theme block + body background override */
+@theme {
+  --color-emerald-50: #e8f5ee;
+  --color-emerald-100: #d4ebe0;
+  --color-emerald-200: #a8d5c0;
+  --color-emerald-300: #5fad86;
+  --color-emerald-400: #2d8a5c;
+  --color-emerald-500: #016b38;
+  --color-emerald-600: #014725;
+  --color-emerald-700: #013820;
+  --color-emerald-800: #012816;
+  --color-emerald-900: #011a0f;
+  --color-teal-100: #d4ebe0;
+  --color-teal-200: #a8d5c0;
+  --color-teal-500: #016b38;
+  --color-teal-600: #014725;
+  /* soft in-app surfaces; outer desktop chrome stays pure white */
+  --color-gray-50: #fffff3;
+}
+
 body {
   margin: 0;
   font-family:
@@ -10,6 +31,18 @@ body {
     BlinkMacSystemFont,
     sans-serif;
   -webkit-font-smoothing: antialiased;
+  background-color: #fffff3;
+  color: #014725;
+}
+
+/* Outside the phone frame — brand cream */
+.mebody-desktop-backdrop {
+  background-color: #fffff3 !important;
+}
+
+/* Phone / app surface — white */
+.mebody-app-surface {
+  background-color: #ffffff !important;
 }
 
 @keyframes fadeSlideIn {

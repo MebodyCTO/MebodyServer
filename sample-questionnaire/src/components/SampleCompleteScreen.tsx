@@ -127,7 +127,7 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
   }, [])
 
   return (
-    <FadeSlidePanel className="relative flex max-h-[min(90vh,820px)] flex-col overflow-hidden rounded-3xl bg-[#F7F4EE] shadow-xl">
+    <FadeSlidePanel className="mebody-app-surface relative flex max-h-[min(90vh,820px)] flex-col overflow-hidden rounded-3xl shadow-xl">
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto" onScroll={checkScrollPosition}>
         <div className="relative bg-gradient-to-br from-teal-500 to-teal-600 px-6 pb-8 pt-6 text-white">
           <p className="mb-5 text-center text-sm font-medium text-white/90">나의 MEBODY 코드</p>
