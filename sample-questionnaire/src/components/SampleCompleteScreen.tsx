@@ -236,7 +236,6 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
         {hasReachedBottom ? (
           <a
             href={HOMEPAGE_URL}
-            rel="noopener noreferrer"
             className="block rounded-2xl border-2 border-gray-200 bg-white py-3.5 text-center text-sm font-semibold text-gray-800 transition-all hover:border-gray-400 active:scale-[0.98]"
           >
             홈페이지
