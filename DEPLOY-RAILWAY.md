@@ -68,9 +68,13 @@ SUPABASE_DB_USERNAME=postgres.YOUR_PROJECT_REF
 SUPABASE_DB_PASSWORD=...
 SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
 ```
 
 `MEBODY_APP_URL`이 비어 있으면 예전 코드에서 앱 링크가 `127.0.0.1:3000`으로 나갈 수 있습니다.
+
+- JWT 검증을 위해 `SUPABASE_JWKS_URL` 또는 `SUPABASE_JWT_SECRET` 중 하나는 반드시 설정합니다.
+- DB URL은 Railway에서 접근 가능한 Supabase Session/Transaction pooler 주소와 SSL 옵션을 사용합니다.
 
 ### 5. Healthcheck failure
 
@@ -81,13 +85,13 @@ SUPABASE_ANON_KEY=...
 
 1. **Deploy Logs**(Build Logs 아님)에서 `Started MebodyApplication` / JDBC `FATAL` / `Connection` 에러 여부
 2. Variables의 `SUPABASE_DB_URL`이 **pooler**인지 (Direct `db.*.supabase.co`면 실패하기 쉬움)
-3. 당장 막히면 Settings에서 Healthcheck path를 **비우거나**, `railway.toml`의 `healthcheckPath = null`로 비활성 후 재배포
-4. 안정화되면 `healthcheckPath = "/health"` 로 다시 켜기
+3. `railway.toml`의 `healthcheckPath = "/health"`를 유지하고 `/health`가 HTTP 200을 반환하는지 확인
+4. 임시로 Healthcheck를 비활성화해야 하면 TOML에서 `healthcheckPath` 항목 자체를 삭제 (`null`은 TOML 문법이 아님)
 5. `PORT`는 Railway가 주입 — 코드는 `server.port=${PORT:...}`, `server.address=0.0.0.0` 사용
 
 대시보드 즉시 우회:
 
-1. Service → **Settings** → Healthcheck path **삭제/비우기**
+1. Service → **Settings** → Healthcheck path가 Config as Code의 `/health`와 일치하는지 확인
 2. **Cmd+K → Deploy latest commit**
 3. Deploy Logs에 `Started MebodyApplication` 나오는지 확인
 
