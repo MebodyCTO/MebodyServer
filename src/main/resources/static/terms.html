@@ -6,19 +6,19 @@
     <title>이용약관 | MEBODY</title>
     <meta name="description" content="MEBODY 이용약관(플레이스홀더). 실제 운영 시 법무 검토 후 본문을 교체하세요." />
     <link rel="stylesheet" href="/assets/web.css" />
+    <link rel="stylesheet" href="/assets/landing.css" />
   </head>
-  <body>
+  <body class="v2">
     <header class="nav">
-      <a class="brand" href="/">
-        <span class="mark">✦</span>
-        <span>
-          <span style="display:block;color:#014725;font-size:12px;letter-spacing:.18em;">MEBODY</span>
-          <span style="display:block;font-size:20px;">이용약관</span>
-        </span>
-      </a>
-      <nav class="nav-actions">
-        <a class="btn btn-ghost" href="/">홈으로</a>
-      </nav>
+      <div class="mb-headbar">
+        <a class="mb-brand" href="/">
+          <span class="mb-brand-name">MEBODY</span>
+          <span class="mb-page-title">이용약관</span>
+        </a>
+        <div class="mb-navact">
+          <a class="mb-btn mb-btn-soft" href="/">홈으로</a>
+        </div>
+      </div>
     </header>
 
     <main class="section">
@@ -55,25 +55,42 @@
     </main>
 
     <footer class="footer" id="company">
-      <div class="footer-glow" aria-hidden="true"></div>
-      <div class="footer-inner">
-        <div class="footer-brand-block">
-          <a class="footer-logo" href="/" aria-label="MEBODY 홈">
-            <span class="footer-mark">✦</span>
-            <span>
-              <strong>MEBODY</strong>
-              <em>Wellness Body Code</em>
-            </span>
-          </a>
-          <p class="footer-copy">본 페이지는 법적 효력을 갖는 최종 고지문이 아닙니다. 배포 전 반드시 법무 검토를 거치세요.</p>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>© 2026 Mebody Inc. All rights reserved.</span>
+      <div class="mb-footer-inner">
         <div>
-          <a href="/privacy">개인정보처리방침</a>
-          <a href="/terms">이용약관</a>
+          <a class="mb-footer-logo" href="/" aria-label="MEBODY 홈">
+            <strong>MEBODY</strong>
+            <em>Wellness Body Code</em>
+          </a>
+          <p class="mb-footer-copy">본 페이지는 법적 효력을 갖는 최종 고지문이 아닙니다. 배포 전 반드시 법무 검토를 거치세요.</p>
+          <dl class="mb-footer-company">
+            <div><dt>회사명</dt><dd>(주)Mebody</dd></div>
+            <div><dt>서비스명</dt><dd>Mebody</dd></div>
+            <div><dt>대표자</dt><dd>정재훈 · 최우혁</dd></div>
+          </dl>
         </div>
+        <nav class="mb-footer-nav" aria-label="MEBODY footer navigation">
+          <div class="mb-footer-col">
+            <h3>서비스</h3>
+            <a href="/sample">체형 코드 셀프 체크</a>
+            <a href="/sample">샘플 코드</a>
+            <a href="/#authPanel">오늘의 미션</a>
+            <a href="/#download">앱 다운로드</a>
+          </div>
+          <div class="mb-footer-col">
+            <h3>회사</h3>
+            <a href="/#company">회사소개</a>
+            <a href="/#company">채용</a>
+          </div>
+          <div class="mb-footer-col">
+            <h3>정책</h3>
+            <a href="/privacy">개인정보처리방침</a>
+            <a href="/terms">이용약관</a>
+          </div>
+        </nav>
+      </div>
+      <div class="mb-footer-bottom">
+        <span>© 2026 Mebody Inc. All rights reserved.</span>
+        <div><a href="/privacy">개인정보처리방침</a><a href="/terms">이용약관</a></div>
       </div>
     </footer>
   </body>

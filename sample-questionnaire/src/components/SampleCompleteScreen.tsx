@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { APP_SIGNUP_URL, HOMEPAGE_URL } from '../config/urls'
+import { SAMPLE_RESULT_FORM_URL } from '../config/urls'
 import { AXIS_GREEN_THEME } from '../data/axisTheme'
 import { getSampleResultContent } from '../data/sampleResultContent'
 import type { SampleCompletionPayload } from '../types/sampleCompletion'
@@ -207,16 +207,17 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
 
           {content?.guideText ? (
             <a
-              href={APP_SIGNUP_URL}
+              href={SAMPLE_RESULT_FORM_URL}
+              target="_blank"
               rel="noopener noreferrer"
               className="block rounded-2xl border border-teal-100 bg-white p-5 shadow-sm transition-all hover:border-teal-300 hover:shadow-md active:scale-[0.99]"
             >
-              <p className="mb-2 text-xs font-bold text-teal-600">회원가입하고 이어서 확인하기</p>
+              <p className="mb-2 text-xs font-bold text-teal-600">설문 남기고 이어서 확인하기</p>
               <p className="text-sm leading-relaxed text-gray-800" style={{ wordBreak: 'keep-all' }}>
                 {content.guideText}
               </p>
               <span className="mt-4 block rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3.5 text-center text-sm font-semibold text-white shadow-lg shadow-emerald-500/20">
-                회원 가입
+                설문 참여하기
               </span>
             </a>
           ) : null}
@@ -228,27 +229,11 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
           className="shrink-0 border-t border-amber-100 bg-amber-50/90 px-4 py-2 text-center text-[11px] leading-snug text-amber-800/80"
           style={{ wordBreak: 'keep-all' }}
         >
-          아래까지 스크롤하면 홈페이지·처음으로를 사용할 수 있어요
+          아래까지 스크롤하면 처음으로를 사용할 수 있어요
         </p>
       ) : null}
 
       <div className="shrink-0 space-y-2 border-t border-gray-200 bg-white p-4">
-        {hasReachedBottom ? (
-          <a
-            href={HOMEPAGE_URL}
-            className="block rounded-2xl border-2 border-gray-200 bg-white py-3.5 text-center text-sm font-semibold text-gray-800 transition-all hover:border-gray-400 active:scale-[0.98]"
-          >
-            홈페이지
-          </a>
-        ) : (
-          <button
-            type="button"
-            disabled
-            className="w-full cursor-not-allowed rounded-2xl border-2 border-gray-100 bg-gray-50 py-3.5 text-center text-sm font-semibold text-gray-300"
-          >
-            홈페이지
-          </button>
-        )}
         {hasReachedBottom ? (
           <button
             type="button"

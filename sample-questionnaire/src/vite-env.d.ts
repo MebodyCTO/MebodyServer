@@ -5,6 +5,7 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_ANON_KEY: string
   readonly VITE_APP_URL: string
   readonly VITE_HOMEPAGE_URL: string
+  readonly VITE_SAMPLE_RESULT_FORM_URL: string
   readonly VITE_USE_SUPABASE_QUESTIONS: string
   readonly VITE_USE_SUPABASE_SUBMIT: string
 }

@@ -160,6 +160,7 @@ export function SampleQuestionnaire({ onComplete }: SampleQuestionnaireProps) {
           guideEnabled={guideEnabled}
           guideGifSrc={guideGifSrc}
           guideText={guideContent?.guideText}
+          selectedAnswer={selectedAnswer}
           question={currentQuestion}
           nextQuestion={nextQuestion}
           nextNextQuestion={nextNextQuestion}

@@ -48,9 +48,6 @@ async function loadConfig() {
   const response = await fetch(apiUrl('/api/public/config'));
   const payload = await response.json();
   state.config = payload.data;
-  document.querySelectorAll('[data-app-url]').forEach((element) => {
-    element.setAttribute('href', state.config.appUrl || 'https://mebody-jjh.vercel.app');
-  });
 }
 
 function setAuthMode(mode) {

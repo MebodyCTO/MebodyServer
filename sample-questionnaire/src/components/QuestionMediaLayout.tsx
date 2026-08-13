@@ -4,7 +4,11 @@ import { FadeSlidePanel } from './FadeSlidePanel'
 import { QuestionGuidePanel } from './QuestionGuidePanel'
 import type { SampleQuestion } from '../data/sampleQuestionsSnapshot'
 import type { QuestionPhase } from '../data/sampleQuestionGuides'
+import type { AnswerValue } from '../utils/sampleBodyCodeCalculator'
 import { resolveQuestionMedia } from '../assets/questionMedia'
+
+/** 잘 모르겠음(②) 선택 시 하단 가이드 GIF 대신 상단 이미지를 유지한다 */
+const UNCERTAIN_ANSWER: AnswerValue = '②'
 
 interface QuestionMediaLayoutProps {
   /** 문항 전환 시 key — 캐릭터는 유지, 하단 문항만 페이드 */
@@ -13,6 +17,7 @@ interface QuestionMediaLayoutProps {
   guideEnabled: boolean
   guideGifSrc?: string
   guideText?: string
+  selectedAnswer?: AnswerValue
   question?: SampleQuestion
   nextQuestion?: SampleQuestion
   nextNextQuestion?: SampleQuestion
@@ -28,6 +33,7 @@ export function QuestionMediaLayout({
   guideEnabled,
   guideGifSrc,
   guideText,
+  selectedAnswer,
   question,
   nextQuestion,
   nextNextQuestion,
@@ -36,9 +42,10 @@ export function QuestionMediaLayout({
   const { gif } = resolveQuestionMedia(question?.media_url)
   const { gif: nextGif } = resolveQuestionMedia(nextQuestion?.media_url)
   const { gif: nextNextGif } = resolveQuestionMedia(nextNextQuestion?.media_url)
-  const showTopMedia = !guideEnabled || phase === 'select'
-  const showGuidePanel = guideEnabled && phase === 'guide' && guideGifSrc && guideText
+  const isUncertainAnswer = selectedAnswer === UNCERTAIN_ANSWER
   const isGuidePhase = guideEnabled && phase === 'guide'
+  const showTopMedia = !guideEnabled || phase === 'select' || (isGuidePhase && isUncertainAnswer)
+  const showGuidePanel = isGuidePhase && guideGifSrc && guideText
 
   useEffect(() => {
     const preload = (src?: string) => {
@@ -81,6 +88,7 @@ export function QuestionMediaLayout({
                   guideText={guideText}
                   phase={phase}
                   stepKey={stepKey}
+                  hideMedia={isUncertainAnswer}
                 />
               ) : null}
             </div>
