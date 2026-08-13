@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { ArrowLeft, Sparkles } from 'lucide-react'
-import { HOMEPAGE_URL, APP_URL } from '../config/urls'
+import { HOMEPAGE_URL } from '../config/urls'
 import { ProgressBar } from './ProgressBar'
 
 interface QuestionnaireShellProps {
@@ -22,15 +22,15 @@ export function QuestionnaireShell({ current, total, children }: QuestionnaireSh
             <ArrowLeft className="h-4 w-4" />
             홈페이지
           </a>
-          <a
-            href={APP_URL}
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => window.alert('지금 App Download 준비중입니다')}
             className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 shadow-sm transition-all hover:border-emerald-300 hover:shadow-md active:scale-[0.98]"
             aria-label="MEBODY 앱 다운로드"
           >
             <Sparkles size={16} color="#014725" />
             <span className="text-xs font-black tracking-wide text-gray-800">MEBODY</span>
-          </a>
+          </button>
         </div>
 
         <ProgressBar current={current} total={total} />

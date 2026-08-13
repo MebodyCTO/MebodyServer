@@ -1,6 +1,5 @@
-/** MEBODY 홈페이지 — 실제 배포 도메인으로 고정 (커스텀 도메인 연결 시 VITE_HOMEPAGE_URL로 덮어쓰기) */
-export const HOMEPAGE_URL =
-  import.meta.env.VITE_HOMEPAGE_URL?.trim() || 'https://mebodyserver-production.up.railway.app/'
+/** MEBODY 홈페이지 — 같은 오리진 `/` (로컬·커스텀 도메인·Railway 공통) */
+export const HOMEPAGE_URL = import.meta.env.VITE_HOMEPAGE_URL?.trim() || '/'
 
 /** MEBODY 앱 서비스 (mebody-jjh) */
 export const APP_URL =
