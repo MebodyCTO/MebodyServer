@@ -174,8 +174,17 @@ function renderMemberSummary(summary) {
   $('#memberGrade').textContent = profile.grade || 'BASIC';
 
   if (bodyCode) {
-    $('#bodyBtiCode').textContent = `${bodyCode}${bodyTitle ? ` · ${bodyTitle}` : ''}`;
-    $('#bodyBtiDescription').textContent = bodyDescription || '최근 진단 결과가 계정에 저장되어 있습니다. 모바일 앱에서 코드 플랜과 오늘의 미션을 이어서 확인할 수 있습니다.';
+    // Mebody code 카드: h2는 코드만, DB 타이틀(캐릭터 멘트)·설명은 하단에 통일
+    $('#bodyBtiCode').textContent = bodyCode;
+    if (bodyTitle && bodyDescription) {
+      $('#bodyBtiDescription').textContent = `${bodyTitle} — ${bodyDescription}`;
+    } else if (bodyTitle) {
+      $('#bodyBtiDescription').textContent = bodyTitle;
+    } else if (bodyDescription) {
+      $('#bodyBtiDescription').textContent = bodyDescription;
+    } else {
+      $('#bodyBtiDescription').textContent = '최근 진단 결과가 계정에 저장되어 있습니다. 모바일 앱에서 코드 플랜과 오늘의 미션을 이어서 확인할 수 있습니다.';
+    }
   } else {
     $('#bodyBtiCode').textContent = '아직 결과 없음';
     $('#bodyBtiDescription').textContent = '아직 진단 결과가 없습니다. 모바일 앱에서 체형 코드 분석을 시작해보세요.';
@@ -253,10 +262,17 @@ async function bootstrap() {
   }
 
   try {
-    await enterDashboard(isAdminPath() ? 'users' : 'me');
+    // `/admin` 에서만 콘솔(대시보드). `/` 홈은 로그인 상태여도 랜딩을 보여준다.
+    if (isAdminPath()) {
+      await enterDashboard('users');
+    } else {
+      await loadMeDashboard();
+      showLanding();
+    }
   } catch (error) {
     localStorage.removeItem('mebody.server.accessToken');
     state.token = '';
+    state.me = null;
     showLanding();
     setMessage(error.message || '로그인이 필요합니다.', false);
     if (isAdminPath()) $('#authPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -297,7 +313,14 @@ async function handleAuthSubmit(event) {
 
     localStorage.setItem('mebody.server.accessToken', auth.access_token);
     state.token = auth.access_token;
-    await enterDashboard(isAdminPath() ? 'users' : 'me');
+    // 홈(`/`)에서 로그인해도 랜딩을 유지. 콘솔은 `/admin` 에서만 연다.
+    if (isAdminPath()) {
+      await enterDashboard('users');
+    } else {
+      await loadMeDashboard();
+      showLanding();
+      setMessage('로그인되었습니다.', true);
+    }
   } catch (error) {
     setMessage(error.message || '처리 중 오류가 발생했습니다.', false);
   } finally {
