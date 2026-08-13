@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { SAMPLE_RESULT_FORM_URL } from '../config/urls'
+import { HOMEPAGE_URL, SAMPLE_RESULT_FORM_URL } from '../config/urls'
 import { AXIS_GREEN_THEME } from '../data/axisTheme'
 import { getSampleResultContent } from '../data/sampleResultContent'
 import type { SampleCompletionPayload } from '../types/sampleCompletion'
@@ -229,11 +229,27 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
           className="shrink-0 border-t border-amber-100 bg-amber-50/90 px-4 py-2 text-center text-[11px] leading-snug text-amber-800/80"
           style={{ wordBreak: 'keep-all' }}
         >
-          아래까지 스크롤하면 처음으로를 사용할 수 있어요
+          아래까지 스크롤하면 홈페이지·처음으로를 사용할 수 있어요
         </p>
       ) : null}
 
       <div className="shrink-0 space-y-2 border-t border-gray-200 bg-white p-4">
+        {hasReachedBottom ? (
+          <a
+            href={HOMEPAGE_URL}
+            className="block rounded-2xl border-2 border-gray-200 bg-white py-3.5 text-center text-sm font-semibold text-gray-800 transition-all hover:border-gray-400 active:scale-[0.98]"
+          >
+            홈페이지
+          </a>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="w-full cursor-not-allowed rounded-2xl border-2 border-gray-100 bg-gray-50 py-3.5 text-center text-sm font-semibold text-gray-300"
+          >
+            홈페이지
+          </button>
+        )}
         {hasReachedBottom ? (
           <button
             type="button"

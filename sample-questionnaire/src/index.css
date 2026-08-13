@@ -89,6 +89,22 @@ body {
   animation: scrollHintBounce 1.6s ease-in-out infinite;
 }
 
+@keyframes characterIdle {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-7px) scale(1.02);
+  }
+}
+
+/* 확정 16코드(정지 PNG)도 살아 보이게 — M축 캐러셀과 별개 idle 모션 */
+.animate-character-idle {
+  animation: characterIdle 2.2s ease-in-out infinite;
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-slide-in {
     animation: none;
@@ -99,6 +115,10 @@ body {
   }
 
   .animate-scroll-hint-bounce {
+    animation: none;
+  }
+
+  .animate-character-idle {
     animation: none;
   }
 }

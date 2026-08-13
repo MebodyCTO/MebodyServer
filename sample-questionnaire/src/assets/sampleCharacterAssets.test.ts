@@ -7,9 +7,11 @@ import {
 } from './sampleCharacterAssets'
 
 describe('getCompatibleCharacterCodes', () => {
-  it('returns a single code for definitive results without M', () => {
-    expect(getCompatibleCharacterCodes('CLLF')).toEqual(['CLLF'])
-    expect(getCompatibleCharacterCodes('frrs')).toEqual(['FRRS'])
+  it('pairs definitive codes with neck-axis sibling for carousel (like MRRS)', () => {
+    expect(getCompatibleCharacterCodes('FRRS')).toEqual(['FRRS', 'CRRS'])
+    expect(getCompatibleCharacterCodes('frrs')).toEqual(['FRRS', 'CRRS'])
+    expect(getCompatibleCharacterCodes('CLLF')).toEqual(['FLLF', 'CLLF'])
+    expect(getCompatibleCharacterCodes('CRRS')).toEqual(['FRRS', 'CRRS'])
   })
 
   it('expands pelvis M into two compatible codes', () => {
@@ -31,6 +33,10 @@ describe('getCompatibleCharacterCodes', () => {
       'CLRS',
       'CLLS',
     ])
+  })
+
+  it('expands neck M for MRRS into FRRS and CRRS', () => {
+    expect(getCompatibleCharacterCodes('MRRS')).toEqual(['FRRS', 'CRRS'])
   })
 
   it('returns all 16 codes for MMMM', () => {

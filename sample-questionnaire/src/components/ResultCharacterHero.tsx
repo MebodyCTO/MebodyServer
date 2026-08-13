@@ -31,7 +31,9 @@ export function ResultCharacterHero({ resultCode }: ResultCharacterHeroProps) {
     [resultCode],
   )
   const prefersReducedMotion = usePrefersReducedMotion()
+  // M 축이 있으면 후보 PNG를 순환. 확정 16코드는 단일 PNG + idle 모션.
   const shouldCarousel = compatibleCodes.length > 1 && !prefersReducedMotion
+  const shouldIdle = compatibleCodes.length >= 1 && !prefersReducedMotion
 
   const [activeIndex, setActiveIndex] = useState(0)
   const [imageSrc, setImageSrc] = useState(() => {
@@ -63,13 +65,25 @@ export function ResultCharacterHero({ resultCode }: ResultCharacterHeroProps) {
     setImageSrc(LOCAL_CHARACTER.png)
   }
 
+  const imageClassName = [
+    'h-[120px] w-[120px] rounded-2xl object-contain transition-opacity duration-300',
+    shouldIdle ? 'animate-character-idle' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   if (compatibleCodes.length === 0) {
     return (
       <div className="mb-4 flex justify-center">
         <img
           src={LOCAL_CHARACTER.png}
           alt="MEBODY 캐릭터"
-          className="h-[120px] w-[120px] rounded-2xl object-contain"
+          className={[
+            'h-[120px] w-[120px] rounded-2xl object-contain',
+            prefersReducedMotion ? '' : 'animate-character-idle',
+          ]
+            .filter(Boolean)
+            .join(' ')}
         />
       </div>
     )
@@ -85,7 +99,7 @@ export function ResultCharacterHero({ resultCode }: ResultCharacterHeroProps) {
             ? `${resultCode} MEBODY 캐릭터`
             : `MEBODY 캐릭터 후보 ${activeIndex + 1}/${compatibleCodes.length}`
         }
-        className="h-[120px] w-[120px] rounded-2xl object-contain transition-opacity duration-300"
+        className={imageClassName}
         onError={handleImageError}
       />
     </div>
