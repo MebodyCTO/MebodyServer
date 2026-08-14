@@ -199,7 +199,7 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
                   : '일부 축 방향이 아직 미확정이에요.'}
               </p>
               <p className="mt-2 text-xs leading-relaxed text-gray-600" style={{ wordBreak: 'keep-all' }}>
-                1차 12문항만으로는 방향을 특정하기 어려운 축이 있어요. 2차 정밀 체크에서 더 자세히 확인할 수
+                1차 12문항만으로는 방향을 특정하기 어려운 축이 있어요. 정밀 체크에서 더 자세히 확인할 수
                 있습니다.
               </p>
             </div>
@@ -216,8 +216,16 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
               <p className="text-sm leading-relaxed text-gray-800" style={{ wordBreak: 'keep-all' }}>
                 {content.guideText}
               </p>
+              <p
+                className="mt-3 rounded-xl bg-emerald-50 px-3.5 py-3 text-sm font-semibold leading-relaxed text-emerald-900"
+                style={{ wordBreak: 'keep-all' }}
+              >
+                더 나은 건강·웰니스 경험을 만들어 드리려면 여러분의 답변이 꼭 필요해요. 설문에 반드시
+                참여해 주세요. 남겨주신 답변은 서비스를 개선하고, 앞으로 여러분의 건강과 웰니스를 더
+                세심하게 챙겨 드리는 데 정말 큰 도움이 됩니다.
+              </p>
               <span className="mt-4 block rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3.5 text-center text-sm font-semibold text-white shadow-lg shadow-emerald-500/20">
-                설문 참여하기
+                지금 꼭 설문 참여하기
               </span>
             </a>
           ) : null}

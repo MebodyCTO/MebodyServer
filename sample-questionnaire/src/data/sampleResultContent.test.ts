@@ -27,4 +27,12 @@ describe('sampleResultContent', () => {
     expect(content?.shortSummary).toContain('목이 앞으로')
     expect(content?.guideText).toContain('회원가입')
   })
+
+  it('uses 정밀 체크 wording without the old 2차 label', () => {
+    for (const code of listSampleResultCodes()) {
+      const content = getSampleResultContent(code)
+      expect(content?.shortSummary).not.toContain('2차')
+      expect(content?.guideText).not.toContain('2차')
+    }
+  })
 })
