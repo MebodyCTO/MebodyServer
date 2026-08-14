@@ -9,7 +9,8 @@ interface ResultCharacterHeroProps {
   resultCode: string
 }
 
-const CAROUSEL_INTERVAL_MS = 500
+/** 후보 교체 간격 — 너무 짧으면 깜빡임처럼 보임 */
+const CAROUSEL_INTERVAL_MS = 1600
 
 function usePrefersReducedMotion(): boolean {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
@@ -30,78 +31,72 @@ export function ResultCharacterHero({ resultCode }: ResultCharacterHeroProps) {
     () => getCompatibleCharacterCodes(resultCode),
     [resultCode],
   )
+  const imageUrls = useMemo(
+    () =>
+      compatibleCodes.length > 0
+        ? compatibleCodes.map((code) => getCharacterImageUrl(code))
+        : [LOCAL_CHARACTER.png],
+    [compatibleCodes],
+  )
   const prefersReducedMotion = usePrefersReducedMotion()
-  // M 축이 있으면 후보 PNG를 순환. 확정 16코드는 단일 PNG + idle 모션.
-  const shouldCarousel = compatibleCodes.length > 1 && !prefersReducedMotion
-  const shouldIdle = compatibleCodes.length >= 1 && !prefersReducedMotion
+  const shouldCarousel = imageUrls.length > 1 && !prefersReducedMotion
+  const shouldIdle = !prefersReducedMotion
 
   const [activeIndex, setActiveIndex] = useState(0)
-  const [imageSrc, setImageSrc] = useState(() => {
-    const firstCode = compatibleCodes[0]
-    return firstCode ? getCharacterImageUrl(firstCode) : LOCAL_CHARACTER.png
-  })
 
   useEffect(() => {
-    const firstCode = compatibleCodes[0]
     setActiveIndex(0)
-    setImageSrc(firstCode ? getCharacterImageUrl(firstCode) : LOCAL_CHARACTER.png)
-  }, [compatibleCodes])
+  }, [imageUrls])
+
+  // 후보 이미지 미리 로드 — 교체 시 빈 프레임/깜빡임 방지
+  useEffect(() => {
+    imageUrls.forEach((url) => {
+      const preload = new Image()
+      preload.src = url
+    })
+  }, [imageUrls])
 
   useEffect(() => {
     if (!shouldCarousel) return
 
     const timer = window.setInterval(() => {
-      setActiveIndex((index) => {
-        const nextIndex = (index + 1) % compatibleCodes.length
-        setImageSrc(getCharacterImageUrl(compatibleCodes[nextIndex]!))
-        return nextIndex
-      })
+      setActiveIndex((index) => (index + 1) % imageUrls.length)
     }, CAROUSEL_INTERVAL_MS)
 
     return () => window.clearInterval(timer)
-  }, [compatibleCodes, shouldCarousel])
-
-  const handleImageError = () => {
-    setImageSrc(LOCAL_CHARACTER.png)
-  }
-
-  const imageClassName = [
-    'h-[120px] w-[120px] rounded-2xl object-contain transition-opacity duration-300',
-    shouldIdle ? 'animate-character-idle' : '',
-  ]
-    .filter(Boolean)
-    .join(' ')
-
-  if (compatibleCodes.length === 0) {
-    return (
-      <div className="mb-4 flex justify-center">
-        <img
-          src={LOCAL_CHARACTER.png}
-          alt="MEBODY 캐릭터"
-          className={[
-            'h-[120px] w-[120px] rounded-2xl object-contain',
-            prefersReducedMotion ? '' : 'animate-character-idle',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        />
-      </div>
-    )
-  }
+  }, [imageUrls, shouldCarousel])
 
   return (
     <div className="mb-4 flex justify-center">
-      <img
-        key={`${compatibleCodes[activeIndex]}-${imageSrc}`}
-        src={imageSrc}
-        alt={
-          compatibleCodes.length === 1
-            ? `${resultCode} MEBODY 캐릭터`
-            : `MEBODY 캐릭터 후보 ${activeIndex + 1}/${compatibleCodes.length}`
-        }
-        className={imageClassName}
-        onError={handleImageError}
-      />
+      <div
+        className={[
+          'relative h-[120px] w-[120px]',
+          shouldIdle ? 'animate-character-idle' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        {imageUrls.map((url, index) => (
+          <img
+            key={url}
+            src={url}
+            alt={
+              imageUrls.length === 1
+                ? `${resultCode} MEBODY 캐릭터`
+                : `MEBODY 캐릭터 후보 ${index + 1}/${imageUrls.length}`
+            }
+            className={[
+              'absolute inset-0 h-full w-full rounded-2xl object-contain',
+              // src 교체/리마운트 없이 opacity만 바꿔 깜빡임 제거
+              'transition-opacity duration-700 ease-in-out',
+              index === activeIndex ? 'opacity-100' : 'opacity-0',
+            ].join(' ')}
+            onError={(event) => {
+              event.currentTarget.src = LOCAL_CHARACTER.png
+            }}
+          />
+        ))}
+      </div>
     </div>
   )
 }

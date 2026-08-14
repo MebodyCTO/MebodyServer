@@ -14,4 +14,4 @@ export const APP_SIGNUP_URL = `${APP_URL.replace(/\/$/, '')}/?ui=auth&mode=signu
  */
 export const SAMPLE_RESULT_FORM_URL =
   import.meta.env.VITE_SAMPLE_RESULT_FORM_URL?.trim() ||
-  'https://docs.google.com/forms/d/e/1FAIpQLSdwpyURRr5jXlL2rpj5qGfPdCdMA17c7D9GL9RB5GGB1c1S0A/viewform'
+  'https://docs.google.com/forms/d/e/1FAIpQLSeVXnF3thZI34Yg1vgTi80nl0erUcG0Tv-2r65YxUUD_6p_Gg/viewform'
