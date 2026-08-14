@@ -5,7 +5,7 @@ import { QuestionGuidePanel } from './QuestionGuidePanel'
 import type { SampleQuestion } from '../data/sampleQuestionsSnapshot'
 import type { QuestionPhase } from '../data/sampleQuestionGuides'
 import type { AnswerValue } from '../utils/sampleBodyCodeCalculator'
-import { resolveQuestionMedia } from '../assets/questionMedia'
+import { getSampleQuestionMediaSet, resolveSampleAnswerMedia } from '../assets/questionMedia'
 
 /** 잘 모르겠음(②) 선택 시 하단 가이드 GIF 대신 상단 이미지를 유지한다 */
 const UNCERTAIN_ANSWER: AnswerValue = '②'
@@ -15,7 +15,6 @@ interface QuestionMediaLayoutProps {
   stepKey: number | string
   phase: QuestionPhase
   guideEnabled: boolean
-  guideGifSrc?: string
   guideText?: string
   selectedAnswer?: AnswerValue
   question?: SampleQuestion
@@ -31,7 +30,6 @@ export function QuestionMediaLayout({
   stepKey,
   phase,
   guideEnabled,
-  guideGifSrc,
   guideText,
   selectedAnswer,
   question,
@@ -39,13 +37,27 @@ export function QuestionMediaLayout({
   nextNextQuestion,
   children,
 }: QuestionMediaLayoutProps) {
-  const { gif } = resolveQuestionMedia(question?.media_url)
-  const { gif: nextGif } = resolveQuestionMedia(nextQuestion?.media_url)
-  const { gif: nextNextGif } = resolveQuestionMedia(nextNextQuestion?.media_url)
+  const mainMedia = getSampleQuestionMediaSet(
+    question?.question_number ?? 0,
+    question?.media_url,
+  ).main
+  const nextMainMedia = getSampleQuestionMediaSet(
+    nextQuestion?.question_number ?? 0,
+    nextQuestion?.media_url,
+  ).main
+  const nextNextMainMedia = getSampleQuestionMediaSet(
+    nextNextQuestion?.question_number ?? 0,
+    nextNextQuestion?.media_url,
+  ).main
+  const answerMedia = resolveSampleAnswerMedia(
+    question?.question_number ?? 0,
+    selectedAnswer,
+    question?.media_url,
+  )
   const isUncertainAnswer = selectedAnswer === UNCERTAIN_ANSWER
   const isGuidePhase = guideEnabled && phase === 'guide'
   const showTopMedia = !guideEnabled || phase === 'select' || (isGuidePhase && isUncertainAnswer)
-  const showGuidePanel = isGuidePhase && guideGifSrc && guideText
+  const showGuidePanel = isGuidePhase && guideText
 
   useEffect(() => {
     const preload = (src?: string) => {
@@ -54,9 +66,9 @@ export function QuestionMediaLayout({
       img.decoding = 'async'
       img.src = src
     }
-    preload(nextGif)
-    preload(nextNextGif)
-  }, [nextGif, nextNextGif])
+    preload(nextMainMedia)
+    preload(nextNextMainMedia)
+  }, [nextMainMedia, nextNextMainMedia])
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -66,8 +78,8 @@ export function QuestionMediaLayout({
         }`}
       >
         <LottieCharacter
-          mediaKey={String(question?.media_url ?? stepKey)}
-          gifSrc={gif}
+          mediaKey={`question-${question?.question_number ?? stepKey}`}
+          gifSrc={mainMedia}
           className="px-4 pt-2"
         />
       </div>
@@ -83,8 +95,8 @@ export function QuestionMediaLayout({
               {children}
               {showGuidePanel ? (
                 <QuestionGuidePanel
-                  mediaKey={String(question?.media_url ?? stepKey)}
-                  gifSrc={guideGifSrc}
+                  mediaKey={`question-${question?.question_number ?? stepKey}-${selectedAnswer ?? 'none'}`}
+                  gifSrc={answerMedia ?? mainMedia}
                   guideText={guideText}
                   phase={phase}
                   stepKey={stepKey}

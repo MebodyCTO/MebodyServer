@@ -3,7 +3,6 @@ import type { SampleQuestion } from './sampleQuestionsSnapshot'
 export type QuestionPhase = 'select' | 'guide'
 
 export interface QuestionGuideContent {
-  gifKey: string
   guideText: string
 }
 
@@ -30,7 +29,6 @@ export function isGuideStepEnabled(questionNumber: number): boolean {
 
 export function getQuestionGuideContent(question: SampleQuestion): QuestionGuideContent {
   return {
-    gifKey: question.media_url,
     guideText:
       GUIDE_TEXT_BY_NUMBER[question.question_number] ??
       '선택하신 답을 바탕으로 움직임 경향을 확인하고 있어요. 다음으로 넘어가기 전에 한 번 더 떠올려 보세요.',

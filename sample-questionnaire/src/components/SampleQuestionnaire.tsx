@@ -12,9 +12,8 @@ import {
 } from '../data/sampleQuestionGuides'
 import { calculateSampleBodyCode, type AnswerMap } from '../utils/sampleBodyCodeCalculator'
 import type { SampleCompletionPayload } from '../types/sampleCompletion'
-import { preloadAllSampleGifs, preloadSampleGif } from '../utils/preloadSampleGifs'
+import { preloadQuestionMedia } from '../utils/preloadSampleMedia'
 import { preloadResultCharacters } from '../utils/preloadResultCharacters'
-import { resolveQuestionMedia } from '../assets/questionMedia'
 import { QuestionnaireShell } from './QuestionnaireShell'
 import { QuestionMediaLayout } from './QuestionMediaLayout'
 import { QuestionCard } from './QuestionCard'
@@ -50,17 +49,13 @@ export function SampleQuestionnaire({ onComplete }: SampleQuestionnaireProps) {
   }, [])
 
   useEffect(() => {
-    preloadAllSampleGifs(questions, questions[0]?.media_url)
-  }, [questions])
-
-  useEffect(() => {
     setPhase('select')
   }, [currentIndex])
 
   useEffect(() => {
-    const mediaKey = questions[currentIndex]?.media_url
-    if (!mediaKey) return
-    preloadSampleGif(resolveQuestionMedia(mediaKey).gif)
+    preloadQuestionMedia(questions[currentIndex], { includeAnswers: true })
+    preloadQuestionMedia(questions[currentIndex + 1])
+    preloadQuestionMedia(questions[currentIndex + 2])
   }, [currentIndex, questions])
 
   const totalQuestions = questions.length
@@ -69,9 +64,6 @@ export function SampleQuestionnaire({ onComplete }: SampleQuestionnaireProps) {
   const nextNextQuestion = questions[currentIndex + 2]
   const guideEnabled = currentQuestion ? isGuideStepEnabled(currentQuestion.question_number) : false
   const guideContent = currentQuestion ? getQuestionGuideContent(currentQuestion) : null
-  const guideGifSrc = guideContent
-    ? resolveQuestionMedia(guideContent.gifKey).gif
-    : undefined
   const selectedAnswer = currentQuestion ? answers[currentQuestion.question_code] : undefined
 
   const completeQuestionnaire = useCallback(
@@ -158,7 +150,6 @@ export function SampleQuestionnaire({ onComplete }: SampleQuestionnaireProps) {
           stepKey={currentQuestion.question_code}
           phase={phase}
           guideEnabled={guideEnabled}
-          guideGifSrc={guideGifSrc}
           guideText={guideContent?.guideText}
           selectedAnswer={selectedAnswer}
           question={currentQuestion}

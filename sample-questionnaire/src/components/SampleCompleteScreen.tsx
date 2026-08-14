@@ -237,7 +237,7 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
           className="shrink-0 border-t border-amber-100 bg-amber-50/90 px-4 py-2 text-center text-[11px] leading-snug text-amber-800/80"
           style={{ wordBreak: 'keep-all' }}
         >
-          아래까지 스크롤하면 홈페이지·처음으로를 사용할 수 있어요
+          아래까지 스크롤해서 더 많은 정보를 확인해 주세요
         </p>
       ) : null}
 
