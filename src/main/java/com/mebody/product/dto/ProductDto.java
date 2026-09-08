@@ -12,6 +12,7 @@ public record ProductDto(
     String name,
     String description,
     BigDecimal price,
+    String category,
     String imageUrl,
     ProductStatus status,
     OffsetDateTime createdAt
@@ -23,6 +24,7 @@ public record ProductDto(
         product.getName(),
         product.getDescription(),
         product.getPrice(),
+        product.getCategory(),
         product.getImageUrl(),
         product.getStatus(),
         product.getCreatedAt()

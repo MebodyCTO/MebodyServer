@@ -96,17 +96,8 @@
               <h2 class="mb-h2">체형을 맞히지 않고,<br />몸의 <span class="mb-thin">사용 패턴</span>을 읽습니다</h2>
               <p class="mb-lead mb-lead-sm">같은 자세를 오래 유지하는 생활에서는 네 부위가 서로 영향을 주고받습니다. 그 흐름을 이해할 수 있는 언어로 바꿉니다.</p>
             </div>
-            <div class="mb-why-media">
-              <img
-                src="/assets/img/mb-character.webp"
-                width="700"
-                height="700"
-                alt=""
-                aria-hidden="true"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
+            <!-- 이미지 슬롯 (현재 비어 있음) -->
+            <div class="mb-why-media"></div>
           </div>
         </div>
         <div class="mb-why-list">
@@ -193,8 +184,23 @@
       </section>
 
       <section id="expert" class="mb-expert">
-        <div class="mb-expert-media" aria-hidden="true">
-          <div class="mb-monogram">MB</div>
+        <div class="mb-expert-media">
+          <!-- 원형 이미지 슬롯.
+               assets/img/mb-expert.webp 를 넣으면 사진이 원 안을 채우고,
+               없으면 MB 모노그램이 그대로 보입니다. -->
+          <div class="mb-expert-avatar">
+            <span class="mb-monogram" aria-hidden="true">MB</span>
+            <img
+              class="mb-expert-portrait"
+              src="/assets/img/mb-expert.webp"
+              width="900"
+              height="900"
+              alt="미바디 전문물리치료사"
+              loading="lazy"
+              decoding="async"
+              onerror="this.remove()"
+            />
+          </div>
         </div>
         <div class="mb-expert-copy">
           <div class="mb-kicker">WHO MAKES IT</div>
@@ -219,8 +225,8 @@
             <a href="https://blog.naver.com/wognsyes" target="_blank" rel="noopener noreferrer">
               <span class="mb-social-l"><span class="mb-social-name">미바디 블로그</span><span class="mb-social-url">blog.naver.com/wognsyes</span></span><span class="mb-social-arrow">↗</span>
             </a>
-            <a class="mb-social-last" href="https://threads.com/@mebody_health" target="_blank" rel="noopener noreferrer">
-              <span class="mb-social-l"><span class="mb-social-name">미바디 쓰레드</span><span class="mb-social-url">threads.com/@mebody_health</span></span><span class="mb-social-arrow">↗</span>
+            <a class="mb-social-last" href="https://www.youtube.com/@mebody_health" target="_blank" rel="noopener noreferrer">
+              <span class="mb-social-l"><span class="mb-social-name">미바디 유튜브</span><span class="mb-social-url">youtube.com/@mebody_health</span></span><span class="mb-social-arrow">↗</span>
             </a>
           </div>
 
@@ -295,7 +301,7 @@
           <dl class="mb-footer-company">
             <div><dt>회사명</dt><dd>(주)Mebody</dd></div>
             <div><dt>서비스명</dt><dd>Mebody</dd></div>
-            <div><dt>대표자</dt><dd>정재훈 · 최우혁</dd></div>
+            <div><dt>대표자</dt><dd>최우혁</dd></div>
           </dl>
         </div>
         <nav class="mb-footer-nav" aria-label="MEBODY footer navigation">
@@ -324,6 +330,8 @@
         <div style="display:grid;gap:10px;">
           <button class="sidebar-link active" data-dashboard-tab="me" type="button">내 페이지</button>
           <button class="sidebar-link hidden" data-admin-only data-dashboard-tab="users" type="button">회원 관리</button>
+          <button class="sidebar-link hidden" data-manager-only data-dashboard-tab="products" type="button">상품 관리</button>
+          <button class="sidebar-link hidden" data-manager-only data-dashboard-tab="orders" type="button">주문 · 배송</button>
           <button class="sidebar-link hidden" data-admin-only data-dashboard-tab="storage" type="button">Storage 이미지</button>
         </div>
         <div style="margin-top:auto;color:rgba(255,255,255,.68);font-size:13px;line-height:1.7;">
@@ -409,6 +417,81 @@
               <div class="detail-actions"><button class="btn btn-primary" id="saveUser" type="button">저장</button><button class="btn btn-ghost" id="deleteUser" type="button">삭제 처리</button></div>
             </div>
           </aside>
+        </section>
+
+        <section id="productsSection" class="admin-layout hidden">
+          <div class="panel" style="overflow:hidden;">
+            <div class="toolbar">
+              <select class="input" id="productStatusFilter" style="max-width:180px;">
+                <option value="">전체 상태</option><option>ACTIVE</option><option>DRAFT</option><option>SOLD_OUT</option><option>ARCHIVED</option>
+              </select>
+              <button class="btn btn-primary" id="reloadProducts" type="button">새로고침</button>
+              <div id="productPhotoNotice" class="hidden" style="display:flex;align-items:center;font-size:12px;font-weight:900;color:#b45309;"></div>
+            </div>
+            <div id="productGrid" class="storage-grid"></div>
+          </div>
+
+          <aside class="panel detail">
+            <h2 id="productFormTitle" style="font-size:28px;letter-spacing:-.05em;margin:0;">상품 등록</h2>
+            <p id="productFormLead" style="margin:0;color:#64748b;font-weight:800;font-size:12px;line-height:1.7;">
+              사진은 필수입니다. 사진을 고르기 전에는 등록 버튼이 열리지 않고, 서버와 DB에서도 사진 없는 판매 상품은 거절합니다.
+            </p>
+
+            <div id="productImageBox" style="border:2px dashed rgba(1,71,37,.28);border-radius:18px;padding:14px;display:grid;gap:10px;background:#f8fafc;">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                <strong style="font-size:12px;font-weight:950;color:#014725;">상품 사진 <span style="color:#b91c1c;">필수</span></strong>
+                <span id="productImageState" style="font-size:11px;font-weight:900;color:#b91c1c;">아직 선택 안 됨</span>
+              </div>
+              <img id="productImagePreview" class="hidden" alt="선택한 상품 사진 미리보기"
+                   style="width:100%;height:170px;object-fit:contain;background:#fff;border-radius:14px;border:1px solid rgba(1,71,37,.12);" />
+              <input class="input" id="productImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" required style="background:#fff;padding-top:11px;" />
+              <span style="font-size:11px;font-weight:800;color:#64748b;line-height:1.6;">JPG · PNG · WEBP · GIF · AVIF / 8MB 이하</span>
+            </div>
+
+            <label>상품명<input class="input" id="productName" maxlength="120" /></label>
+            <label>카테고리<select class="input" id="productCategory">
+              <option value="release">셀프 이완 (release)</option>
+              <option value="strength">근력 운동 (strength)</option>
+              <option value="stretch">스트레칭 (stretch)</option>
+              <option value="support">보조 용품 (support)</option>
+              <option value="food">보조 식품 (food)</option>
+            </select></label>
+            <label>가격(원)<input class="input" id="productPrice" type="number" min="0" step="100" /></label>
+            <label>설명<textarea class="input" id="productDescription" maxlength="500" style="height:96px;padding-top:12px;"></textarea></label>
+            <label>상태<select class="input" id="productStatus">
+              <option value="ACTIVE">ACTIVE (마켓에 노출)</option>
+              <option value="DRAFT">DRAFT (비공개)</option>
+              <option value="SOLD_OUT">SOLD_OUT</option>
+              <option value="ARCHIVED">ARCHIVED</option>
+            </select></label>
+            <label id="productSellerRow">판매자<select class="input" id="productSeller"></select></label>
+
+            <div class="detail-actions">
+              <button class="btn btn-primary" id="saveProduct" type="button" disabled>등록</button>
+              <button class="btn btn-ghost hidden" id="cancelProductEdit" type="button">새 상품 등록으로</button>
+              <button class="btn btn-ghost hidden" id="deleteProduct" type="button">삭제</button>
+            </div>
+          </aside>
+        </section>
+
+        <section id="ordersSection" class="panel hidden" style="margin-top:18px;overflow:hidden;">
+          <div class="toolbar">
+            <select class="input" id="orderFulfillmentFilter" style="max-width:200px;">
+              <option value="">전체 배송 상태</option>
+              <option value="NONE">배송 준비 전</option>
+              <option value="PREPARING">배송 준비 중</option>
+              <option value="SHIPPED">배송 중</option>
+              <option value="DELIVERED">배송 완료</option>
+            </select>
+            <button class="btn btn-primary" id="reloadOrders" type="button">새로고침</button>
+            <div id="orderNotice" style="display:flex;align-items:center;font-size:12px;font-weight:900;color:#014725;"></div>
+          </div>
+          <div style="overflow:auto;">
+            <table>
+              <thead><tr><th>주문</th><th>구매자</th><th>금액</th><th>결제</th><th>배송</th><th>송장</th><th>처리</th></tr></thead>
+              <tbody id="orderRows"><tr><td colspan="7">불러오는 중...</td></tr></tbody>
+            </table>
+          </div>
         </section>
 
         <section id="storageSection" class="panel hidden" style="margin-top:18px;overflow:hidden;">

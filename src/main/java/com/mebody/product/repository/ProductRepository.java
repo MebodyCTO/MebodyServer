@@ -8,4 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductRepository extends JpaRepository<Product, UUID> {
   List<Product> findByStatusOrderByCreatedAtDesc(ProductStatus status);
+
+  /** 관리 콘솔용 — 상태와 무관하게 전부. */
+  List<Product> findAllByOrderByCreatedAtDesc();
 }

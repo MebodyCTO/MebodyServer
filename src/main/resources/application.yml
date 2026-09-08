@@ -13,6 +13,11 @@ spring:
     username: ${SUPABASE_DB_USERNAME:postgres}
     password: ${SUPABASE_DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      data-source-properties:
+        # Supabase 풀러(6543, transaction mode)는 서버측 prepared statement 를 재사용할 수 없다.
+        # 끄지 않으면 요청이 몰릴 때 'prepared statement "S_n" already exists' 로 트랜잭션이 통째로 깨진다.
+        prepareThreshold: 0
   jpa:
     hibernate:
       ddl-auto: none
@@ -24,10 +29,32 @@ spring:
           time_zone: UTC
   jackson:
     default-property-inclusion: non_null
+  servlet:
+    multipart:
+      # 상품 사진 업로드. 기본값(1MB)이면 웬만한 제품 사진이 그대로 막힙니다.
+      max-file-size: 8MB
+      max-request-size: 12MB
 
 mebody:
   frontend-origin: ${FRONTEND_ORIGIN:http://127.0.0.1:3000,http://localhost:3000}
   app-url: ${MEBODY_APP_URL:https://mebody-jjh.vercel.app}
+  billing:
+    # 개발용 결제 어댑터. 켜면 실제 결제 없이 멤버십이 켜지고 주문이 결제 완료가 됩니다.
+    # 사업자등록·PG/스토어 계약 전에 플로우를 확인하려는 용도이며, 운영에서는 반드시 false 입니다.
+    dev-mode: ${MEBODY_BILLING_DEV_MODE:false}
+    subscription-days: ${MEBODY_BILLING_SUBSCRIPTION_DAYS:30}
+    toss:
+      secret-key: ${TOSS_SECRET_KEY:}
+    google-play:
+      package-name: ${GOOGLE_PLAY_PACKAGE_NAME:net.mebody.app}
+      service-account-json: ${GOOGLE_PLAY_SERVICE_ACCOUNT_JSON:}
+  ads:
+    # 보상형 광고 서버 검증(SSV). AdMob 콘솔의 광고 단위에 콜백 URL 을 등록한 뒤 켜세요.
+    #   콜백 URL 예: https://<배포주소>/api/ads/admob/ssv
+    # 꺼져 있으면 앱이 직접 보너스를 청구하는 기존 방식이 그대로 동작합니다.
+    ssv-enabled: ${MEBODY_ADS_SSV_ENABLED:false}
+    verifier-keys-url: ${MEBODY_ADS_VERIFIER_KEYS_URL:https://gstatic.com/admob/reward/verifier-keys.json}
+    max-age-seconds: ${MEBODY_ADS_MAX_AGE_SECONDS:3600}
   supabase:
     url: ${SUPABASE_URL:}
     anon-key: ${SUPABASE_ANON_KEY:}

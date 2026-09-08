@@ -1,4 +1,7 @@
 const state = {
+  editingProductId: null,
+  products: [],
+  orders: [],
   config: null,
   mode: 'signin',
   token: localStorage.getItem('mebody.server.accessToken') || '',
@@ -24,6 +27,11 @@ function apiUrl(path) {
 const $ = (selector) => document.querySelector(selector);
 const isAdminPath = () => window.location.pathname === '/admin';
 const isAdmin = () => state.me?.role === 'ADMIN';
+const isSeller = () => state.me?.role === 'SELLER';
+/** 상품을 올릴 수 있는 역할 — 관리자는 전부, 판매자는 자기 것만. */
+const isManager = () => isAdmin() || isSeller();
+/** 판매자는 /api/seller/products, 관리자는 /api/admin/products 로 나갑니다. */
+const productBase = () => (isAdmin() ? '/api/admin/products' : '/api/seller/products');
 
 function visibleMessageElement() {
   return [...document.querySelectorAll('[data-message]')]
@@ -211,11 +219,18 @@ function configureDashboardAccess() {
   document.querySelectorAll('[data-admin-only]').forEach((element) => {
     element.classList.toggle('hidden', !isAdmin());
   });
+  document.querySelectorAll('[data-manager-only]').forEach((element) => {
+    element.classList.toggle('hidden', !isManager());
+  });
+  // 판매자는 자기 상품만 올리므로 판매자 선택 칸이 필요 없습니다(서버가 본인으로 강제).
+  $('#productSellerRow')?.classList.toggle('hidden', !isAdmin());
 }
 
 function setDashboardTab(tab) {
   const requestedTab = tab || 'me';
-  const nextTab = requestedTab !== 'me' && !isAdmin() ? 'me' : requestedTab;
+  const managerTabs = ['products', 'orders'];
+  const allowed = requestedTab === 'me' || (managerTabs.includes(requestedTab) ? isManager() : isAdmin());
+  const nextTab = allowed ? requestedTab : 'me';
   state.currentTab = nextTab;
 
   document.querySelectorAll('[data-dashboard-tab]').forEach((button) => {
@@ -223,11 +238,15 @@ function setDashboardTab(tab) {
   });
   $('#meSection').classList.toggle('hidden', nextTab !== 'me');
   $('#usersSection').classList.toggle('hidden', nextTab !== 'users');
+  $('#productsSection').classList.toggle('hidden', nextTab !== 'products');
+  $('#ordersSection').classList.toggle('hidden', nextTab !== 'orders');
   $('#storageSection').classList.toggle('hidden', nextTab !== 'storage');
 
   const meta = {
     me: ['MY PAGE', '내 MEBODY', '계정 정보와 최근 체형 코드, 미션 상태를 확인합니다.'],
     users: ['OPERATIONS', '회원·권한 관리', 'Supabase 사용자 프로필과 권한, 등급, 체형 코드를 관리합니다.'],
+    products: ['MARKET', '상품 관리', '사진과 함께 상품을 등록합니다. 사진 없이는 등록되지 않고, 등록 즉시 앱 마켓 탭에 반영됩니다.'],
+    orders: ['ORDERS', '주문 · 배송', '결제된 주문의 배송 상태를 관리합니다. 발송 처리에는 송장번호가 필요합니다.'],
     storage: ['STORAGE', 'Storage 이미지 관리', 'Supabase Storage 이미지를 서버 권한으로 안전하게 관리합니다.'],
   }[nextTab];
   $('#dashboardKicker').textContent = meta[0];
@@ -235,6 +254,8 @@ function setDashboardTab(tab) {
   $('#dashboardLead').textContent = meta[2];
 
   if (nextTab === 'users') Promise.all([loadSummary(), loadUsers()]).catch((error) => setMessage(error.message, false));
+  if (nextTab === 'products') loadProducts().catch((error) => setMessage(error.message, false));
+  if (nextTab === 'orders') loadOrders().catch((error) => setMessage(error.message, false));
   if (nextTab === 'storage') loadImages().catch((error) => setMessage(error.message, false));
 }
 
@@ -446,6 +467,312 @@ async function uploadImage() {
   await loadImages();
 }
 
+
+// ---------------------------------------------------------------- 상품 관리
+//
+// 사진 필수 규칙은 세 겹입니다. 여기(화면)는 그중 가장 바깥이고, 편의를 위한 겁니다 —
+//   · 등록 모드에서는 파일을 고르기 전까지 등록 버튼이 disabled
+//   · 서버(ProductAdminService)가 파일 없는 요청을 400 으로 거절
+//   · DB의 products_image_required CHECK 가 사진 없는 ACTIVE 행을 거절
+// 화면만 믿지 않는 이유는, 화면은 우회할 수 있기 때문입니다.
+
+const PRODUCT_CATEGORY_LABEL = {
+  release: '셀프 이완',
+  strength: '근력 운동',
+  stretch: '스트레칭',
+  support: '보조 용품',
+  food: '보조 식품',
+};
+const MAX_PRODUCT_IMAGE_BYTES = 8 * 1024 * 1024;
+
+function selectedProductImage() {
+  return $('#productImageFile')?.files?.[0] || null;
+}
+
+/** 등록은 사진이 있어야만, 수정은 이미 사진이 있으면 사진 없이도 저장 가능. */
+function refreshProductImageState() {
+  const file = selectedProductImage();
+  const editing = state.products.find((product) => product.id === state.editingProductId) || null;
+  const hasExisting = Boolean(editing?.imageUrl);
+  const stateLabel = $('#productImageState');
+  const preview = $('#productImagePreview');
+  const box = $('#productImageBox');
+
+  if (preview?.dataset.objectUrl) {
+    URL.revokeObjectURL(preview.dataset.objectUrl);
+    delete preview.dataset.objectUrl;
+  }
+
+  if (file) {
+    const url = URL.createObjectURL(file);
+    preview.src = url;
+    preview.dataset.objectUrl = url;
+    preview.classList.remove('hidden');
+    stateLabel.textContent = `${file.name} (${Math.ceil(file.size / 1024)}KB)`;
+    stateLabel.style.color = '#047857';
+    box.style.borderColor = 'rgba(4,120,87,.5)';
+  } else if (hasExisting) {
+    preview.src = editing.imageUrl;
+    preview.classList.remove('hidden');
+    stateLabel.textContent = '기존 사진 유지';
+    stateLabel.style.color = '#047857';
+    box.style.borderColor = 'rgba(4,120,87,.5)';
+  } else {
+    preview.classList.add('hidden');
+    preview.removeAttribute('src');
+    stateLabel.textContent = state.editingProductId ? '이 상품은 사진이 없습니다 — 사진을 올려야 저장됩니다' : '아직 선택 안 됨';
+    stateLabel.style.color = '#b91c1c';
+    box.style.borderColor = 'rgba(1,71,37,.28)';
+  }
+
+  $('#saveProduct').disabled = !(file || hasExisting);
+}
+
+function resetProductForm() {
+  state.editingProductId = null;
+  $('#productFormTitle').textContent = '상품 등록';
+  $('#productFormLead').textContent = '사진은 필수입니다. 사진을 고르기 전에는 등록 버튼이 열리지 않고, 서버와 DB에서도 사진 없는 판매 상품은 거절합니다.';
+  $('#saveProduct').textContent = '등록';
+  $('#cancelProductEdit').classList.add('hidden');
+  $('#deleteProduct').classList.add('hidden');
+  $('#productImageFile').value = '';
+  $('#productName').value = '';
+  $('#productPrice').value = '';
+  $('#productDescription').value = '';
+  $('#productCategory').value = 'release';
+  $('#productStatus').value = 'ACTIVE';
+  refreshProductImageState();
+}
+
+function editProduct(product) {
+  state.editingProductId = product.id;
+  $('#productFormTitle').textContent = '상품 수정';
+  $('#productFormLead').textContent = product.imageUrl
+    ? '사진을 새로 고르면 교체되고, 비워두면 기존 사진을 그대로 씁니다.'
+    : '이 상품은 사진이 없습니다. 판매 중(ACTIVE)으로 두려면 사진을 올려야 저장됩니다.';
+  $('#saveProduct').textContent = '수정 저장';
+  $('#cancelProductEdit').classList.remove('hidden');
+  $('#deleteProduct').classList.remove('hidden');
+  $('#productImageFile').value = '';
+  $('#productName').value = product.name || '';
+  $('#productPrice').value = product.price ?? '';
+  $('#productDescription').value = product.description || '';
+  $('#productCategory').value = product.category || 'release';
+  $('#productStatus').value = product.status || 'ACTIVE';
+  if (isAdmin() && product.sellerId) $('#productSeller').value = product.sellerId;
+  refreshProductImageState();
+  $('#productsSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/** 관리자만 판매자를 고릅니다. 판매자·관리자 프로필을 모아 옵니다. */
+async function loadSellerOptions() {
+  if (!isAdmin()) return;
+  const select = $('#productSeller');
+  if (select.dataset.loaded === '1') return;
+  const [sellers, admins] = await Promise.all([
+    api('/api/admin/users?' + new URLSearchParams({ role: 'SELLER', size: '100' })),
+    api('/api/admin/users?' + new URLSearchParams({ role: 'ADMIN', size: '100' })),
+  ]);
+  const rows = [...(sellers?.content || []), ...(admins?.content || [])];
+  select.innerHTML = rows
+    .map((user) => `<option value="${escapeAttr(user.id)}">${escapeHtml(user.name || user.nickname || user.email || user.id)} · ${escapeHtml(user.role)}</option>`)
+    .join('') || '<option value="">판매자 계정이 없습니다</option>';
+  select.dataset.loaded = '1';
+}
+
+async function loadProducts() {
+  await loadSellerOptions();
+  const filter = $('#productStatusFilter').value;
+  const products = await api(productBase());
+  state.products = products || [];
+  const visible = state.products.filter((product) => !filter || product.status === filter);
+
+  const missing = state.products.filter((product) => !product.imageUrl).length;
+  const notice = $('#productPhotoNotice');
+  notice.classList.toggle('hidden', missing === 0);
+  notice.textContent = missing === 0 ? '' : `사진 없는 상품 ${missing}개 — 카드를 눌러 사진을 채워주세요`;
+
+  $('#productGrid').innerHTML = visible.map((product) => `
+    <article class="image-card">
+      ${product.imageUrl
+        ? `<img src="${escapeAttr(product.imageUrl)}" alt="${escapeAttr(product.name)}" loading="lazy" />`
+        : '<div style="height:132px;display:grid;place-items:center;background:#fff7ed;color:#b45309;font-weight:950;font-size:12px;padding:0;">사진 없음</div>'}
+      <div>
+        <strong style="display:block;color:#0f172a;font-size:13px;">${escapeHtml(product.name)}</strong>
+        <span style="display:block;margin-top:4px;color:#014725;">${Number(product.price ?? 0).toLocaleString('ko-KR')}원</span>
+        <span style="display:block;margin-top:4px;color:#64748b;">${escapeHtml(PRODUCT_CATEGORY_LABEL[product.category] || product.category || '미분류')}</span>
+        <span class="pill ${escapeAttr(product.status)}" style="margin-top:8px;">${escapeHtml(product.status)}</span>
+        <button class="btn btn-ghost" type="button" data-edit-product="${escapeAttr(product.id)}" style="margin-top:10px;min-height:36px;width:100%;">
+          ${product.imageUrl ? '수정' : '사진 등록'}
+        </button>
+      </div>
+    </article>
+  `).join('') || '<div style="padding:20px;color:#64748b">상품이 없습니다.</div>';
+
+  document.querySelectorAll('[data-edit-product]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const product = state.products.find((item) => item.id === button.dataset.editProduct);
+      if (product) editProduct(product);
+    });
+  });
+}
+
+async function deleteProduct() {
+  const editing = state.editingProductId;
+  if (!editing) return;
+  const product = state.products.find((item) => item.id === editing);
+  if (!confirm(`${product?.name || '이 상품'}을(를) 삭제할까요? 사진도 함께 지워집니다.`)) return;
+  await api(`${productBase()}/${encodeURIComponent(editing)}`, { method: 'DELETE' });
+  setMessage('상품이 삭제되었습니다.', true);
+  resetProductForm();
+  await loadProducts();
+}
+
+async function saveProduct() {
+  const file = selectedProductImage();
+  const editing = state.editingProductId;
+
+  if (!editing && !file) {
+    setMessage('상품 사진은 필수입니다. 사진 파일을 먼저 선택해주세요.', false);
+    return;
+  }
+  if (file) {
+    if (!/^image\//.test(file.type)) {
+      setMessage('이미지 파일만 올릴 수 있습니다.', false);
+      return;
+    }
+    if (file.size > MAX_PRODUCT_IMAGE_BYTES) {
+      setMessage('상품 사진은 8MB 이하만 올릴 수 있습니다.', false);
+      return;
+    }
+  }
+
+  const name = $('#productName').value.trim();
+  const price = $('#productPrice').value.trim();
+  if (!name) { setMessage('상품명을 입력해주세요.', false); return; }
+  if (price === '' || Number(price) < 0) { setMessage('가격을 0원 이상으로 입력해주세요.', false); return; }
+
+  const form = new FormData();
+  form.append('name', name);
+  form.append('price', price);
+  form.append('category', $('#productCategory').value);
+  form.append('status', $('#productStatus').value);
+  const description = $('#productDescription').value.trim();
+  if (description) form.append('description', description);
+  if (isAdmin()) {
+    const sellerId = $('#productSeller').value;
+    if (!sellerId) { setMessage('판매자를 선택해주세요.', false); return; }
+    form.append('sellerId', sellerId);
+  }
+  if (file) form.append('image', file);
+
+  const path = editing ? `${productBase()}/${encodeURIComponent(editing)}` : productBase();
+  await api(path, { method: editing ? 'PATCH' : 'POST', body: form });
+  setMessage(editing ? '상품이 수정되었습니다. 앱 마켓 탭에 바로 반영됩니다.' : '상품이 사진과 함께 등록되었습니다. 앱 마켓 탭에 바로 반영됩니다.', true);
+  resetProductForm();
+  await loadProducts();
+}
+
+
+// ---------------------------------------------------------------- 주문 · 배송
+//
+// 배송 상태는 앱이 바꿀 수 없습니다(042 에서 authenticated 의 EXECUTE 를 회수했습니다).
+// 여기가 유일한 통로이고, 판매자는 자기 상품이 든 주문만 봅니다.
+
+const FULFILLMENT_LABEL = {
+  NONE: '준비 전',
+  PREPARING: '준비 중',
+  SHIPPED: '배송 중',
+  DELIVERED: '배송 완료',
+};
+/** 되돌릴 수 없으므로 다음 단계만 제시합니다. */
+const FULFILLMENT_NEXT = {
+  NONE: ['PREPARING', 'SHIPPED'],
+  PREPARING: ['SHIPPED'],
+  SHIPPED: ['DELIVERED'],
+  DELIVERED: [],
+};
+
+function orderNotice(text, ok = true) {
+  const el = $('#orderNotice');
+  if (!el) return;
+  el.textContent = text || '';
+  el.style.color = ok ? '#014725' : '#b91c1c';
+}
+
+async function loadOrders() {
+  const filter = $('#orderFulfillmentFilter').value;
+  let orders;
+  try {
+    orders = await api('/api/admin/orders' + (filter ? `?${new URLSearchParams({ fulfillment: filter })}` : ''));
+  } catch (error) {
+    // 표를 '불러오는 중...' 에 멈춰두지 않고, 무슨 일인지 그 자리에 씁니다.
+    $('#orderRows').innerHTML = `<tr><td colspan="7" style="padding:20px;color:#b45309;font-weight:800;">${escapeHtml(error.message)}</td></tr>`;
+    orderNotice(error.message, false);
+    return;
+  }
+  state.orders = orders || [];
+
+  $('#orderRows').innerHTML = state.orders.length === 0
+    ? '<tr><td colspan="7">주문이 없습니다.</td></tr>'
+    : state.orders.map((order) => {
+        const next = FULFILLMENT_NEXT[order.fulfillmentStatus] || [];
+        const shipping = (() => {
+          try {
+            const s = order.shipping ? JSON.parse(order.shipping) : null;
+            return s ? `${escapeHtml(s.recipient || '')} · ${escapeHtml(s.phone || '')}<br>(${escapeHtml(s.postcode || '')}) ${escapeHtml(s.address1 || '')} ${escapeHtml(s.address2 || '')}` : '-';
+          } catch { return '-'; }
+        })();
+        return `
+        <tr>
+          <td style="max-width:220px;">
+            <strong style="display:block;">${escapeHtml((order.items || []).join(', ') || '(품목 없음)')}</strong>
+            <small style="color:#64748b;">${formatDate(order.createdAt)}</small>
+            <div style="margin-top:6px;font-size:11px;color:#64748b;line-height:1.5;">${shipping}</div>
+          </td>
+          <td>${escapeHtml(order.buyerEmail || '-')}</td>
+          <td>
+            <strong>${Number(order.totalKrw).toLocaleString('ko-KR')}원</strong>
+            ${order.rewardUsed > 0 ? `<br><small style="color:#64748b;">적립금 ${Number(order.rewardUsed).toLocaleString('ko-KR')}원</small>` : ''}
+          </td>
+          <td><span class="pill ${escapeAttr(order.status)}">${escapeHtml(order.status)}</span></td>
+          <td><span class="pill">${escapeHtml(FULFILLMENT_LABEL[order.fulfillmentStatus] || order.fulfillmentStatus)}</span></td>
+          <td style="font-size:11px;color:#475569;">${order.trackingNo ? `${escapeHtml(order.trackingCarrier || '')}<br>${escapeHtml(order.trackingNo)}` : '-'}</td>
+          <td>
+            ${order.status !== 'PAID' ? '<small style="color:#64748b;">결제 완료 주문만</small>' : next.length === 0 ? '<small style="color:#64748b;">완료</small>' : `
+              <div style="display:grid;gap:6px;min-width:180px;">
+                <input class="input" data-carrier="${escapeAttr(order.id)}" placeholder="택배사" value="${escapeAttr(order.trackingCarrier || '')}" style="min-height:34px;font-size:12px;" />
+                <input class="input" data-tracking="${escapeAttr(order.id)}" placeholder="송장번호" value="${escapeAttr(order.trackingNo || '')}" style="min-height:34px;font-size:12px;" />
+                ${next.map((step) => `<button class="btn btn-soft" type="button" data-fulfill="${escapeAttr(order.id)}" data-step="${step}" style="min-height:34px;font-size:12px;">${FULFILLMENT_LABEL[step]}로</button>`).join('')}
+              </div>`}
+          </td>
+        </tr>`;
+      }).join('');
+
+  document.querySelectorAll('[data-fulfill]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const id = button.dataset.fulfill;
+      const step = button.dataset.step;
+      const carrier = document.querySelector(`[data-carrier="${id}"]`)?.value?.trim() || null;
+      const trackingNo = document.querySelector(`[data-tracking="${id}"]`)?.value?.trim() || null;
+      if (step === 'SHIPPED' && !trackingNo) {
+        orderNotice('발송 처리에는 송장번호가 필요합니다.', false);
+        return;
+      }
+      try {
+        await api(`/api/admin/orders/${encodeURIComponent(id)}/fulfillment`, {
+          method: 'POST',
+          body: JSON.stringify({ status: step, carrier, trackingNo }),
+        });
+        orderNotice(`${FULFILLMENT_LABEL[step]}(으)로 변경했습니다.`, true);
+        await loadOrders();
+      } catch (error) {
+        orderNotice(error.message, false);
+      }
+    });
+  });
+}
+
 function bindHome() {
   document.querySelectorAll('[data-auth-tab]').forEach((button) => {
     button.addEventListener('click', () => setAuthMode(button.dataset.authTab));
@@ -485,6 +812,14 @@ function bindHome() {
   $('#deleteUser')?.addEventListener('click', () => softDeleteUser().catch((error) => setMessage(error.message, false)));
   $('#loadImages')?.addEventListener('click', () => loadImages().catch((error) => setMessage(error.message, false)));
   $('#uploadImage')?.addEventListener('click', () => uploadImage().catch((error) => setMessage(error.message, false)));
+  $('#productImageFile')?.addEventListener('change', refreshProductImageState);
+  $('#productStatusFilter')?.addEventListener('change', () => loadProducts().catch((error) => setMessage(error.message, false)));
+  $('#reloadProducts')?.addEventListener('click', () => loadProducts().catch((error) => setMessage(error.message, false)));
+  $('#saveProduct')?.addEventListener('click', () => saveProduct().catch((error) => setMessage(error.message, false)));
+  $('#cancelProductEdit')?.addEventListener('click', () => resetProductForm());
+  $('#deleteProduct')?.addEventListener('click', () => deleteProduct().catch((error) => setMessage(error.message, false)));
+  $('#reloadOrders')?.addEventListener('click', () => loadOrders().catch((error) => setMessage(error.message, false)));
+  $('#orderFulfillmentFilter')?.addEventListener('change', () => loadOrders().catch((error) => setMessage(error.message, false)));
 }
 
 function formatDate(value) {

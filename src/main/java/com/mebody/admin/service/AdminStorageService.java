@@ -82,6 +82,25 @@ public class AdminStorageService {
 
   public AdminStorageUploadResponse uploadImage(String path, MultipartFile file) {
     requireAdmin();
+    return uploadImageInternal(path, file);
+  }
+
+  /**
+   * 관리자 외 역할(판매자)도 이미지를 올려야 하는 곳에서 씁니다.
+   * 허용 역할을 호출부가 명시하게 해서, 권한 검사를 빠뜨릴 수 없게 했습니다.
+   */
+  public AdminStorageUploadResponse uploadImageFor(String path, MultipartFile file, UserRole... allowedRoles) {
+    currentUserService.requireRole(allowedRoles);
+    return uploadImageInternal(path, file);
+  }
+
+  /** 이미지 교체 시 이전 파일 정리용. 실패해도 호출부가 무시할 수 있게 예외를 그대로 던집니다. */
+  public void deleteImageFor(String path, UserRole... allowedRoles) {
+    currentUserService.requireRole(allowedRoles);
+    deleteImageInternal(path);
+  }
+
+  private AdminStorageUploadResponse uploadImageInternal(String path, MultipartFile file) {
     String normalizedPath = normalizePath(path);
     if (file == null || file.isEmpty()) {
       throw new ApiException(HttpStatus.BAD_REQUEST, "업로드할 파일이 필요합니다.");
@@ -105,6 +124,10 @@ public class AdminStorageService {
 
   public void deleteImage(String path) {
     requireAdmin();
+    deleteImageInternal(path);
+  }
+
+  private void deleteImageInternal(String path) {
     String normalizedPath = normalizePath(path);
     try {
       String body = objectMapper.writeValueAsString(Map.of("prefixes", List.of(normalizedPath)));
