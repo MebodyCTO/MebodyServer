@@ -111,7 +111,7 @@ git diff --check
 ### Public
 
 - `GET /api/public/config`
-- `POST /api/public/auth/signup`
+- `POST /api/public/auth/signup` — Admin API로 즉시 email 확정(레거시/내부). 홈·앱 회원가입은 Supabase anon `signUp` + Confirm email 사용. 메일/SMTP: [`docs/AUTH-EMAIL.md`](docs/AUTH-EMAIL.md)
 
 ### Member
 

@@ -65,6 +65,8 @@ function setAuthMode(mode) {
   $('#name').classList.toggle('hidden', mode === 'signin');
   $('#password').setAttribute('autocomplete', mode === 'signin' ? 'current-password' : 'new-password');
   $('#signupOnlyFields')?.classList.toggle('hidden', mode === 'signin');
+  $('#forgotPassword')?.classList.toggle('hidden', mode !== 'signin');
+  $('#signupHint')?.classList.toggle('hidden', mode !== 'signup');
   if (mode === 'signin') {
     const confirmInput = $('#passwordConfirm');
     if (confirmInput) confirmInput.value = '';
@@ -87,17 +89,50 @@ function showLanding() {
 }
 
 function updateAccountSection() {
+  const loggedIn = Boolean(state.me && state.token);
+  const displayName = state.me?.name || state.me?.nickname || state.me?.email?.split('@')[0] || 'MEBODY';
+
   const kicker = $('#accountKicker');
   const title = $('#accountTitle');
-  if (!kicker || !title) return;
-  
-  if (state.me) {
-    const displayName = state.me.name || state.me.nickname || state.me.email?.split('@')[0] || 'MEBODY';
-    kicker.textContent = 'MY ACCOUNT';
-    title.textContent = `${displayName}님, 다시 오신 것을 환영합니다.`;
-  } else {
-    kicker.textContent = 'ACCOUNT';
-    title.textContent = '결과를 저장하고 다음 방문에서 바로 이어보세요.';
+  const lead = $('#accountLead');
+  if (kicker && title) {
+    if (loggedIn) {
+      kicker.textContent = 'MY ACCOUNT';
+      title.textContent = `${displayName}님, 다시 오신 것을 환영합니다.`;
+      if (lead) lead.textContent = '아래 내 MEBODY에서 체형 코드와 미션을 확인하고, 웹 진단을 이어서 진행할 수 있습니다.';
+    } else {
+      kicker.textContent = 'ACCOUNT';
+      title.textContent = '결과를 저장하고 다음 방문에서 바로 이어보세요.';
+      if (lead) lead.textContent = '회원가입 후 체형 코드, 코드 플랜, 오늘의 액션과 루틴을 계정 기준으로 관리할 수 있습니다. 일반 회원은 자동으로 BASIC 등급으로 시작합니다.';
+    }
+  }
+  $('#accountTags')?.classList.toggle('hidden', loggedIn);
+
+  $('#guestAuth')?.classList.toggle('hidden', loggedIn);
+  $('#sessionAuth')?.classList.toggle('hidden', !loggedIn);
+  $('#memberHome')?.classList.toggle('hidden', !loggedIn);
+
+  $('#navGuest')?.classList.toggle('hidden', loggedIn);
+  $('#navMember')?.classList.toggle('hidden', !loggedIn);
+
+  const isAdminUser = state.me?.role === 'ADMIN';
+  $('#navAdmin')?.classList.toggle('hidden', !isAdminUser);
+  $('#sessionAdmin')?.classList.toggle('hidden', !isAdminUser);
+
+  const memberHref = loggedIn ? '#memberHome' : '#authPanel';
+  const memberLabel = loggedIn ? '내 페이지' : '회원';
+  ['#navMemberLink', '#navMemberLinkMobile'].forEach((selector) => {
+    const link = $(selector);
+    if (!link) return;
+    link.setAttribute('href', memberHref);
+    link.textContent = memberLabel;
+  });
+
+  if (loggedIn) {
+    $('#sessionName').textContent = displayName;
+    $('#sessionEmail').textContent = state.me?.email || '';
+    $('#sessionRole').textContent = state.me?.role || 'MEMBER';
+    $('#sessionGrade').textContent = state.me?.grade || 'BASIC';
   }
 }
 
@@ -108,10 +143,18 @@ function showDashboard() {
   $('#dashboardView')?.classList.remove('hidden');
 }
 
-async function supabasePasswordLogin(email, password) {
+function requireSupabaseConfig() {
   if (!state.config?.supabaseUrl || !state.config?.supabaseAnonKey) {
     throw new Error('Server .env에 SUPABASE_URL과 SUPABASE_ANON_KEY가 필요합니다.');
   }
+}
+
+function authRedirectTo() {
+  return `${window.location.origin}/`;
+}
+
+async function supabasePasswordLogin(email, password) {
+  requireSupabaseConfig();
   const response = await fetch(`${state.config.supabaseUrl}/auth/v1/token?grant_type=password`, {
     method: 'POST',
     headers: {
@@ -125,17 +168,71 @@ async function supabasePasswordLogin(email, password) {
   return payload;
 }
 
-async function serverSignup(email, password, displayName) {
-  const response = await fetch(apiUrl('/api/public/auth/signup'), {
+/** jjh AuthScreen과 동일: anon signUp (Confirm email ON이면 session 없음 → 인증 메일). */
+async function supabaseSignUp(email, password, displayName) {
+  requireSupabaseConfig();
+  const response = await fetch(`${state.config.supabaseUrl}/auth/v1/signup`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, displayName }),
+    headers: {
+      apikey: state.config.supabaseAnonKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email,
+      password,
+      data: { display_name: displayName || '' },
+      email_redirect_to: authRedirectTo(),
+    }),
   });
-  const payload = await response.json().catch(() => null);
+  const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(payload?.message || `회원가입 처리에 실패했습니다. (${response.status})`);
+    throw new Error(payload.error_description || payload.msg || payload.message || '회원가입에 실패했습니다.');
   }
-  return supabasePasswordLogin(email, password);
+  return payload;
+}
+
+async function supabaseRequestPasswordReset(email) {
+  requireSupabaseConfig();
+  const redirectTo = encodeURIComponent(authRedirectTo());
+  const response = await fetch(`${state.config.supabaseUrl}/auth/v1/recover?redirect_to=${redirectTo}`, {
+    method: 'POST',
+    headers: {
+      apikey: state.config.supabaseAnonKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload.error_description || payload.msg || payload.message || '비밀번호 재설정 메일 발송에 실패했습니다.');
+  }
+}
+
+/** 이메일 인증/재설정 링크의 #access_token=... 로 돌아온 경우 세션 저장 */
+function consumeAuthHash() {
+  const raw = window.location.hash?.replace(/^#/, '');
+  if (!raw || !raw.includes('access_token')) return null;
+  const params = new URLSearchParams(raw);
+  const accessToken = params.get('access_token');
+  if (!accessToken) return null;
+  const type = params.get('type') || '';
+  history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+  return { access_token: accessToken, type };
+}
+
+async function applySessionAndEnter(auth, successMessage) {
+  localStorage.setItem('mebody.server.accessToken', auth.access_token);
+  state.token = auth.access_token;
+  if (isAdminPath()) {
+    await enterDashboard('users');
+  } else {
+    await loadMeDashboard();
+    showLanding();
+    if (successMessage) setMessage(successMessage, true);
+    requestAnimationFrame(() => {
+      $('#memberHome')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
 }
 
 async function api(path, options = {}) {
@@ -159,6 +256,11 @@ async function api(path, options = {}) {
   return payload?.data;
 }
 
+function setText(id, value) {
+  const el = typeof id === 'string' ? $(id) : id;
+  if (el) el.textContent = value ?? '';
+}
+
 function renderMemberSummary(summary) {
   const profile = summary?.profile || state.me || {};
   const displayName = profile.name || profile.nickname || 'MEBODY 회원';
@@ -166,41 +268,89 @@ function renderMemberSummary(summary) {
   const bodyTitle = summary?.bodyBtiTitle || profile.bodyBtiTitle || '';
   const bodyDescription = profile.bodyBtiDescription || '';
   const missionRate = Number(summary?.missionAchievementRate ?? profile.missionAchievementRate ?? 0);
+  const activeCount = Number(summary?.activeMissionCount ?? 0);
+  const completedCount = Number(summary?.completedMissionCount ?? 0);
+  const missionSummaryText = `진행 중 미션 ${activeCount}개 · 완료 미션 ${completedCount}개`;
+  const progressWidth = `${Math.max(0, Math.min(100, missionRate))}%`;
+
+  let bodyDescText = '아직 진단 결과가 없습니다. 웹에서 체형 코드 분석을 시작해보세요.';
+  if (bodyCode) {
+    if (bodyTitle && bodyDescription) bodyDescText = `${bodyTitle} — ${bodyDescription}`;
+    else if (bodyTitle) bodyDescText = bodyTitle;
+    else if (bodyDescription) bodyDescText = bodyDescription;
+    else bodyDescText = '최근 진단 결과가 계정에 저장되어 있습니다. 코드 플랜과 오늘의 미션을 이어서 확인할 수 있습니다.';
+  }
 
   const memberKicker = document.querySelector('#meSection .member-hero-card .kicker');
   if (memberKicker) {
     memberKicker.textContent = profile.role === 'ADMIN' ? 'ADMIN ACCOUNT' : 'MY ACCOUNT';
   }
+  setText('#homeAccountKicker', profile.role === 'ADMIN' ? 'ADMIN ACCOUNT' : 'ACCOUNT');
 
-  $('#dashboardEmail').textContent = profile.email || '';
-  $('#memberName').textContent = displayName;
-  $('#memberEmail').textContent = profile.email || '';
-  $('#memberRole').textContent = profile.role || 'MEMBER';
-  $('#memberRole').className = `pill ${profile.role || ''}`;
-  $('#memberStatus').textContent = profile.status || 'ACTIVE';
-  $('#memberStatus').className = `pill ${profile.status || ''}`;
-  $('#memberGrade').textContent = profile.grade || 'BASIC';
+  setText('#dashboardEmail', profile.email || '');
+  setText('#memberName', displayName);
+  setText('#memberEmail', profile.email || '');
+  setText('#memberRole', profile.role || 'MEMBER');
+  if ($('#memberRole')) $('#memberRole').className = `pill ${profile.role || ''}`;
+  setText('#memberStatus', profile.status || 'ACTIVE');
+  if ($('#memberStatus')) $('#memberStatus').className = `pill ${profile.status || ''}`;
+  setText('#memberGrade', profile.grade || 'BASIC');
 
-  if (bodyCode) {
-    // Mebody code 카드: h2는 코드만, DB 타이틀(캐릭터 멘트)·설명은 하단에 통일
-    $('#bodyBtiCode').textContent = bodyCode;
-    if (bodyTitle && bodyDescription) {
-      $('#bodyBtiDescription').textContent = `${bodyTitle} — ${bodyDescription}`;
-    } else if (bodyTitle) {
-      $('#bodyBtiDescription').textContent = bodyTitle;
-    } else if (bodyDescription) {
-      $('#bodyBtiDescription').textContent = bodyDescription;
-    } else {
-      $('#bodyBtiDescription').textContent = '최근 진단 결과가 계정에 저장되어 있습니다. 모바일 앱에서 코드 플랜과 오늘의 미션을 이어서 확인할 수 있습니다.';
-    }
-  } else {
-    $('#bodyBtiCode').textContent = '아직 결과 없음';
-    $('#bodyBtiDescription').textContent = '아직 진단 결과가 없습니다. 모바일 앱에서 체형 코드 분석을 시작해보세요.';
+  setText('#homeMemberName', displayName);
+  setText('#homeMemberEmail', profile.email || '');
+  setText('#homeMemberRole', profile.role || 'MEMBER');
+  setText('#homeMemberStatus', profile.status || 'ACTIVE');
+  setText('#homeMemberGrade', profile.grade || 'BASIC');
+
+  setText('#bodyBtiCode', bodyCode || '아직 결과 없음');
+  setText('#bodyBtiDescription', bodyDescText);
+  setText('#homeBodyBtiCode', bodyCode || '아직 결과 없음');
+  setText('#homeBodyBtiDescription', bodyDescText);
+
+  setText('#missionRate', String(missionRate));
+  setText('#homeMissionRate', String(missionRate));
+  setText('#missionSummary', missionSummaryText);
+  setText('#homeMissionSummary', missionSummaryText);
+  if ($('#missionProgressBar')) $('#missionProgressBar').style.width = progressWidth;
+  if ($('#homeMissionProgressBar')) $('#homeMissionProgressBar').style.width = progressWidth;
+
+  updateAccountSection();
+}
+
+function renderMissionList(missionSummary) {
+  const list = $('#homeMissionList');
+  if (!list) return;
+  const items = missionSummary?.progress || [];
+  if (!items.length) {
+    list.innerHTML = '<li class="mb-mission-empty">아직 등록된 미션 진행이 없습니다. 진단을 완료하면 미션이 연결됩니다.</li>';
+    return;
   }
+  list.innerHTML = items.map((item, index) => {
+    const rate = Number(item.achievementRate ?? 0);
+    const done = item.completedAt ? '완료' : '진행 중';
+    return `
+      <li>
+        <div>
+          <div class="mb-mission-title">미션 ${index + 1}</div>
+          <div class="mb-mission-meta">${done} · ${Number(item.currentCount ?? 0)} / ${Number(item.targetCount ?? 0)}</div>
+        </div>
+        <div class="mb-mission-rate">${rate}%</div>
+      </li>
+    `;
+  }).join('');
+}
 
-  $('#missionRate').textContent = missionRate;
-  $('#missionSummary').textContent = `진행 중 미션 ${Number(summary?.activeMissionCount ?? 0)}개 · 완료 미션 ${Number(summary?.completedMissionCount ?? 0)}개`;
-  $('#missionProgressBar').style.width = `${Math.max(0, Math.min(100, missionRate))}%`;
+async function loadMissions() {
+  if (!state.token) return;
+  try {
+    const missions = await api('/api/me/missions');
+    renderMissionList(missions);
+  } catch (error) {
+    const list = $('#homeMissionList');
+    if (list) {
+      list.innerHTML = `<li class="mb-mission-empty">${escapeHtml(error.message || '미션을 불러오지 못했습니다.')}</li>`;
+    }
+  }
 }
 
 async function loadMeDashboard() {
@@ -213,6 +363,7 @@ async function loadMeDashboard() {
     state.me = profile;
     renderMemberSummary({ profile });
   }
+  await loadMissions();
 }
 
 function configureDashboardAccess() {
@@ -273,6 +424,24 @@ async function bootstrap() {
   bindHome();
   setAuthMode('signin');
 
+  const hashAuth = consumeAuthHash();
+  if (hashAuth?.access_token) {
+    try {
+      const msg = hashAuth.type === 'recovery'
+        ? '비밀번호 재설정 링크가 확인되었습니다. 로그인 후 비밀번호를 변경해주세요.'
+        : '이메일 인증이 완료되었습니다.';
+      await applySessionAndEnter(hashAuth, msg);
+      return;
+    } catch (error) {
+      localStorage.removeItem('mebody.server.accessToken');
+      state.token = '';
+      state.me = null;
+      showLanding();
+      setMessage(error.message || '이메일 인증 후 로그인에 실패했습니다.', false);
+      return;
+    }
+  }
+
   if (!state.token) {
     showLanding();
     if (isAdminPath()) {
@@ -327,25 +496,63 @@ async function handleAuthSubmit(event) {
   }
 
   $('#authSubmit').disabled = true;
+  clearMessage();
   try {
-    const auth = state.mode === 'signin'
-      ? await supabasePasswordLogin(email, password)
-      : await serverSignup(email, password, name);
+    if (state.mode === 'signin') {
+      const auth = await supabasePasswordLogin(email, password);
+      await applySessionAndEnter(auth, '로그인되었습니다.');
+      return;
+    }
 
-    localStorage.setItem('mebody.server.accessToken', auth.access_token);
-    state.token = auth.access_token;
-    // 홈(`/`)에서 로그인해도 랜딩을 유지. 콘솔은 `/admin` 에서만 연다.
-    if (isAdminPath()) {
-      await enterDashboard('users');
-    } else {
-      await loadMeDashboard();
-      showLanding();
-      setMessage('로그인되었습니다.', true);
+    // 회원가입: jjh와 동일 — Confirm email ON이면 메일 인증 후 로그인
+    let signupPayload;
+    try {
+      signupPayload = await supabaseSignUp(email, password, name);
+    } catch (signUpError) {
+      try {
+        const auth = await supabasePasswordLogin(email, password);
+        await applySessionAndEnter(auth, '이미 가입된 계정으로 로그인되었습니다.');
+        return;
+      } catch {
+        throw signUpError;
+      }
+    }
+
+    if (signupPayload?.access_token) {
+      await applySessionAndEnter(signupPayload, '회원가입과 로그인이 완료되었습니다.');
+      return;
+    }
+
+    try {
+      const auth = await supabasePasswordLogin(email, password);
+      await applySessionAndEnter(auth, '회원가입 후 로그인되었습니다.');
+    } catch {
+      setAuthMode('signin');
+      setMessage('회원가입이 완료되었습니다. 이메일 인증 후 로그인해주세요.', true);
     }
   } catch (error) {
     setMessage(error.message || '처리 중 오류가 발생했습니다.', false);
   } finally {
     $('#authSubmit').disabled = false;
+  }
+}
+
+async function handlePasswordReset() {
+  const email = $('#email')?.value.trim() || '';
+  if (!email) {
+    setMessage('비밀번호를 재설정할 이메일을 먼저 입력해주세요.', false);
+    return;
+  }
+  const btn = $('#forgotPassword');
+  if (btn) btn.disabled = true;
+  clearMessage();
+  try {
+    await supabaseRequestPasswordReset(email);
+    setMessage('비밀번호 재설정 메일을 보냈습니다. 메일함에서 링크를 확인해주세요.', true);
+  } catch (error) {
+    setMessage(error.message || '비밀번호 재설정 메일 발송에 실패했습니다.', false);
+  } finally {
+    if (btn) btn.disabled = false;
   }
 }
 
@@ -793,6 +1000,9 @@ function bindHome() {
   });
 
   $('#authForm')?.addEventListener('submit', handleAuthSubmit);
+  $('#forgotPassword')?.addEventListener('click', () => {
+    handlePasswordReset().catch((error) => setMessage(error.message, false));
+  });
   document.querySelectorAll('[data-dashboard-tab]').forEach((button) => {
     button.addEventListener('click', () => setDashboardTab(button.dataset.dashboardTab));
   });
@@ -800,10 +1010,15 @@ function bindHome() {
     localStorage.removeItem('mebody.server.accessToken');
     state.token = '';
     state.me = null;
+    renderMissionList({ progress: [] });
+    updateAccountSection();
     showLanding();
     setAuthMode('signin');
+    clearMessage();
+    setMessage('로그아웃되었습니다.', true);
     $('#authPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }));
+  $('#reloadMissions')?.addEventListener('click', () => loadMissions().catch((error) => setMessage(error.message, false)));
   $('#reloadUsers')?.addEventListener('click', () => Promise.all([loadSummary(), loadUsers()]));
   $('#search')?.addEventListener('keydown', (event) => { if (event.key === 'Enter') loadUsers(); });
   $('#statusFilter')?.addEventListener('change', loadUsers);

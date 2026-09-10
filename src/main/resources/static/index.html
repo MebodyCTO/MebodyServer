@@ -22,13 +22,18 @@
           <a href="#result">체형 코드</a>
           <a href="#flow">이용 흐름</a>
           <a href="#expert">전문가</a>
-          <a href="#authPanel">회원</a>
+          <a href="#authPanel" id="navMemberLink">회원</a>
           <a href="#download">앱</a>
         </nav>
-        <div class="mb-navact">
+        <div class="mb-navact" id="navGuest">
           <button class="mb-btn mb-btn-ghost" type="button" data-login>로그인</button>
           <button class="mb-btn mb-btn-soft" type="button" data-signup>회원가입</button>
           <a class="mb-btn mb-btn-primary" href="#download">앱 다운로드</a>
+        </div>
+        <div class="mb-navact hidden" id="navMember">
+          <a class="mb-btn mb-btn-ghost" href="#memberHome">내 페이지</a>
+          <a class="mb-btn mb-btn-soft hidden" id="navAdmin" href="/admin">콘솔</a>
+          <button class="mb-btn mb-btn-primary" type="button" data-logout>로그아웃</button>
         </div>
       </div>
       <nav class="mb-mobilenav" aria-label="섹션 바로가기">
@@ -36,7 +41,7 @@
         <a href="#result">체형 코드</a>
         <a href="#flow">이용 흐름</a>
         <a href="#expert">전문가</a>
-        <a href="#authPanel">회원</a>
+        <a href="#authPanel" id="navMemberLinkMobile">회원</a>
         <a href="#download">앱</a>
       </nav>
     </header>
@@ -242,12 +247,12 @@
         <div>
           <div class="mb-kicker" id="accountKicker">ACCOUNT</div>
           <h2 class="mb-h2" id="accountTitle">결과를 저장하고 다음 방문에서 바로 이어보세요</h2>
-          <p class="mb-lead">회원가입 후 체형 코드, 코드 플랜, 오늘의 액션과 루틴을 계정 기준으로 관리할 수 있습니다. 일반 회원은 자동으로 BASIC 등급으로 시작합니다.</p>
-          <div class="mb-account-tags">
+          <p class="mb-lead" id="accountLead">회원가입 후 체형 코드, 코드 플랜, 오늘의 액션과 루틴을 계정 기준으로 관리할 수 있습니다. 일반 회원은 자동으로 BASIC 등급으로 시작합니다.</p>
+          <div class="mb-account-tags" id="accountTags">
             <span>결과 저장</span><span class="mb-dot">·</span><span>코드 플랜</span><span class="mb-dot">·</span><span>미션 기록</span>
           </div>
         </div>
-        <div class="mb-authpanel">
+        <div class="mb-authpanel" id="guestAuth">
           <div class="mb-tabs">
             <button class="mb-tab active" type="button" data-auth-tab="signin">로그인</button>
             <button class="mb-tab" type="button" data-auth-tab="signup">회원가입</button>
@@ -271,8 +276,67 @@
               </div>
             </div>
             <button class="mb-btn mb-btn-primary mb-btn-block" id="authSubmit" type="submit">로그인하고 시작</button>
+            <button class="mb-linkbtn" id="forgotPassword" type="button">비밀번호를 잊으셨나요?</button>
+            <p class="mb-auth-hint hidden" id="signupHint">가입 후 인증 메일이 발송됩니다. 메일함에서 링크를 확인한 뒤 로그인해주세요.</p>
           </form>
           <div class="message" id="authMessage"></div>
+        </div>
+        <div class="mb-authpanel hidden" id="sessionAuth">
+          <div class="mb-kicker">SIGNED IN</div>
+          <h3 class="mb-authtitle" id="sessionName">MEBODY 회원</h3>
+          <p class="mb-session-email" id="sessionEmail"></p>
+          <div class="mb-session-pills">
+            <span class="mb-pill" id="sessionRole">MEMBER</span>
+            <span class="mb-pill" id="sessionGrade">BASIC</span>
+          </div>
+          <div class="mb-session-actions">
+            <a class="mb-btn mb-btn-primary mb-btn-block" href="#memberHome">내 MEBODY 보기</a>
+            <a class="mb-btn mb-btn-soft mb-btn-block" href="/sample">체형 코드 분석</a>
+            <a class="mb-btn mb-btn-ghost mb-btn-block hidden" id="sessionAdmin" href="/admin">관리 콘솔</a>
+            <button class="mb-btn mb-btn-ghost mb-btn-block" type="button" data-logout>로그아웃</button>
+          </div>
+          <div class="message" id="sessionMessage" data-message></div>
+        </div>
+      </section>
+
+      <section id="memberHome" class="mb-memberhome hidden">
+        <div class="mb-memberhome-head">
+          <div class="mb-kicker">MY MEBODY</div>
+          <h2 class="mb-h2">계정 · 체형 코드 · <span class="mb-thin">미션</span></h2>
+          <p class="mb-lead">로그인하면 저장된 체형 코드와 미션 진행률을 홈에서 바로 확인할 수 있습니다.</p>
+        </div>
+        <div class="mb-member-grid">
+          <article class="mb-member-card">
+            <div class="mb-kicker" id="homeAccountKicker">ACCOUNT</div>
+            <h3 id="homeMemberName">MEBODY 회원</h3>
+            <p class="mb-member-muted" id="homeMemberEmail"></p>
+            <div class="mb-session-pills">
+              <span class="mb-pill" id="homeMemberRole">MEMBER</span>
+              <span class="mb-pill" id="homeMemberStatus">ACTIVE</span>
+              <span class="mb-pill" id="homeMemberGrade">BASIC</span>
+            </div>
+          </article>
+          <article class="mb-member-card mb-member-card-accent">
+            <div class="mb-kicker">Mebody code</div>
+            <h3 id="homeBodyBtiCode">아직 결과 없음</h3>
+            <p class="mb-member-muted" id="homeBodyBtiDescription">아직 진단 결과가 없습니다. 웹에서 체형 코드 분석을 시작해보세요.</p>
+            <a class="mb-btn mb-btn-primary" href="/sample">체형 코드 분석 시작하기</a>
+          </article>
+          <article class="mb-member-card">
+            <div class="mb-kicker">MISSION</div>
+            <h3><span id="homeMissionRate">0</span>%</h3>
+            <p class="mb-member-muted" id="homeMissionSummary">오늘의 미션 수행률을 확인합니다.</p>
+            <div class="mb-member-progress"><span id="homeMissionProgressBar" style="width:0%"></span></div>
+          </article>
+        </div>
+        <div class="mb-mission-panel">
+          <div class="mb-mission-panel-head">
+            <h3>미션 진행</h3>
+            <button class="mb-btn mb-btn-ghost" type="button" id="reloadMissions">새로고침</button>
+          </div>
+          <ul class="mb-mission-list" id="homeMissionList">
+            <li class="mb-mission-empty">로그인 후 미션이 여기에 표시됩니다.</li>
+          </ul>
         </div>
       </section>
 
@@ -308,7 +372,7 @@
           <div class="mb-footer-col">
             <h3>서비스</h3>
             <a href="/sample">체형 코드 셀프 체크</a>
-            <a href="#authPanel">오늘의 미션</a>
+            <a href="#memberHome">오늘의 미션</a>
             <a href="#download">앱 다운로드</a>
           </div>
           <div class="mb-footer-col">
