@@ -48,6 +48,18 @@ mebody:
     google-play:
       package-name: ${GOOGLE_PLAY_PACKAGE_NAME:net.mebody.app}
       service-account-json: ${GOOGLE_PLAY_SERVICE_ACCOUNT_JSON:}
+  auth:
+    # 회원가입 확인 절차. 지금은 이메일·휴대폰 둘 다 가입 즉시 이용입니다.
+    # 코드는 이미 들어 있고 아래 값만 true 로 바꾸면 확인 절차가 켜집니다.
+    require-email-verification: ${MEBODY_AUTH_REQUIRE_EMAIL_VERIFICATION:false}
+    require-phone-verification: ${MEBODY_AUTH_REQUIRE_PHONE_VERIFICATION:false}
+    # alias: 휴대폰 가입을 이메일 별칭(01012345678@phone.mebody.net)으로 처리 — 지금
+    # native: 번호 자체로 가입·로그인 — Supabase 에 SMS 제공자를 연결한 뒤에만 동작합니다
+    phone-mode: ${MEBODY_AUTH_PHONE_MODE:alias}
+    # 앱의 VITE_PHONE_ALIAS_DOMAIN 과 같아야 합니다.
+    phone-alias-domain: ${MEBODY_AUTH_PHONE_ALIAS_DOMAIN:phone.mebody.net}
+    # 비밀번호 최소 길이. 1 = 사실상 제한 없음(지금). 조건을 걸려면 8 등으로 올리세요.
+    min-password-length: ${MEBODY_AUTH_MIN_PASSWORD_LENGTH:1}
   ads:
     # 보상형 광고 서버 검증(SSV). AdMob 콘솔의 광고 단위에 콜백 URL 을 등록한 뒤 켜세요.
     #   콜백 URL 예: https://<배포주소>/api/ads/admob/ssv

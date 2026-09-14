@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MEBODY | 체형 코드와 건강 루틴을 시작하세요</title>
-    <meta name="description" content="MEBODY는 사전체크 4개와 49문항으로 목·어깨·골반·하체 패턴을 확인하고, 나에게 맞는 체형 코드와 15분 케어 루틴을 안내하는 웰니스 셀프 체크 서비스입니다." />
+    <title>mebody | Mebody Code · 체형코드(몸Bti)</title>
+    <meta name="description" content="MEBODY는 사전체크 4개와 49문항으로 목·어깨·골반·하체 패턴을 확인하고, 나에게 맞는 Mebody Code(체형코드(몸Bti))와 15분 케어 루틴을 안내하는 웰니스 셀프 체크 서비스입니다." />
     <link rel="stylesheet" href="/assets/web.css" />
     <link rel="stylesheet" href="/assets/landing.css" />
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/PretendardStdVariable.woff2" crossorigin />
@@ -18,43 +18,45 @@
           <span class="mb-brand-sub">body code</span>
         </a>
         <nav class="mb-nav" aria-label="주요 메뉴">
-          <a href="#why">소개</a>
-          <a href="#result">체형 코드</a>
-          <a href="#flow">이용 흐름</a>
-          <a href="#expert">전문가</a>
-          <a href="#authPanel" id="navMemberLink">회원</a>
-          <a href="#download">앱</a>
+          <a href="/#why">소개</a>
+          <a href="/#result">Mebody Code</a>
+          <a href="/#flow">이용 흐름</a>
+          <a href="/#expert">전문가</a>
+          <a href="/#authPanel" id="navMemberLink">회원</a>
+          <a href="/#download">앱</a>
         </nav>
         <div class="mb-navact" id="navGuest">
           <button class="mb-btn mb-btn-ghost" type="button" data-login>로그인</button>
           <button class="mb-btn mb-btn-soft" type="button" data-signup>회원가입</button>
-          <a class="mb-btn mb-btn-primary" href="#download">앱 다운로드</a>
+          <a class="mb-btn mb-btn-primary" href="/#download">앱 다운로드</a>
         </div>
         <div class="mb-navact hidden" id="navMember">
-          <a class="mb-btn mb-btn-ghost" href="#memberHome">내 페이지</a>
+          <a class="mb-btn mb-btn-ghost" href="/me">내 페이지</a>
           <a class="mb-btn mb-btn-soft hidden" id="navAdmin" href="/admin">콘솔</a>
           <button class="mb-btn mb-btn-primary" type="button" data-logout>로그아웃</button>
         </div>
       </div>
       <nav class="mb-mobilenav" aria-label="섹션 바로가기">
-        <a href="#why">소개</a>
-        <a href="#result">체형 코드</a>
-        <a href="#flow">이용 흐름</a>
-        <a href="#expert">전문가</a>
-        <a href="#authPanel" id="navMemberLinkMobile">회원</a>
-        <a href="#download">앱</a>
+        <a href="/#why">소개</a>
+        <a href="/#result">Mebody Code</a>
+        <a href="/#flow">이용 흐름</a>
+        <a href="/#expert">전문가</a>
+        <a href="/#authPanel" id="navMemberLinkMobile">회원</a>
+        <a href="/#download">앱</a>
       </nav>
     </header>
 
     <main>
+      <!-- 랜딩(비회원/마케팅). /me 에서는 통째로 숨긴다. -->
+      <div id="landingView">
       <section class="mb-hero">
         <div class="mb-hero-copy">
           <div class="mb-eyebrow"><span class="mb-eyebrow-rule"></span><span>사전체크 4 · 문항 49</span></div>
           <h1 class="mb-h1">오늘의 몸을<br /><span class="mb-thin">읽어내는</span> 네 글자</h1>
-          <p class="mb-lead">목·어깨·골반·하체가 서로 주고받는 패턴을 하나의 체형 코드로 정리하고, 오늘 필요한 액션과 15분 케어 루틴까지 이어드립니다.</p>
+          <p class="mb-lead">목·어깨·골반·하체가 서로 주고받는 패턴을 하나의 Mebody Code(체형코드(몸Bti))로 정리하고, 오늘 필요한 액션과 15분 케어 루틴까지 이어드립니다.</p>
           <div class="mb-hero-cta">
-            <a class="mb-btn mb-btn-primary mb-btn-lg" href="/sample">체형 코드 분석 시작</a>
-            <a class="mb-btn mb-btn-ghost mb-btn-lg" href="#why">어떻게 작동하나요</a>
+            <a class="mb-btn mb-btn-primary mb-btn-lg" data-app-url href="https://mebody-jjh.vercel.app">Mebody Code 분석 시작</a>
+            <a class="mb-btn mb-btn-ghost mb-btn-lg" href="/#why">어떻게 작동하나요</a>
           </div>
           <p class="mb-fineprint">의료 진단이 아닌 웰니스 셀프 체크입니다 · 소요 약 3분</p>
         </div>
@@ -65,7 +67,7 @@
             src="/assets/img/mb-frrs.webp"
             width="800"
             height="800"
-            alt="FRRS 체형 코드 캐릭터 — 목 전방, 오른쪽 어깨 높음, 골반 오른쪽 회전, 하체 뻣뻣"
+            alt="FRRS Mebody Code 캐릭터 — 목 전방, 오른쪽 어깨 높음, 골반 오른쪽 회전, 하체 뻣뻣"
             fetchpriority="high"
             decoding="async"
           />
@@ -90,7 +92,7 @@
         <div class="mb-stat"><div class="mb-stat-num">49</div><div class="mb-stat-label">문항 셀프 체크</div></div>
         <div class="mb-stat"><div class="mb-stat-num">4축</div><div class="mb-stat-label">목·어깨·골반·하체</div></div>
         <div class="mb-stat"><div class="mb-stat-num">15분</div><div class="mb-stat-label">하루 케어 루틴</div></div>
-        <div class="mb-stat"><div class="mb-stat-num">16</div><div class="mb-stat-label">가지 체형 코드</div></div>
+        <div class="mb-stat"><div class="mb-stat-num">16</div><div class="mb-stat-label">가지 Mebody Code</div></div>
       </section>
 
       <section id="why" class="mb-why">
@@ -108,7 +110,7 @@
         <div class="mb-why-list">
           <article class="mb-why-row">
             <div class="mb-num">01</div>
-            <div><h3 class="mb-h3">체형 코드 분석</h3><p class="mb-body">사전체크와 49문항 답변으로 4축 패턴을 계산해 나만의 mebody 코드를 만듭니다.</p></div>
+            <div><h3 class="mb-h3">Mebody Code 분석</h3><p class="mb-body">사전체크와 49문항 답변으로 4축 패턴을 계산해 나만의 Mebody Code(체형코드(몸Bti))를 만듭니다.</p></div>
           </article>
           <article class="mb-why-row">
             <div class="mb-num">02</div>
@@ -247,7 +249,7 @@
         <div>
           <div class="mb-kicker" id="accountKicker">ACCOUNT</div>
           <h2 class="mb-h2" id="accountTitle">결과를 저장하고 다음 방문에서 바로 이어보세요</h2>
-          <p class="mb-lead" id="accountLead">회원가입 후 체형 코드, 코드 플랜, 오늘의 액션과 루틴을 계정 기준으로 관리할 수 있습니다. 일반 회원은 자동으로 BASIC 등급으로 시작합니다.</p>
+          <p class="mb-lead" id="accountLead">회원가입 후 Mebody Code, 코드 플랜, 오늘의 액션과 루틴을 계정 기준으로 관리할 수 있습니다. 일반 회원은 자동으로 BASIC 등급으로 시작합니다.</p>
           <div class="mb-account-tags" id="accountTags">
             <span>결과 저장</span><span class="mb-dot">·</span><span>코드 플랜</span><span class="mb-dot">·</span><span>미션 기록</span>
           </div>
@@ -261,9 +263,8 @@
           <form class="mb-form" id="authForm">
             <input class="mb-input hidden" id="name" placeholder="이름 또는 닉네임" autocomplete="name" />
             <input class="mb-input" id="email" type="email" placeholder="you@example.com" autocomplete="email" />
-            <input class="mb-input" id="password" type="password" placeholder="비밀번호 (8자 이상)" autocomplete="current-password" />
+            <input class="mb-input" id="password" type="password" placeholder="원하는 비밀번호" autocomplete="current-password" />
             <div id="signupOnlyFields" class="hidden">
-              <input class="mb-input" id="passwordConfirm" type="password" placeholder="비밀번호 확인" autocomplete="new-password" />
               <div class="mb-consent" role="group" aria-label="필수 동의">
                 <label class="mb-consent-row">
                   <input type="checkbox" id="consentPrivacy" autocomplete="off" />
@@ -277,7 +278,7 @@
             </div>
             <button class="mb-btn mb-btn-primary mb-btn-block" id="authSubmit" type="submit">로그인하고 시작</button>
             <button class="mb-linkbtn" id="forgotPassword" type="button">비밀번호를 잊으셨나요?</button>
-            <p class="mb-auth-hint hidden" id="signupHint">가입 후 인증 메일이 발송됩니다. 메일함에서 링크를 확인한 뒤 로그인해주세요.</p>
+            <p class="mb-auth-hint hidden" id="signupHint">확인 메일 없이 바로 가입되고 로그인됩니다.</p>
           </form>
           <div class="message" id="authMessage"></div>
         </div>
@@ -290,8 +291,8 @@
             <span class="mb-pill" id="sessionGrade">BASIC</span>
           </div>
           <div class="mb-session-actions">
-            <a class="mb-btn mb-btn-primary mb-btn-block" href="#memberHome">내 MEBODY 보기</a>
-            <a class="mb-btn mb-btn-soft mb-btn-block" href="/sample">체형 코드 분석</a>
+            <a class="mb-btn mb-btn-primary mb-btn-block" href="/me">내 MEBODY 보기</a>
+            <a class="mb-btn mb-btn-soft mb-btn-block" data-app-url href="https://mebody-jjh.vercel.app">Mebody Code 분석</a>
             <a class="mb-btn mb-btn-ghost mb-btn-block hidden" id="sessionAdmin" href="/admin">관리 콘솔</a>
             <button class="mb-btn mb-btn-ghost mb-btn-block" type="button" data-logout>로그아웃</button>
           </div>
@@ -299,11 +300,26 @@
         </div>
       </section>
 
+      <section id="download" class="mb-download">
+        <div>
+          <div class="mb-kicker">APP DOWNLOAD</div>
+          <h2 class="mb-h2">모바일에서도 내 코드를 <span class="mb-thin">이어서</span> 확인하세요</h2>
+          <p class="mb-lead">앱 다운로드 링크는 출시 일정에 맞춰 연결됩니다. 지금은 웹에서 진단하고 결과를 저장할 수 있습니다.</p>
+        </div>
+        <div class="mb-stores">
+          <a class="mb-store-btn" href="/#download"><span>App Store</span><span class="mb-store-note">출시 준비 중</span></a>
+          <a class="mb-store-btn" href="/#download"><span>Google Play</span><span class="mb-store-note">곧 공개</span></a>
+          <a class="mb-store-btn mb-store-btn-last" data-app-url href="https://mebody-jjh.vercel.app"><span>웹에서 바로 진단</span><span>→</span></a>
+        </div>
+      </section>
+      </div>
+
+      <!-- 회원 화면. /me 전용 — 라우트가 가시성을 결정한다. -->
       <section id="memberHome" class="mb-memberhome hidden">
         <div class="mb-memberhome-head">
           <div class="mb-kicker">MY MEBODY</div>
-          <h2 class="mb-h2">계정 · 체형 코드 · <span class="mb-thin">미션</span></h2>
-          <p class="mb-lead">로그인하면 저장된 체형 코드와 미션 진행률을 홈에서 바로 확인할 수 있습니다.</p>
+          <h2 class="mb-h2" id="memberHomeTitle">계정 · Mebody Code · <span class="mb-thin">미션</span></h2>
+          <p class="mb-lead" id="memberHomeLead">저장된 Mebody Code와 오늘의 미션 진행률입니다.</p>
         </div>
         <div class="mb-member-grid">
           <article class="mb-member-card">
@@ -317,10 +333,10 @@
             </div>
           </article>
           <article class="mb-member-card mb-member-card-accent">
-            <div class="mb-kicker">Mebody code</div>
+            <div class="mb-kicker">Mebody Code</div>
             <h3 id="homeBodyBtiCode">아직 결과 없음</h3>
-            <p class="mb-member-muted" id="homeBodyBtiDescription">아직 진단 결과가 없습니다. 웹에서 체형 코드 분석을 시작해보세요.</p>
-            <a class="mb-btn mb-btn-primary" href="/sample">체형 코드 분석 시작하기</a>
+            <p class="mb-member-muted" id="homeBodyBtiDescription">아직 진단 결과가 없습니다. 웹에서 Mebody Code 분석을 시작해보세요.</p>
+            <a class="mb-btn mb-btn-primary" data-app-url href="https://mebody-jjh.vercel.app">Mebody Code 분석 시작하기</a>
           </article>
           <article class="mb-member-card">
             <div class="mb-kicker">MISSION</div>
@@ -339,19 +355,6 @@
           </ul>
         </div>
       </section>
-
-      <section id="download" class="mb-download">
-        <div>
-          <div class="mb-kicker">APP DOWNLOAD</div>
-          <h2 class="mb-h2">모바일에서도 내 코드를 <span class="mb-thin">이어서</span> 확인하세요</h2>
-          <p class="mb-lead">앱 다운로드 링크는 출시 일정에 맞춰 연결됩니다. 지금은 웹에서 진단하고 결과를 저장할 수 있습니다.</p>
-        </div>
-        <div class="mb-stores">
-          <a class="mb-store-btn" href="#download"><span>App Store</span><span class="mb-store-note">출시 준비 중</span></a>
-          <a class="mb-store-btn" href="#download"><span>Google Play</span><span class="mb-store-note">곧 공개</span></a>
-          <a class="mb-store-btn mb-store-btn-last" href="/sample"><span>웹에서 바로 진단</span><span>→</span></a>
-        </div>
-      </section>
     </main>
 
     <footer class="footer" id="company">
@@ -361,7 +364,7 @@
             <strong>MEBODY</strong>
             <em>Wellness Body Code</em>
           </a>
-          <p class="mb-footer-copy">체형 코드와 오늘의 미션으로 내 몸의 루틴을 이어가는 웰니스 셀프 체크 서비스.</p>
+          <p class="mb-footer-copy">Mebody Code와 오늘의 미션으로 내 몸의 루틴을 이어가는 웰니스 셀프 체크 서비스.</p>
           <dl class="mb-footer-company">
             <div><dt>회사명</dt><dd>(주)Mebody</dd></div>
             <div><dt>서비스명</dt><dd>Mebody</dd></div>
@@ -371,14 +374,14 @@
         <nav class="mb-footer-nav" aria-label="MEBODY footer navigation">
           <div class="mb-footer-col">
             <h3>서비스</h3>
-            <a href="/sample">체형 코드 셀프 체크</a>
-            <a href="#memberHome">오늘의 미션</a>
-            <a href="#download">앱 다운로드</a>
+            <a href="/sample">샘플 코드</a>
+            <a data-app-url href="https://mebody-jjh.vercel.app">오늘의 미션</a>
+            <a href="/#download">앱 다운로드</a>
           </div>
           <div class="mb-footer-col">
             <h3>회사</h3>
-            <a href="#company">회사소개</a>
-            <a href="#company">채용</a>
+            <a href="/#company">회사소개</a>
+            <a href="/#company">채용</a>
           </div>
         </nav>
       </div>
@@ -409,7 +412,7 @@
           <div>
             <div class="kicker" id="dashboardKicker">MY PAGE</div>
             <h1 id="dashboardTitle">내 MEBODY</h1>
-            <p class="section-lead" id="dashboardLead" style="margin-top:14px;">계정 정보와 최근 체형 코드, 미션 상태를 확인합니다.</p>
+            <p class="section-lead" id="dashboardLead" style="margin-top:14px;">계정 정보와 최근 Mebody Code, 미션 상태를 확인합니다.</p>
           </div>
           <a class="btn btn-ghost" href="/">홈페이지</a>
         </div>
@@ -430,10 +433,10 @@
             </article>
 
             <article class="panel member-card">
-              <div class="kicker">Mebody code</div>
+              <div class="kicker">Mebody Code</div>
               <h2 id="bodyBtiCode">아직 결과 없음</h2>
-              <p id="bodyBtiDescription" class="member-muted">아직 진단 결과가 없습니다. 모바일 앱에서 체형 코드 분석을 시작해보세요.</p>
-              <a class="btn btn-primary" href="/sample">체형 코드 분석 시작하기</a>
+              <p id="bodyBtiDescription" class="member-muted">아직 진단 결과가 없습니다. 모바일 앱에서 Mebody Code 분석을 시작해보세요.</p>
+              <a class="btn btn-primary" data-app-url href="https://mebody-jjh.vercel.app">Mebody Code 분석 시작하기</a>
             </article>
 
             <article class="panel member-card">
@@ -474,9 +477,9 @@
               <label>Role<select class="input" id="edit-role"><option>MEMBER</option><option>SELLER</option><option>ADMIN</option></select></label>
               <label>Status<select class="input" id="edit-status"><option>ACTIVE</option><option>PENDING</option><option>SUSPENDED</option><option>DELETED</option></select></label>
               <label>Grade<select class="input" id="edit-grade"><option>BASIC</option><option>BRONZE</option><option>SILVER</option><option>GOLD</option><option>VIP</option></select></label>
-              <label>몸BTI 코드<input class="input" id="edit-bodyBtiCode" /></label>
-              <label>몸BTI 제목<input class="input" id="edit-bodyBtiTitle" /></label>
-              <label>몸BTI 설명<textarea class="input" id="edit-bodyBtiDescription" style="height:90px;padding-top:12px;"></textarea></label>
+              <label>Mebody Code<input class="input" id="edit-bodyBtiCode" /></label>
+              <label>Mebody Code 제목<input class="input" id="edit-bodyBtiTitle" /></label>
+              <label>Mebody Code 설명<textarea class="input" id="edit-bodyBtiDescription" style="height:90px;padding-top:12px;"></textarea></label>
               <label>미션 달성률<input class="input" id="edit-missionAchievementRate" type="number" min="0" max="100" /></label>
               <div class="detail-actions"><button class="btn btn-primary" id="saveUser" type="button">저장</button><button class="btn btn-ghost" id="deleteUser" type="button">삭제 처리</button></div>
             </div>

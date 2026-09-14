@@ -28,7 +28,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties({SupabaseProperties.class, com.mebody.billing.config.BillingProperties.class,
-    com.mebody.ads.config.AdRewardProperties.class})
+    com.mebody.ads.config.AdRewardProperties.class, com.mebody.auth.config.AuthSignupProperties.class})
 public class SecurityConfig {
 
   /**
@@ -57,6 +57,8 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(HttpMethod.GET, "/api/public/config").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/public/auth/signup").permitAll()
+            .requestMatchers(HttpMethod.GET, "/api/public/auth/config").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/public/auth/approve").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll()
             // AdMob 이 부르는 콜백. 로그인 토큰이 없고, 신뢰의 근거는 요청에 붙은 ECDSA 서명이다.
             // (서명 검증은 AdMobSsvVerifier 가 한다 — 여기서 뚫는 건 인증뿐이다)

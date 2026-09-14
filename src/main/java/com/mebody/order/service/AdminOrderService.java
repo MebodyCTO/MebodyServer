@@ -78,8 +78,11 @@ public class AdminOrderService {
    */
   private RuntimeException translate(org.springframework.dao.DataAccessException e) {
     String message = String.valueOf(e.getMostSpecificCause().getMessage());
-    if (message.contains("fulfillment_status") || message.contains("shipping_snapshot")
-        || message.contains("set_order_fulfillment_admin")) {
+    // "없는 컬럼/함수" 일 때만 미적용으로 판정합니다. 이름만 보고 판단하면
+    // 그 함수가 정상적으로 올린 거절 메시지까지 미적용으로 잘못 읽습니다.
+    boolean missingObject = message.contains("does not exist") || message.contains("존재하지 않");
+    if (missingObject && (message.contains("fulfillment_status") || message.contains("shipping_snapshot")
+        || message.contains("set_order_fulfillment_admin") || message.contains("cancel_paid_order_admin"))) {
       return new ApiException(HttpStatus.SERVICE_UNAVAILABLE,
           "배송 관리에 필요한 DB 변경이 아직 적용되지 않았습니다. db/journey/042_fulfillment_and_ssv.sql 을 실행해주세요.");
     }
@@ -125,9 +128,9 @@ public class AdminOrderService {
       throw new NotFoundException("주문을 찾을 수 없습니다.");
     } catch (org.springframework.dao.DataAccessException e) {
       String message = String.valueOf(e.getMostSpecificCause().getMessage());
-      if (message.contains("fulfillment_status") || message.contains("set_order_fulfillment_admin")) {
-        throw translate(e);
-      }
+      // 함수가 스스로 올린 업무 오류를 먼저 가려냅니다.
+      // PostgreSQL 오류 문구에는 함수 이름이 함께 실려 오기 때문에, 미적용 판정을 앞에 두면
+      // "송장번호가 필요합니다" 같은 정상 거절까지 "042 미적용" 으로 뭉개집니다.
       if (message.contains("tracking number required")) {
         throw new ApiException(HttpStatus.BAD_REQUEST, "발송 처리에는 송장번호가 필요합니다.");
       }
@@ -143,7 +146,7 @@ public class AdminOrderService {
       if (message.contains("order not found")) {
         throw new NotFoundException("주문을 찾을 수 없습니다.");
       }
-      throw e;
+      throw translate(e);
     }
 
     return list(null).stream()

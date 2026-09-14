@@ -4,10 +4,29 @@
   "installCommand": "npm install --prefer-offline --no-audit --no-fund",
   "outputDirectory": "src/main/resources/static",
   "rewrites": [
-    { "source": "/admin", "destination": "/index.html" },
-    { "source": "/privacy", "destination": "/privacy.html" },
-    { "source": "/terms", "destination": "/terms.html" },
-    { "source": "/sample", "destination": "/sample/index.html" },
-    { "source": "/sample/", "destination": "/sample/index.html" }
+    {
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/me",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
+    },
+    {
+      "source": "/sample",
+      "destination": "/sample/index.html"
+    },
+    {
+      "source": "/sample/",
+      "destination": "/sample/index.html"
+    }
   ]
 }

@@ -10,6 +10,9 @@ const state = {
   currentTab: 'me',
 };
 
+/** bindHome() 이 이미 실행됐는지 — 이벤트 중복 바인드 방지 */
+let homeBound = false;
+
 function apiOrigin() {
   const b = typeof window !== 'undefined' && window.__MEBODY_API_BASE__;
   return typeof b === 'string' ? b.trim().replace(/\/$/, '') : '';
@@ -26,6 +29,8 @@ function apiUrl(path) {
 
 const $ = (selector) => document.querySelector(selector);
 const isAdminPath = () => window.location.pathname === '/admin';
+/** `/me` — 로그인한 회원 전용 화면. 랜딩과 배타적으로 표시된다. */
+const isMemberPath = () => window.location.pathname === '/me';
 const isAdmin = () => state.me?.role === 'ADMIN';
 const isSeller = () => state.me?.role === 'SELLER';
 /** 상품을 올릴 수 있는 역할 — 관리자는 전부, 판매자는 자기 것만. */
@@ -54,8 +59,27 @@ function clearMessage() {
 
 async function loadConfig() {
   const response = await fetch(apiUrl('/api/public/config'));
+  if (!response.ok) {
+    throw new Error(`공개 설정 요청 실패 (${response.status})`);
+  }
   const payload = await response.json();
   state.config = payload.data;
+}
+
+/**
+ * 실제 진단 앱(jjh)으로 가는 링크를 서버 설정값으로 채운다.
+ * 출처는 MEBODY_APP_URL 환경변수 → /api/public/config 의 appUrl.
+ * HTML 에는 폴백 href 가 박혀 있고, 설정을 못 받으면 그 값이 그대로 쓰인다.
+ * 앱 주소를 HTML 여러 곳에 하드코딩하지 않으려는 배선이다.
+ */
+function applyAppUrl() {
+  const appUrl = state.config?.appUrl?.trim();
+  if (!appUrl) return;
+  const base = appUrl.replace(/\/$/, '');
+  document.querySelectorAll('[data-app-url]').forEach((el) => {
+    const suffix = el.getAttribute('data-app-url') || '';
+    el.setAttribute('href', `${base}${suffix}`);
+  });
 }
 
 function setAuthMode(mode) {
@@ -68,8 +92,6 @@ function setAuthMode(mode) {
   $('#forgotPassword')?.classList.toggle('hidden', mode !== 'signin');
   $('#signupHint')?.classList.toggle('hidden', mode !== 'signup');
   if (mode === 'signin') {
-    const confirmInput = $('#passwordConfirm');
-    if (confirmInput) confirmInput.value = '';
     const privacy = $('#consentPrivacy');
     if (privacy) privacy.checked = false;
     const terms = $('#consentTerms');
@@ -85,7 +107,35 @@ function showLanding() {
   $('main')?.classList.remove('hidden');
   $('.footer')?.classList.remove('hidden');
   $('#dashboardView')?.classList.add('hidden');
+  $('#landingView')?.classList.remove('hidden');
+  $('#memberHome')?.classList.add('hidden');
+  $('.mb-nav')?.classList.remove('hidden');
+  $('.mb-mobilenav')?.classList.remove('hidden');
   updateAccountSection();
+}
+
+/**
+ * `/me` 회원 화면. 랜딩(#landingView)을 통째로 숨기고 #memberHome 만 남긴다.
+ * 섹션을 하나씩 숨기지 않는 이유: 랜딩에 섹션이 추가될 때 빠뜨리지 않도록.
+ * 상단 섹션 네비게이션도 숨긴다 — 가리킬 섹션이 화면에 없기 때문.
+ */
+function showMemberHome() {
+  $('.nav')?.classList.remove('hidden');
+  $('main')?.classList.remove('hidden');
+  $('.footer')?.classList.remove('hidden');
+  $('#dashboardView')?.classList.add('hidden');
+  $('#landingView')?.classList.add('hidden');
+  $('#memberHome')?.classList.remove('hidden');
+  $('.mb-nav')?.classList.add('hidden');
+  $('.mb-mobilenav')?.classList.add('hidden');
+  document.title = '내 페이지 | MEBODY';
+  updateAccountSection();
+
+  const name = state.me?.name || state.me?.nickname || state.me?.email?.split('@')[0];
+  const title = $('#memberHomeTitle');
+  if (title && name) {
+    title.innerHTML = `${escapeHtml(name)}님의 <span class="mb-thin">MEBODY</span>`;
+  }
 }
 
 function updateAccountSection() {
@@ -110,7 +160,7 @@ function updateAccountSection() {
 
   $('#guestAuth')?.classList.toggle('hidden', loggedIn);
   $('#sessionAuth')?.classList.toggle('hidden', !loggedIn);
-  $('#memberHome')?.classList.toggle('hidden', !loggedIn);
+  // #memberHome 은 여기서 건드리지 않는다. 가시성은 경로(showLanding/showMemberHome)가 결정한다.
 
   $('#navGuest')?.classList.toggle('hidden', loggedIn);
   $('#navMember')?.classList.toggle('hidden', !loggedIn);
@@ -119,7 +169,7 @@ function updateAccountSection() {
   $('#navAdmin')?.classList.toggle('hidden', !isAdminUser);
   $('#sessionAdmin')?.classList.toggle('hidden', !isAdminUser);
 
-  const memberHref = loggedIn ? '#memberHome' : '#authPanel';
+  const memberHref = loggedIn ? '/me' : '/#authPanel';
   const memberLabel = loggedIn ? '내 페이지' : '회원';
   ['#navMemberLink', '#navMemberLinkMobile'].forEach((selector) => {
     const link = $(selector);
@@ -168,7 +218,50 @@ async function supabasePasswordLogin(email, password) {
   return payload;
 }
 
-/** jjh AuthScreen과 동일: anon signUp (Confirm email ON이면 session 없음 → 인증 메일). */
+/**
+ * 서버를 거친 가입. 확인 절차 없이 그 자리에서 승인된 계정이 만들어집니다.
+ * 앱(jjh)의 /api/public/auth/signup 과 같은 경로입니다.
+ */
+async function serverSignUp(identifier, password, displayName) {
+  const response = await fetch('/api/public/auth/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ identifier, password, displayName: displayName || null }),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.message || payload.error || '회원가입에 실패했습니다.');
+  return payload.data ?? payload;
+}
+
+/** 승인 대기로 남은 계정 풀기. 승인만 할 뿐 로그인은 따로 합니다. */
+async function serverApprove(identifier) {
+  try {
+    const response = await fetch('/api/public/auth/approve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier }),
+    });
+    if (!response.ok) return false;
+    const payload = await response.json().catch(() => ({}));
+    return Boolean((payload.data ?? payload)?.approved);
+  } catch {
+    return false;
+  }
+}
+
+/** 로그인. 승인 대기로 막히면 자동으로 풀고 한 번만 다시 시도합니다. */
+async function loginAllowingPending(email, password, identifier) {
+  try {
+    return await supabasePasswordLogin(email, password);
+  } catch (error) {
+    const text = String(error?.message ?? '').toLowerCase();
+    if (!text.includes('not confirmed')) throw error;
+    if (!(await serverApprove(identifier ?? email))) throw error;
+    return await supabasePasswordLogin(email, password);
+  }
+}
+
+/** 예전 경로. 서버에 못 붙었을 때만 씁니다(Confirm email ON이면 인증 메일). */
 async function supabaseSignUp(email, password, displayName) {
   requireSupabaseConfig();
   const response = await fetch(`${state.config.supabaseUrl}/auth/v1/signup`, {
@@ -225,13 +318,14 @@ async function applySessionAndEnter(auth, successMessage) {
   state.token = auth.access_token;
   if (isAdminPath()) {
     await enterDashboard('users');
-  } else {
+  } else if (isMemberPath()) {
     await loadMeDashboard();
-    showLanding();
+    showMemberHome();
     if (successMessage) setMessage(successMessage, true);
-    requestAnimationFrame(() => {
-      $('#memberHome')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
+  } else {
+    // 랜딩에서 로그인했으면 /me 로 실제 이동한다. 주소가 상태를 반영해야
+    // 새로고침·뒤로가기·북마크가 어긋나지 않는다.
+    window.location.assign('/me');
   }
 }
 
@@ -420,7 +514,19 @@ async function enterDashboard(preferredTab = 'me') {
 }
 
 async function bootstrap() {
-  await loadConfig();
+  // 공개 설정을 못 받아도 UI 바인드는 반드시 진행한다.
+  // 이전에는 loadConfig() 가 throw 하면 bootstrap 이 여기서 중단되어
+  // bindHome() 이 실행되지 않았고, 그 결과 로그인·회원가입·탭 등
+  // 모든 버튼이 아무 반응도 하지 않는 페이지가 되었다.
+  let configError = null;
+  try {
+    await loadConfig();
+  } catch (error) {
+    configError = error;
+    console.error('공개 설정 로드 실패:', error);
+  }
+
+  applyAppUrl();
   bindHome();
   setAuthMode('signin');
 
@@ -444,7 +550,12 @@ async function bootstrap() {
 
   if (!state.token) {
     showLanding();
-    if (isAdminPath()) {
+    if (configError) {
+      setMessage('서버에 연결하지 못해 로그인·회원가입은 지금 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.', false);
+    } else if (isMemberPath()) {
+      setMessage('내 페이지는 로그인 후 이용할 수 있습니다.', true);
+      $('#authPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else if (isAdminPath()) {
       setMessage('로그인하면 권한에 따라 내 페이지 또는 관리자 화면으로 이동합니다.', true);
       $('#authPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -452,9 +563,12 @@ async function bootstrap() {
   }
 
   try {
-    // `/admin` 에서만 콘솔(대시보드). `/` 홈은 로그인 상태여도 랜딩을 보여준다.
+    // `/admin` 콘솔, `/me` 회원 화면, `/` 는 로그인 상태여도 랜딩.
     if (isAdminPath()) {
       await enterDashboard('users');
+    } else if (isMemberPath()) {
+      await loadMeDashboard();
+      showMemberHome();
     } else {
       await loadMeDashboard();
       showLanding();
@@ -480,15 +594,7 @@ async function handleAuthSubmit(event) {
   }
 
   if (state.mode === 'signup') {
-    if (password.length < 8) {
-      setMessage('비밀번호는 8자 이상이어야 합니다.', false);
-      return;
-    }
-    const confirm = $('#passwordConfirm')?.value ?? '';
-    if (password !== confirm) {
-      setMessage('비밀번호와 확인이 일치하지 않습니다.', false);
-      return;
-    }
+    // 길이·확인 조건은 걸지 않습니다. 서버 설정(mebody.auth.min-password-length)이 정합니다.
     if (!($('#consentPrivacy')?.checked && $('#consentTerms')?.checked)) {
       setMessage('개인정보처리방침과 이용약관에 동의해주세요.', false);
       return;
@@ -499,37 +605,31 @@ async function handleAuthSubmit(event) {
   clearMessage();
   try {
     if (state.mode === 'signin') {
-      const auth = await supabasePasswordLogin(email, password);
+      const auth = await loginAllowingPending(email, password, email);
       await applySessionAndEnter(auth, '로그인되었습니다.');
       return;
     }
 
-    // 회원가입: jjh와 동일 — Confirm email ON이면 메일 인증 후 로그인
-    let signupPayload;
+    // 회원가입: 서버를 거쳐 확인 절차 없이 그 자리에서 승인됩니다.
     try {
-      signupPayload = await supabaseSignUp(email, password, name);
-    } catch (signUpError) {
-      try {
-        const auth = await supabasePasswordLogin(email, password);
-        await applySessionAndEnter(auth, '이미 가입된 계정으로 로그인되었습니다.');
-        return;
-      } catch {
-        throw signUpError;
-      }
+      const result = await serverSignUp(email, password, name);
+      const auth = await loginAllowingPending(result.loginEmail || email, password, email);
+      await applySessionAndEnter(auth, result.alreadyRegistered
+        ? '이미 가입된 계정으로 로그인되었습니다.'
+        : '회원가입과 로그인이 완료되었습니다.');
+      return;
+    } catch (serverError) {
+      // 서버에 못 붙는 경우에만 예전 경로로 되돌아갑니다.
+      if (!String(serverError?.message ?? '').includes('Failed to fetch')) throw serverError;
     }
 
+    const signupPayload = await supabaseSignUp(email, password, name);
     if (signupPayload?.access_token) {
       await applySessionAndEnter(signupPayload, '회원가입과 로그인이 완료되었습니다.');
       return;
     }
-
-    try {
-      const auth = await supabasePasswordLogin(email, password);
-      await applySessionAndEnter(auth, '회원가입 후 로그인되었습니다.');
-    } catch {
-      setAuthMode('signin');
-      setMessage('회원가입이 완료되었습니다. 이메일 인증 후 로그인해주세요.', true);
-    }
+    const auth = await loginAllowingPending(email, password, email);
+    await applySessionAndEnter(auth, '회원가입 후 로그인되었습니다.');
   } catch (error) {
     setMessage(error.message || '처리 중 오류가 발생했습니다.', false);
   } finally {
@@ -981,6 +1081,9 @@ async function loadOrders() {
 }
 
 function bindHome() {
+  if (homeBound) return;
+  homeBound = true;
+
   document.querySelectorAll('[data-auth-tab]').forEach((button) => {
     button.addEventListener('click', () => setAuthMode(button.dataset.authTab));
   });
@@ -1010,6 +1113,12 @@ function bindHome() {
     localStorage.removeItem('mebody.server.accessToken');
     state.token = '';
     state.me = null;
+    // `/me` 는 로그인 전용이므로 로그아웃하면 랜딩으로 실제 이동한다.
+    // 그냥 showLanding() 만 하면 주소는 /me 인데 내용은 랜딩인 상태가 된다.
+    if (isMemberPath()) {
+      window.location.assign('/');
+      return;
+    }
     renderMissionList({ progress: [] });
     updateAccountSection();
     showLanding();
@@ -1099,6 +1208,14 @@ function escapeAttr(value) {
 
 bootstrap().catch((error) => {
   console.error(error);
+  // 초기화가 어떤 이유로도 실패했을 때 버튼이 적어도 동작하도록 보장한다.
+  // bindHome() 은 homeBound 가드가 있어 중복 바인드되지 않는다.
+  try {
+    bindHome();
+    setAuthMode('signin');
+  } catch (bindError) {
+    console.error('UI 바인드 실패:', bindError);
+  }
   showLanding();
-  setMessage('서버 공개 설정을 불러오지 못했습니다.', false);
+  setMessage('초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요.', false);
 });
