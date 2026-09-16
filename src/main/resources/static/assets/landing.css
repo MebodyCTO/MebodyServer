@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MEBODY landing (v2)
+   mebody landing (v2)
    web.css 이후에 로드된다. web.css / web.js 는 수정하지 않는다.
 
    규칙 1 — 모든 랜딩 클래스는 `mb-` 접두어. 예외는 web.js 가 의존하는 5개뿐:
@@ -49,25 +49,96 @@
   --mb-green-2: #016b38;
   --mb-ink-70: #3d6b54;
   --mb-ink-60: #4a6b58;
-  --mb-ink-50: #6b8a79;
+  /* 4.93:1 on cream. 이전 #6b8a79 는 3.77:1 로 11~13px 텍스트에서 미달이었다.
+     ink-60(#4a6b58, 5.90:1) 과 구분이 남는 선에서 가장 어둡게. */
+  --mb-ink-50: #587761;
   --mb-line: rgba(1, 71, 37, 0.12);
   --mb-line-2: rgba(1, 71, 37, 0.16);
   --mb-on-dark-70: rgba(255, 255, 243, 0.72);
   --mb-on-dark-50: rgba(255, 255, 243, 0.6);
   --mb-on-dark-line: rgba(255, 255, 243, 0.24);
-  --mb-header-h: 77px;
+  /* 18(패딩) + 44(버튼) + 18 + 1(테두리). .mb-btn 높이와 연동되므로 같이 바꿀 것 */
+  --mb-header-h: 81px;
   --mb-pad-x: clamp(20px, 4vw, 56px);
   --mb-font: "Pretendard Variable", Pretendard, "SUIT Variable", "Noto Sans KR",
     system-ui, -apple-system, sans-serif;
   /* 한글 글리프 없음 — 라틴 문자열에만 사용 */
   --mb-font-display: "Instrument Serif", Georgia, serif;
+
+  /* --- 시맨틱 레이어 -------------------------------------------------------
+     라이트에서는 위 원시 토큰을 그대로 가리킨다(시각 변화 0).
+     다크에서만 갈라지는데, 특히 '그린 밴드'는 반대로 움직여야 한다:
+     밝은 페이지에서 가장 어두운 띠였던 #result·footer 가
+     어두운 페이지에서 더 어두우면 진창이 되므로 가장 밝은 면이 된다. */
+  --mb-surface: var(--mb-cream);
+  --mb-surface-raised: var(--mb-cream);
+  --mb-surface-inset: var(--mb-paper);
+  --mb-surface-invert: var(--mb-green);
+  --mb-accent-fill: var(--mb-green);
+  --mb-on-accent: var(--mb-cream);
+  --mb-on-invert: var(--mb-cream);
+}
+
+/* --- 다크 모드 -------------------------------------------------------------
+   `.v2` 가 아니라 라우트 스탬프에 건다. index.html 의 <body class="v2"> 안에
+   관리자 콘솔(#dashboardView)이 같이 들어 있어서, .v2 에 걸면 콘솔까지 물든다.
+   privacy/terms 는 스탬프 자체가 없어 자동으로 제외된다.
+   대비는 전부 실측값이다. */
+html[data-mb-route="app"] {
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  html[data-mb-route="app"] {
+    --mb-surface: #0b1f15;
+    --mb-surface-raised: #173523;      /* 표면 대비 1.29 — 카드가 보이려면 이 정도는 필요 */
+    --mb-surface-inset: #0f2619;
+    --mb-surface-invert: #1c4029;      /* 밴드를 '가장 밝은 면' 으로 뒤집는다 */
+
+    --mb-green: #e9efe4;               /* 본문 — 14.69:1 */
+    --mb-green-2: #3fa971;             /* 링크·호버·포커스 — 5.84:1 */
+    --mb-ink-70: #c6d4c4;              /* 11.15:1 */
+    --mb-ink-60: #b6c6b8;              /* 9.63:1 */
+    --mb-ink-50: #9bb0a2;              /* 7.47:1 — 13px 에서도 여유 */
+    --mb-cream: #e9efe4;               /* 밴드 위 텍스트로 남는 잔여 용도 */
+
+    --mb-accent-fill: #3fa971;         /* 브랜드 그린은 다크에서 1.58:1 이라 못 씀 */
+    --mb-on-accent: #0b1f15;           /* 채움 위 텍스트 — 5.84:1 */
+    --mb-on-invert: #e9efe4;           /* 밴드 위 텍스트 — 9.75:1 */
+
+    --mb-line: rgba(233, 239, 228, 0.16);
+    --mb-line-2: rgba(233, 239, 228, 0.22);
+    --mb-on-dark-70: rgba(233, 239, 228, 0.82);
+    --mb-on-dark-50: rgba(233, 239, 228, 0.7);
+    --mb-on-dark-line: rgba(233, 239, 228, 0.2);
+  }
+  /* 헤더는 반투명이라 표면색과 함께 어두워져야 한다 */
+  html[data-mb-route="app"] .v2 .nav {
+    background: rgba(11, 31, 21, 0.86);
+  }
+  /* 다크에서는 rgba(1,71,37,.14) 계열 테두리가 사라지므로 명시한다 */
+  html[data-mb-route="app"] .v2 :is(.mb-authpanel, .mb-member-card, .mb-mission-panel, .mb-codecard) {
+    border: 1px solid var(--mb-line-2);
+  }
+  /* 밴드에 위쪽 경계가 없어 표면과 붙어 보이는 것 방지 */
+  html[data-mb-route="app"] .v2 .mb-result {
+    border-top: 1px solid var(--mb-line);
+  }
+  /* 포커스 내측 링은 항상 '그 자리의 표면색' 이어야 외측 링이 분리된다 */
+  html[data-mb-route="app"] .v2 :is(a, button, input, select, textarea, [tabindex]):focus-visible {
+    box-shadow: 0 0 0 2px var(--mb-surface), 0 0 0 4px var(--mb-green-2);
+  }
+  /* 캐릭터 PNG 는 크림 배경이 구워져 있어 다크에서 눈부시다 */
+  html[data-mb-route="app"] .v2 .mb-hero-img,
+  html[data-mb-route="app"] .v2 .mb-result-media img {
+    filter: brightness(0.92) saturate(0.95);
+  }
 }
 
 /* --- web.css 엘리먼트 셀렉터 상쇄 ---------------------------------------
    web.css:15-22 의 body 는 민트/크림 3중 그라데이션을 깐다. (0,1,1) 로 이긴다. */
 body.v2 {
   margin: 0;
-  background: var(--mb-cream);
+  background: var(--mb-surface);
   color: var(--mb-green);
   font-family: var(--mb-font);
   -webkit-font-smoothing: antialiased;
@@ -89,6 +160,19 @@ body.v2 {
 }
 .v2 img {
   max-width: 100%;
+}
+
+/* 화면에는 안 보이고 스크린리더만 읽는 레이블.
+   인증 입력 3개는 플레이스홀더가 레이블 역할을 하고 있었는데,
+   플레이스홀더는 입력을 시작하면 사라져 접근 가능한 이름이 없어진다. */
+.v2 .mb-sronly {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* 스티키 헤더에 앵커가 가리는 문제 (web.css:14 html{scroll-behavior:smooth}) */
@@ -121,33 +205,54 @@ body.v2 {
   padding: 18px var(--mb-pad-x);
 }
 .v2 .mb-brand {
+  position: relative;
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 10px;
   color: var(--mb-green);
   text-decoration: none;
 }
+/* 브랜드 마크 — 앱 아이콘·파비콘과 같은 형태(mebody-jjh/scripts/make-icons.py 가 정본).
+   락업 안의 워드마크↔서브타이틀 baseline 관계를 깨지 않도록 마크만 중앙 정렬한다. */
+.v2 .mb-brand-mark {
+  align-self: center;
+  height: 1rem;
+  width: auto;
+  fill: currentColor;
+  flex-shrink: 0;
+}
 .v2 .mb-brand-name {
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 800;
   letter-spacing: -0.06em;
 }
 .v2 .mb-brand-sub {
   font-family: var(--mb-font-display);
   font-style: italic;
-  font-size: 16px;
+  font-size: 1rem;
   color: var(--mb-ink-60);
 }
 .v2 .mb-nav {
   display: flex;
   gap: 30px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 .v2 .mb-nav a,
 .v2 .mb-mobilenav a {
-  color: #2f5c46;
+  position: relative;
+  color: var(--mb-ink-70);
   text-decoration: none;
+}
+/* 텍스트 링크는 17px 높이뿐이라 터치 타깃이 44px 에 못 미친다.
+   의사요소로 히트 영역만 넓힌다 — 절대배치라 레이아웃은 그대로.
+   좌우 8px 확장 < 간격(30px/22px)의 절반이라 인접 링크와 겹치지 않는다. */
+.v2 .mb-nav a::after,
+.v2 .mb-mobilenav a::after {
+  content: "";
+  position: absolute;
+  inset-block: -13.5px;
+  inset-inline: -8px;
 }
 .v2 .mb-nav a:hover,
 .v2 .mb-mobilenav a:hover {
@@ -167,10 +272,19 @@ body.v2 {
   overflow-x: auto;
   padding: 12px var(--mb-pad-x);
   border-top: 1px solid var(--mb-line);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
+}
+
+/* 브랜드 로고 2개도 44px 히트 영역. 좌우로 인접 링크가 없어 겹침 위험 없음. */
+.v2 .mb-brand::after,
+.v2 .mb-footer-logo::after {
+  content: "";
+  position: absolute;
+  inset-block: -9px;
+  inset-inline: -4px;
 }
 
 /* --- 버튼 --------------------------------------------------------------- */
@@ -178,13 +292,15 @@ body.v2 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
-  padding: 0 18px;
+  /* 44px = 애플 HIG 모바일 터치 타깃 최소치. height 고정이 아니라
+     min-height + padding-block 이라 글자가 커져도 텍스트가 잘리지 않는다. */
+  min-height: 44px;
+  padding: 10px 18px;
   border: 0;
   border-radius: 999px;
   background: none;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   color: var(--mb-green);
   text-decoration: none;
@@ -193,12 +309,12 @@ body.v2 {
   transition: background-color 0.16s ease, border-color 0.16s ease, opacity 0.16s ease;
 }
 .v2 .mb-btn-primary {
-  background: var(--mb-green);
-  color: var(--mb-cream);
+  background: var(--mb-accent-fill);
+  color: var(--mb-on-accent);
 }
 .v2 .mb-btn-primary:hover {
   background: var(--mb-green-2);
-  color: var(--mb-cream);
+  color: var(--mb-on-accent);
 }
 .v2 .mb-btn-soft {
   border: 1px solid rgba(1, 71, 37, 0.24);
@@ -207,34 +323,38 @@ body.v2 {
   background: rgba(1, 71, 37, 0.06);
 }
 .v2 .mb-btn-ghost {
-  padding: 0 16px;
+  padding: 10px 16px;
 }
 .v2 .mb-btn-ghost:hover {
   color: var(--mb-green-2);
 }
 .v2 .mb-btn-lg {
-  height: 56px;
-  padding: 0 30px;
-  font-size: 16px;
+  min-height: 56px;
+  padding: 14px 30px;
+  font-size: 1rem;
 }
 .v2 .mb-btn-lg.mb-btn-ghost {
-  padding: 0 26px;
+  padding: 14px 26px;
   border: 1px solid rgba(1, 71, 37, 0.24);
 }
 .v2 .mb-btn-block {
   width: 100%;
-  height: 54px;
+  min-height: 54px;
   margin-top: 8px;
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
-.v2 .mb-btn:focus-visible {
-  outline: 2px solid var(--mb-green-2);
-  outline-offset: 2px;
+/* 포커스 표시 — 이중 링.
+   단일 링은 주 버튼 채움색(#014725) 위에서 #016B38 이 1.64:1 이라 WCAG 2.4.11(3:1) 미달.
+   내측 링을 페이지 표면색으로 깔아 어떤 채움 위에서도 외측 링이 분리되게 한다(10.81:1). */
+.v2 :is(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--mb-surface), 0 0 0 4px var(--mb-green-2);
+  border-radius: inherit;
 }
 
 /* --- 공통 타이포 --------------------------------------------------------- */
 .v2 .mb-kicker {
-  font-size: 12px;
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.22em;
   color: var(--mb-ink-50);
@@ -243,7 +363,7 @@ body.v2 {
   color: var(--mb-on-dark-50);
 }
 .v2 .mb-h1 {
-  font-size: clamp(46px, 5.4vw, 92px);
+  font-size: clamp(2.875rem, 5.4vw, 5.75rem);
   line-height: 1.02;
   letter-spacing: -0.055em;
   font-weight: 800;
@@ -251,7 +371,7 @@ body.v2 {
 }
 .v2 .mb-h2 {
   margin-top: 20px;
-  font-size: clamp(30px, 3.4vw, 54px);
+  font-size: clamp(1.875rem, 3.4vw, 3.375rem);
   line-height: 1.1;
   letter-spacing: -0.055em;
   font-weight: 800;
@@ -259,7 +379,7 @@ body.v2 {
 }
 .v2 .mb-h3 {
   margin: 0;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 800;
   letter-spacing: -0.04em;
 }
@@ -270,7 +390,7 @@ body.v2 {
 .v2 .mb-lead {
   margin-top: 22px;
   max-width: 480px;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.85;
   color: var(--mb-ink-70);
   word-break: keep-all;
@@ -283,23 +403,32 @@ body.v2 {
 }
 .v2 .mb-body {
   margin-top: 12px;
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.8;
   color: var(--mb-ink-70);
   word-break: keep-all;
 }
 .v2 .mb-fineprint {
   margin: 26px 0 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.7;
   color: var(--mb-ink-50);
   word-break: keep-all;
 }
 .v2 .mb-num {
   font-family: var(--mb-font-display);
-  font-size: 28px;
-  color: var(--mb-green);
-  opacity: 0.55;
+  font-size: 1.75rem;
+  /* opacity:.55 는 실효 #739A82 = 3.12:1 이라 큰 글씨로만 겨우 통과했다.
+     토큰으로 바꿔 라이트·다크 양쪽에서 기준을 넘긴다. */
+  color: var(--mb-content-muted, var(--mb-ink-50));
+}
+/* #why 는 순서가 아니라 병렬 가치제안 4개다.
+   숫자 대신 브랜드가 이미 코드 주석(no.04 / code)에 쓰는 이탤릭 세리프로.
+   Instrument Serif 는 라틴 전용이라 라벨은 반드시 라틴. */
+.v2 .mb-num-word {
+  font-style: italic;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
 }
 
 /* --- 히어로 -------------------------------------------------------------- */
@@ -322,10 +451,10 @@ body.v2 {
   align-items: center;
   gap: 12px;
   margin-bottom: 34px;
-  font-size: 12px;
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.22em;
-  color: #2f5c46;
+  color: var(--mb-ink-70);
 }
 .v2 .mb-eyebrow-rule {
   width: 34px;
@@ -336,7 +465,7 @@ body.v2 {
 .v2 .mb-hero-copy .mb-lead {
   margin-top: 30px;
   max-width: 460px;
-  font-size: 17px;
+  font-size: 1.0625rem;
 }
 .v2 .mb-hero-cta {
   display: flex;
@@ -348,7 +477,7 @@ body.v2 {
   position: relative;
   min-height: 520px;
   border-left: 1px solid var(--mb-line);
-  background: var(--mb-paper);
+  background: var(--mb-surface-inset);
 }
 .v2 .mb-hero-img {
   position: absolute;
@@ -363,14 +492,14 @@ body.v2 {
   bottom: clamp(28px, 5vw, 64px);
   width: 300px;
   padding: 26px;
-  background: var(--mb-cream);
+  background: var(--mb-surface-raised);
   border: 1px solid rgba(1, 71, 37, 0.14);
   box-shadow: 0 30px 60px rgba(1, 71, 37, 0.14);
   pointer-events: none;
   animation: mb-drift 9s ease-in-out infinite;
 }
 .v2 .mb-codecard-kicker {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.2em;
   color: var(--mb-ink-50);
@@ -412,8 +541,9 @@ body.v2 {
   gap: 12px;
 }
 .v2 .mb-axis-label {
-  flex: 0 0 62px;
-  font-size: 12px;
+  flex: 0 0 auto;
+  min-width: 62px;
+  font-size: 0.8125rem;
   color: var(--mb-ink-50);
 }
 .v2 .mb-axis-track {
@@ -424,7 +554,7 @@ body.v2 {
 .v2 .mb-axis-fill {
   display: block;
   height: 100%;
-  background: var(--mb-green);
+  background: var(--mb-accent-fill);
 }
 
 /* --- 통계 바 ------------------------------------------------------------- */
@@ -442,14 +572,24 @@ body.v2 {
   padding-right: var(--mb-pad-x);
   border-left: 0;
 }
+.v2 .mb-stat-unit {
+  font-family: var(--mb-font);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-left: 2px;
+  letter-spacing: 0;
+}
 .v2 .mb-stat-num {
-  font-size: 34px;
+  /* 숫자를 세리프로. 템플릿 통계바는 숫자를 본문과 같은 sans 로 쓰는 게 티다.
+     한글 단위는 .mb-stat-unit 으로 분리 — 세리프에 한글이 없어 필수이기도 하다. */
+  font-family: var(--mb-font-display);
+  font-size: 2.125rem;
   font-weight: 800;
   letter-spacing: -0.05em;
 }
 .v2 .mb-stat-label {
   margin-top: 6px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--mb-ink-50);
 }
 
@@ -489,19 +629,19 @@ body.v2 {
   border-bottom: 0;
 }
 .v2 .mb-why-row .mb-num {
-  font-size: 30px;
+  font-size: 1.875rem;
 }
 .v2 .mb-why-row .mb-h3 {
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 .v2 .mb-why-row .mb-body {
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 /* --- RESULT (다크) ------------------------------------------------------- */
 .v2 .mb-result {
-  background: var(--mb-green);
-  color: var(--mb-cream);
+  background: var(--mb-surface-invert);
+  color: var(--mb-on-invert);
   padding: clamp(64px, 8vw, 120px) var(--mb-pad-x);
 }
 .v2 .mb-result-inner {
@@ -518,7 +658,7 @@ body.v2 {
   border-bottom: 1px solid var(--mb-on-dark-line);
 }
 .v2 .mb-result-head .mb-h2 {
-  font-size: clamp(34px, 4.2vw, 68px);
+  font-size: clamp(2.125rem, 4.2vw, 4.25rem);
   line-height: 1.04;
   letter-spacing: -0.06em;
 }
@@ -539,7 +679,7 @@ body.v2 {
   gap: 18px;
 }
 .v2 .mb-result-code {
-  font-size: clamp(76px, 9vw, 150px);
+  font-size: clamp(4.75rem, 9vw, 9.375rem);
   line-height: 0.82;
   font-weight: 800;
   letter-spacing: -0.08em;
@@ -547,13 +687,13 @@ body.v2 {
 .v2 .mb-result-codetag {
   font-family: var(--mb-font-display);
   font-style: italic;
-  font-size: 24px;
+  font-size: 1.5rem;
   color: var(--mb-on-dark-50);
   padding-bottom: 10px;
 }
 .v2 .mb-result-name {
   margin-top: 24px;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 700;
 }
 .v2 .mb-result-body .mb-lead {
@@ -569,7 +709,7 @@ body.v2 {
 .v2 .mb-raxis-row {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 10px;
 }
@@ -582,13 +722,13 @@ body.v2 {
 }
 .v2 .mb-raxis-fill {
   height: 100%;
-  background: var(--mb-cream);
+  background: var(--mb-on-invert);
 }
 /* 캐릭터 PNG 는 알파가 없고 배경이 #FDF7E7 이라, 다크 그린 위에 그냥 얹으면
    크림색 사각형이 그대로 보인다. 같은 색 패널로 감싸서 의도된 프레임으로 만든다. */
 .v2 .mb-result-media {
   height: clamp(420px, 52vw, 620px);
-  background: var(--mb-paper);
+  background: var(--mb-surface-inset);
   border-radius: 32px;
   padding: 24px;
   overflow: hidden;
@@ -610,7 +750,7 @@ body.v2 {
 }
 .v2 .mb-flow-title {
   max-width: 760px;
-  font-size: clamp(32px, 3.6vw, 58px);
+  font-size: clamp(2rem, 3.6vw, 3.625rem);
   line-height: 1.08;
 }
 .v2 .mb-flow-grid {
@@ -637,7 +777,7 @@ body.v2 {
   position: relative;
   min-height: clamp(420px, 46vw, 660px);
   border-right: 1px solid var(--mb-line);
-  background: var(--mb-paper);
+  background: var(--mb-surface-inset);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -653,12 +793,12 @@ body.v2 {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--mb-cream);
+  background: var(--mb-surface-raised);
   border: 1px solid var(--mb-line);
   box-shadow: 0 18px 44px rgba(0, 70, 40, 0.1);
 }
 .v2 .mb-monogram {
-  font-size: clamp(56px, 7vw, 96px);
+  font-size: clamp(3.5rem, 7vw, 6rem);
   font-weight: 800;
   letter-spacing: -0.08em;
   color: var(--mb-green);
@@ -670,7 +810,7 @@ body.v2 {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: 55% 28%;
 }
 .v2 .mb-expert-copy {
   padding: clamp(40px, 5vw, 80px) var(--mb-pad-x);
@@ -691,7 +831,7 @@ body.v2 {
   border-top: 1px solid var(--mb-line-2);
 }
 .v2 .mb-cred-title {
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 800;
   letter-spacing: -0.03em;
 }
@@ -707,7 +847,7 @@ body.v2 {
   display: grid;
   grid-template-columns: 14px 1fr;
   gap: 12px;
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.7;
   color: var(--mb-ink-70);
   word-break: keep-all;
@@ -744,12 +884,12 @@ body.v2 {
   gap: 14px;
 }
 .v2 .mb-social-name {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 700;
 }
 .v2 .mb-social-url,
 .v2 .mb-social-arrow {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--mb-ink-50);
 }
 .v2 .mb-social a:hover .mb-social-url,
@@ -764,12 +904,12 @@ body.v2 {
   gap: 20px;
 }
 .v2 .mb-expert-foot .mb-btn {
-  height: 52px;
-  padding: 0 26px;
-  font-size: 15px;
+  min-height: 52px;
+  padding: 12px 26px;
+  font-size: 0.9375rem;
 }
 .v2 .mb-expert-tag {
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: var(--mb-ink-60);
   font-weight: 300;
 }
@@ -787,14 +927,14 @@ body.v2 {
 }
 .v2 .mb-account .mb-h2 {
   max-width: 520px;
-  font-size: clamp(30px, 3.2vw, 50px);
+  font-size: clamp(1.875rem, 3.2vw, 3.125rem);
 }
 .v2 .mb-account-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 22px;
   margin-top: 34px;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--mb-ink-60);
 }
 .v2 .mb-dot {
@@ -802,7 +942,7 @@ body.v2 {
 }
 .v2 .mb-authpanel {
   padding: clamp(24px, 3vw, 34px);
-  background: #fff;
+  background: var(--mb-surface-raised);
   border: 1px solid rgba(1, 71, 37, 0.14);
 }
 .v2 .mb-tabs {
@@ -812,12 +952,12 @@ body.v2 {
   margin-bottom: 26px;
 }
 .v2 .mb-tab {
-  height: 52px;
+  min-height: 52px;
   border: 0;
   border-bottom: 2px solid transparent;
   background: none;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   cursor: pointer;
@@ -829,7 +969,7 @@ body.v2 {
 }
 .v2 .mb-authtitle {
   margin: 0 0 18px;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.04em;
 }
@@ -840,10 +980,12 @@ body.v2 {
 .v2 .mb-linkbtn {
   border: none;
   background: transparent;
-  padding: 4px 0 0;
+  /* 44px 히트 영역. 음수 마진으로 시각적 위치는 유지 */
+  padding: 13px 0;
+  margin-block: -9px 0;
   color: var(--mb-green);
   font-family: inherit;
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: 800;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -856,23 +998,23 @@ body.v2 {
 }
 .v2 .mb-auth-hint {
   margin: 0;
-  font-size: 12px;
+  font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--mb-ink-50);
   word-break: keep-all;
 }
 .v2 .mb-input {
   width: 100%;
-  height: 52px;
+  /* height 대신 min-height: rem 전환 후 큰 글씨에서 텍스트가 잘리지 않도록 */
+  min-height: 52px;
   padding: 0 16px;
   border: 1px solid rgba(1, 71, 37, 0.2);
   border-radius: 0;
-  background: var(--mb-cream);
+  background: var(--mb-surface-raised);
   font-family: inherit;
-  font-size: 15px;
+  font-size: 1rem;   /* 16 미만이면 iOS 사파리가 포커스 시 페이지를 확대한다 */
   font-weight: 500;
   color: var(--mb-green);
-  outline: none;
 }
 .v2 .mb-input::placeholder {
   color: var(--mb-ink-50);
@@ -890,23 +1032,29 @@ body.v2 {
   margin-top: 10px;
   padding: 14px;
   border: 1px solid rgba(1, 71, 37, 0.14);
-  background: var(--mb-cream);
+  background: var(--mb-surface-raised);
 }
 .v2 .mb-consent-row {
   display: flex;
+  align-items: center;
+  min-height: 44px;
   gap: 10px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.6;
   color: var(--mb-ink-70);
   cursor: pointer;
 }
 .v2 .mb-consent-row input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  margin-top: 3px;
+  width: 20px;
+  height: 20px;
+  flex: none;
   accent-color: var(--mb-green);
 }
+/* 레이블 안에 중첩된 링크. 행 자체는 44px 이지만 링크는 16px 이라
+   상하 패딩 + 음수 마진으로 히트 영역만 넓힌다. */
 .v2 .mb-consent-row a {
+  padding-block: 14px;
+  margin-block: -14px;
   color: var(--mb-green);
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -914,7 +1062,7 @@ body.v2 {
 .v2 .mb-session-email {
   margin: 0 0 16px;
   color: var(--mb-ink-60);
-  font-size: 15px;
+  font-size: 0.9375rem;
   word-break: break-all;
 }
 .v2 .mb-session-pills {
@@ -926,12 +1074,12 @@ body.v2 {
 .v2 .mb-pill {
   display: inline-flex;
   align-items: center;
-  min-height: 28px;
+  min-height: 32px;
   padding: 0 10px;
   border: 1px solid rgba(1, 71, 37, 0.18);
-  background: var(--mb-cream);
+  background: var(--mb-surface-raised);
   color: var(--mb-green);
-  font-size: 11px;
+  font-size: 0.8125rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -954,7 +1102,7 @@ body.v2 {
   margin-bottom: clamp(28px, 4vw, 40px);
 }
 .v2 .mb-memberhome .mb-h2 {
-  font-size: clamp(30px, 3.4vw, 52px);
+  font-size: clamp(1.875rem, 3.4vw, 3.25rem);
 }
 .v2 .mb-member-grid {
   display: grid;
@@ -969,14 +1117,14 @@ body.v2 {
   align-items: flex-start;
   gap: 14px;
   border: 1px solid rgba(1, 71, 37, 0.14);
-  background: #fff;
+  background: var(--mb-surface-raised);
 }
 .v2 .mb-member-card-accent {
-  background: linear-gradient(160deg, #fff 0%, #e8f5ee 100%);
+  background: linear-gradient(160deg, var(--mb-surface-raised) 0%, var(--mb-surface-inset) 100%);
 }
 .v2 .mb-member-card h3 {
   margin: 0;
-  font-size: clamp(28px, 2.8vw, 42px);
+  font-size: clamp(1.75rem, 2.8vw, 2.625rem);
   line-height: 1.05;
   letter-spacing: -0.05em;
   font-weight: 800;
@@ -985,7 +1133,7 @@ body.v2 {
 .v2 .mb-member-muted {
   margin: 0;
   color: var(--mb-ink-60);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.7;
   word-break: keep-all;
   flex: 1;
@@ -1000,13 +1148,13 @@ body.v2 {
 .v2 .mb-member-progress span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #016b38, #014725);
+  background: linear-gradient(90deg, var(--mb-green-2), var(--mb-accent-fill));
   transition: width 0.25s ease;
 }
 .v2 .mb-mission-panel {
   margin-top: 14px;
   border: 1px solid rgba(1, 71, 37, 0.14);
-  background: #fff;
+  background: var(--mb-surface-raised);
 }
 .v2 .mb-mission-panel-head {
   display: flex;
@@ -1018,7 +1166,7 @@ body.v2 {
 }
 .v2 .mb-mission-panel-head h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 800;
   letter-spacing: -0.03em;
 }
@@ -1040,20 +1188,20 @@ body.v2 {
 }
 .v2 .mb-mission-empty {
   color: var(--mb-ink-50);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .v2 .mb-mission-title {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: var(--mb-green);
 }
 .v2 .mb-mission-meta {
   margin-top: 4px;
-  font-size: 12px;
+  font-size: 0.8125rem;
   color: var(--mb-ink-50);
 }
 .v2 .mb-mission-rate {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 800;
   color: var(--mb-green);
 }
@@ -1085,7 +1233,7 @@ body.v2 {
   height: 66px;
   padding: 0 22px;
   border-top: 1px solid var(--mb-line-2);
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: var(--mb-green);
   text-decoration: none;
@@ -1107,7 +1255,7 @@ body.v2 {
 .v2 .footer {
   position: relative;
   overflow: visible;
-  background: var(--mb-green);
+  background: var(--mb-surface-invert);
   color: rgba(255, 255, 243, 0.78);
   padding: clamp(56px, 7vw, 86px) var(--mb-pad-x) 26px;
 }
@@ -1119,27 +1267,31 @@ body.v2 {
   gap: clamp(28px, 5vw, 60px);
 }
 .v2 .mb-footer-logo {
+  position: relative;
   display: flex;
   align-items: baseline;
   gap: 12px;
-  color: var(--mb-cream);
+  color: var(--mb-on-invert);
   text-decoration: none;
 }
+.v2 .mb-footer-logo .mb-brand-mark {
+  height: 1.125rem;
+}
 .v2 .mb-footer-logo strong {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.06em;
 }
 .v2 .mb-footer-logo em {
   font-family: var(--mb-font-display);
   font-style: normal;
-  font-size: 16px;
+  font-size: 1rem;
   color: rgba(255, 255, 243, 0.66);
 }
 .v2 .mb-footer-copy {
   margin: 20px 0 0;
   max-width: 340px;
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.8;
   word-break: keep-all;
 }
@@ -1147,15 +1299,15 @@ body.v2 {
   margin: 28px 0 0;
   display: grid;
   gap: 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .v2 .mb-footer-company > div {
   display: flex;
   gap: 14px;
 }
 .v2 .mb-footer-company dt {
-  width: 64px;
-  color: rgba(255, 255, 243, 0.5);
+  min-width: 64px;   /* rem 전환 시 '회사명' 이 잘리지 않도록 width → min-width */
+  color: rgba(255, 255, 243, 0.66);   /* 3.91:1 → 5.61:1 */
 }
 .v2 .mb-footer-company dd {
   margin: 0;
@@ -1167,24 +1319,28 @@ body.v2 {
 }
 .v2 .mb-footer-col {
   display: grid;
-  gap: 12px;
+  /* gap 0 + 링크 자체 패딩. 여기서 오버레이를 쓰면 12px 간격 탓에
+     인접 타깃이 14px 겹쳐 서로를 먹는다. */
+  gap: 0;
   align-content: start;
 }
-.v2 .mb-footer-col h3 {
+.v2 .mb-footer-colhead {
   margin: 0 0 6px;
-  font-size: 12px;
+  font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.2em;
-  color: rgba(255, 255, 243, 0.5);
+  /* 0.5 알파는 #014725 위에서 3.91:1 로 미달. 0.66 → #A9C0AD 5.61:1 */
+  color: rgba(255, 255, 243, 0.66);
 }
 .v2 .mb-footer-col a {
+  padding-block: 13px;   /* 18px 글자 + 26 = 44px */
   color: rgba(255, 255, 243, 0.78);
-  font-size: 15px;
+  font-size: 0.9375rem;
   text-decoration: none;
 }
 .v2 .mb-footer-col a:hover,
 .v2 .mb-footer-bottom a:hover {
-  color: var(--mb-cream);
+  color: var(--mb-on-invert);
 }
 .v2 .mb-footer-bottom {
   max-width: 1240px;
@@ -1195,7 +1351,7 @@ body.v2 {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 14px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--mb-on-dark-50);
 }
 .v2 .mb-footer-bottom div {
@@ -1203,14 +1359,21 @@ body.v2 {
   gap: 20px;
 }
 .v2 .mb-footer-bottom a {
+  position: relative;
   color: inherit;
   text-decoration: none;
+}
+.v2 .mb-footer-bottom a::after {
+  content: "";
+  position: absolute;
+  inset-block: -14px;
+  inset-inline: -8px;
 }
 
 /* --- 정책 페이지(privacy/terms) 헤더 -------------------------------------
    이 두 페이지는 JS 를 안 불러오므로 로그인/회원가입 버튼을 두지 않는다. */
 .v2 .mb-page-title {
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: -0.04em;
   color: var(--mb-ink-60);
@@ -1241,6 +1404,16 @@ body.v2 {
   .v2 .mb-codecard {
     animation: none;
   }
+  /* 나머지 전환 2개 */
+  .v2 .mb-btn,
+  .v2 .mb-member-progress span {
+    transition: none;
+  }
+  /* web.css:14 의 html{scroll-behavior:smooth} 무력화.
+     동일 특이도(0,0,1)이고 landing.css 가 나중에 로드되므로 이긴다. */
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* ==========================================================================
@@ -1251,8 +1424,8 @@ body.v2 {
    ========================================================================== */
 @media (max-width: 920px) {
   :root {
-    /* 이 폭부터 헤더가 2줄(헤드바 ~76px + 모바일 nav ~42px)이 된다 */
-    --mb-header-h: 118px;
+    /* 이 폭부터 헤더가 2줄(헤드바 ~80px + 모바일 nav ~42px) */
+    --mb-header-h: 122px;
   }
   .v2 .mb-nav {
     display: none;
@@ -1292,6 +1465,7 @@ body.v2 {
   }
   .v2 .mb-expert {
     min-height: 88vh;
+    overflow: hidden;
   }
   .v2 .mb-hero-media,
   .v2 .mb-expert-media {
@@ -1301,16 +1475,53 @@ body.v2 {
     border: 0;
     z-index: 0;
   }
-  .v2 .mb-hero-copy,
-  .v2 .mb-expert-copy {
+  .v2 .mb-hero-copy {
     position: relative;
     z-index: 1;
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 243, 0.94) 0%,
-      rgba(255, 255, 243, 0.86) 55%,
-      rgba(255, 255, 243, 0.94) 100%
+      color-mix(in srgb, var(--mb-surface) 94%, transparent) 0%,
+      color-mix(in srgb, var(--mb-surface) 86%, transparent) 55%,
+      color-mix(in srgb, var(--mb-surface) 94%, transparent) 100%
     );
+  }
+  /* 전문가 사진: 원을 풀블리드 배경으로 펼치고 흐리게 — 글씨만 선명 */
+  .v2 .mb-expert-avatar {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+  .v2 .mb-expert-avatar .mb-monogram {
+    display: none;
+  }
+  .v2 .mb-expert-portrait {
+    object-fit: cover;
+    object-position: 55% 28%;
+    filter: blur(18px) saturate(0.75) brightness(0.85);
+    transform: scale(1.16);
+    opacity: 0.72;
+  }
+  .v2 .mb-expert-copy {
+    position: relative;
+    z-index: 1;
+    /* 글씨 뒤는 표면색으로 대비 확보, 가장자리로 갈수록 흐린 사진이 비침 */
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--mb-surface) 92%, transparent) 0%,
+        color-mix(in srgb, var(--mb-surface) 78%, transparent) 58%,
+        color-mix(in srgb, var(--mb-surface) 48%, transparent) 100%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--mb-surface) 70%, transparent) 0%,
+        color-mix(in srgb, var(--mb-surface) 55%, transparent) 50%,
+        color-mix(in srgb, var(--mb-surface) 72%, transparent) 100%
+      );
   }
   .v2 .mb-codecard {
     display: none;
@@ -1324,9 +1535,6 @@ body.v2 {
     height: auto;
     padding-bottom: 0;
   }
-  .v2 .mb-expert-avatar {
-    width: min(56vw, 260px);
-  }
   .v2 .mb-footer-nav {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1337,9 +1545,9 @@ body.v2 {
     display: none;
   }
   .v2 .mb-navact > * {
-    height: 38px;
+    /* height 축소 제거: 폰이 터치 최악 조건이라 44px 를 유지한다 */
     padding: 0 13px;
-    font-size: 13px;
+    font-size: 0.875rem;
   }
   .v2 .mb-why-row {
     grid-template-columns: 1fr;
@@ -1349,5 +1557,80 @@ body.v2 {
     height: 78vw;
     border-radius: 20px;
     padding: 16px;
+  }
+}
+
+/* ── 확인 다이얼로그 ─────────────────────────────────────────────────────────
+   네이티브 confirm() 대체. 버튼이 항상 "확인/취소" 라 파괴적 동사가 버튼에
+   나타나지 않고 기본 포커스가 OK 로 가는 문제를 없앤다.
+   <dialog> 를 쓰므로 포커스 트랩 · Esc 닫기 · 배경 inert 는 브라우저가 처리한다.
+   클래스는 전부 mb- 접두 (규칙 2 — web.css 의 맨 클래스와 겹치지 않는다). */
+.v2 .mb-confirm {
+  --mb-danger: #8e3a32; /* 앱과 같은 오류색. 크림 위 7.44:1 · 채움 위 흰 글씨 7.50:1 */
+  width: min(30rem, calc(100vw - 32px));
+  padding: 24px;
+  border: 1px solid var(--mb-line-2);
+  border-radius: 18px;
+  background: var(--mb-surface-raised);
+  color: var(--mb-green);
+  font-family: var(--mb-font);
+  box-shadow: 0 24px 60px rgba(1, 31, 17, 0.28);
+}
+.v2 .mb-confirm::backdrop {
+  background: rgba(1, 31, 17, 0.46);
+}
+.v2 .mb-confirm-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.v2 .mb-confirm-body {
+  margin: 10px 0 0;
+  color: var(--mb-ink-60);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.v2 .mb-confirm-body:empty {
+  display: none;
+}
+.v2 .mb-confirm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 22px;
+}
+.v2 .mb-confirm-actions > button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+.v2 .mb-confirm-cancel {
+  border-color: var(--mb-line-2);
+  background: transparent;
+  color: var(--mb-green);
+}
+.v2 .mb-confirm-ok {
+  background: var(--mb-accent-fill);
+  color: var(--mb-on-accent);
+}
+.v2 .mb-confirm-danger .mb-confirm-ok {
+  background: var(--mb-danger);
+  color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  /* 다크에서 #8e1f1f 는 표면과 붙어버린다. 밝은 적색 채움 + 어두운 글씨로 뒤집는다. */
+  html[data-mb-route="app"] .v2 .mb-confirm {
+    --mb-danger: #ff9a92;
+  }
+  html[data-mb-route="app"] .v2 .mb-confirm-danger .mb-confirm-ok {
+    color: #2a0808; /* 9.05:1 */
   }
 }

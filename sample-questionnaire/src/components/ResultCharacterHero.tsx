@@ -82,8 +82,8 @@ export function ResultCharacterHero({ resultCode }: ResultCharacterHeroProps) {
             src={url}
             alt={
               imageUrls.length === 1
-                ? `${resultCode} MEBODY 캐릭터`
-                : `MEBODY 캐릭터 후보 ${index + 1}/${imageUrls.length}`
+                ? `${resultCode} mebody 캐릭터`
+                : `mebody 캐릭터 후보 ${index + 1}/${imageUrls.length}`
             }
             className={[
               'absolute inset-0 h-full w-full rounded-2xl object-contain',

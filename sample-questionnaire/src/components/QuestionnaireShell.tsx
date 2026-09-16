@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import { ArrowLeft, Sparkles } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import { BrandMark } from './BrandMark'
 import { HOMEPAGE_URL } from '../config/urls'
 import { ProgressBar } from './ProgressBar'
 
@@ -17,19 +18,19 @@ export function QuestionnaireShell({ current, total, children }: QuestionnaireSh
         <div className="flex items-center justify-between px-6 pt-6">
           <a
             href={HOMEPAGE_URL}
-            className="inline-flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-gray-800"
+            className="mebody-hit inline-flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-gray-800"
           >
             <ArrowLeft className="h-4 w-4" />
             홈페이지
           </a>
           <button
             type="button"
-            onClick={() => window.alert('지금 App Download 준비중입니다')}
-            className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 shadow-sm transition-all hover:border-emerald-300 hover:shadow-md active:scale-[0.98]"
-            aria-label="MEBODY 앱 다운로드"
+            onClick={() => window.alert('앱 다운로드는 준비 중입니다.')}
+            className="mebody-hit inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 shadow-sm transition-all hover:border-emerald-300 hover:shadow-md active:scale-[0.98]"
+            aria-label="mebody 앱 다운로드"
           >
-            <Sparkles size={16} color="#014725" />
-            <span className="text-xs font-black tracking-wide text-gray-800">MEBODY</span>
+            <BrandMark size={16} color="#014725" />
+            <span className="text-xs font-black tracking-wide text-gray-900">mebody</span>
           </button>
         </div>
 

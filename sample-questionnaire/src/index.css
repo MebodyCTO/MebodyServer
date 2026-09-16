@@ -1,8 +1,31 @@
+/* 홈페이지(landing.css)·앱과 **같은** 폰트 파일을 쓴다.
+   이전에는 font-family 에 'Pretendard' 만 적혀 있고 @font-face 가 없어서,
+   /sample 만 시스템 기본 서체로 렌더돼 다른 서비스처럼 보였다. */
+@font-face {
+  font-family: 'Pretendard Variable';
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  src: url('/assets/fonts/PretendardStdVariable.woff2') format('woff2-variations'),
+       url('/assets/fonts/PretendardStdVariable.woff2') format('woff2');
+}
+
 @import 'tailwindcss';
 
-/* MEBODY brand — cream #FFFFF3 / green #014725
+/* mebody brand — cream #FFFFF3 / green #014725
    ROLLBACK: delete @theme block + body background override */
 @theme {
+  /* 타입 스케일 — 앱과 같은 값. 같은 유틸 이름이 두 서비스에서 다른 크기로
+     렌더되면(text-sm 이 14px vs 13px) 같은 디자이너가 만든 것처럼 보이지 않는다. */
+  --text-xs: .6875rem;   /* 11px — Apple 모바일 최소값 */
+  --text-sm: .8125rem;   /* 13px */
+  --text-base: .875rem;  /* 14px */
+  --text-lg: .984375rem; /* 15.75px */
+  --text-xl: 1.09375rem; /* 17.5px */
+  --text-2xl: 1.3125rem; /* 21px */
+  --text-3xl: 1.640625rem;
+  --text-4xl: 1.96875rem;
+
   --color-emerald-50: #e8f5ee;
   --color-emerald-100: #d4ebe0;
   --color-emerald-200: #a8d5c0;
@@ -13,17 +36,31 @@
   --color-emerald-700: #013820;
   --color-emerald-800: #012816;
   --color-emerald-900: #011a0f;
-  --color-teal-100: #d4ebe0;
-  --color-teal-200: #a8d5c0;
-  --color-teal-500: #016b38;
-  --color-teal-600: #014725;
-  /* soft in-app surfaces; outer desktop chrome stays pure white */
-  --color-gray-50: #fffff3;
+
+  /* 회색 램프 — Tailwind 기본은 파란 기미(oklch … 264°)라 홈페이지·앱의
+     초록 기미 중립색과 나란히 두면 다른 디자인처럼 보인다.
+     값은 앱(mebody-jjh)이 쓰는 것과 같다. */
+  --color-gray-50: #fffff3;   /* = --mb-cream, 인앱 표면 */
+  --color-gray-100: #f0f4ec;
+  --color-gray-200: #e1e9da;  /* = --mb-line 합성값 */
+  --color-gray-300: #6f8c7b;  /* 비활성 텍스트·링 3.65:1 */
+  --color-gray-400: #587761;  /* 호버 테두리 */
+  --color-gray-500: #587761;  /* = --mb-ink-50, 4.93:1 */
+  --color-gray-600: #4a6b58;  /* = --mb-ink-60 */
+  --color-gray-700: #3d6b54;  /* = --mb-ink-70 */
+  --color-gray-800: #2c5544;
+  --color-gray-900: #014725;  /* = --mb-green, 본문색 */
+
+  /* 주의 문구용 따뜻한 면 — 홈페이지의 --mb-paper 를 쓴다 (틸·주황 금지) */
+  --color-amber-50: #fdf7e7;
+  --color-amber-100: #efe3c6;
+  --color-amber-800: #4a6b58;  /* #fdf7e7 위 5.55:1 */
 }
 
 body {
   margin: 0;
   font-family:
+    'Pretendard Variable',
     'Pretendard',
     'SUIT',
     'Noto Sans KR',
@@ -121,4 +158,31 @@ body {
   .animate-character-idle {
     animation: none;
   }
+}
+
+/* ===== 접근성 — 홈페이지(landing.css)·앱(index.css)과 같은 규칙 ==========
+   이 파일에는 포커스 표시가 하나도 없었다. 키보드·스위치 컨트롤 사용자는
+   지금 어디에 있는지 알 수 없었고, 다른 두 화면과도 어긋났다. */
+:root {
+  --mebody-focus-ring: #016b38; /* 크림 위 6.59:1 */
+  --mebody-focus-halo: #fffff3;
+}
+:is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--mebody-focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--mebody-focus-halo);
+}
+
+/* 시각 크기는 그대로 두고 터치 영역만 44×44 로 (앱과 같은 유틸) */
+.mebody-hit {
+  position: relative;
+}
+.mebody-hit::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
 }

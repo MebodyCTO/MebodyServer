@@ -28,6 +28,76 @@ function apiUrl(path) {
 }
 
 const $ = (selector) => document.querySelector(selector);
+
+/**
+ * OS 의 "동작 줄이기" 설정을 존중하는 스크롤.
+ * 앱(mebody-jjh)의 lib/viewport.ts `preferredScrollBehavior()` 와 같은 규칙이다.
+ */
+const preferredScrollBehavior = () =>
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+
+/** `scrollToEl('#authPanel')` — 요소가 없으면 조용히 무시한다. */
+const scrollToEl = (selector, block = 'center') =>
+  document.querySelector(selector)?.scrollIntoView({ behavior: preferredScrollBehavior(), block });
+
+/**
+ * 네이티브 confirm() 대체.
+ * confirm() 은 버튼이 늘 "확인/취소" 라서 (1) 무슨 일이 일어나는지 버튼에 안 적히고
+ * (2) 기본 포커스가 확인으로 간다. 파괴적 동작에는 둘 다 위험하다.
+ * <dialog>.showModal() 을 쓰므로 포커스 트랩·Esc 닫기는 브라우저가 처리한다.
+ *
+ * @returns {Promise<boolean>} 확인 버튼을 누르면 true
+ */
+function confirmAction({ title, body = '', confirmLabel, cancelLabel = '취소', destructive = true }) {
+  return new Promise((resolve) => {
+    const dialog = document.createElement('dialog');
+    dialog.className = destructive ? 'mb-confirm mb-confirm-danger' : 'mb-confirm';
+
+    const heading = document.createElement('h2');
+    heading.className = 'mb-confirm-title';
+    heading.textContent = title;
+
+    const detail = document.createElement('p');
+    detail.className = 'mb-confirm-body';
+    detail.textContent = body;
+
+    const actions = document.createElement('div');
+    actions.className = 'mb-confirm-actions';
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'mb-confirm-cancel';
+    cancel.textContent = cancelLabel;
+    const ok = document.createElement('button');
+    ok.type = 'button';
+    ok.className = 'mb-confirm-ok';
+    ok.textContent = confirmLabel;
+    actions.append(cancel, ok);
+
+    dialog.append(heading, detail, actions);
+    document.body.appendChild(dialog);
+
+    let answer = false;
+    const finish = (value) => {
+      answer = value;
+      dialog.close();
+    };
+    cancel.addEventListener('click', () => finish(false));
+    ok.addEventListener('click', () => finish(true));
+    // Esc · 배경 클릭 → 취소
+    dialog.addEventListener('cancel', () => finish(false));
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) finish(false);
+    });
+    dialog.addEventListener('close', () => {
+      dialog.remove();
+      resolve(answer);
+    });
+
+    dialog.showModal();
+    // 파괴적 동작에서 기본 포커스는 취소에 둔다.
+    (destructive ? cancel : ok).focus();
+  });
+}
 const isAdminPath = () => window.location.pathname === '/admin';
 /** `/me` — 로그인한 회원 전용 화면. 랜딩과 배타적으로 표시된다. */
 const isMemberPath = () => window.location.pathname === '/me';
@@ -128,19 +198,19 @@ function showMemberHome() {
   $('#memberHome')?.classList.remove('hidden');
   $('.mb-nav')?.classList.add('hidden');
   $('.mb-mobilenav')?.classList.add('hidden');
-  document.title = '내 페이지 | MEBODY';
+  document.title = '내 페이지 | mebody';
   updateAccountSection();
 
   const name = state.me?.name || state.me?.nickname || state.me?.email?.split('@')[0];
   const title = $('#memberHomeTitle');
   if (title && name) {
-    title.innerHTML = `${escapeHtml(name)}님의 <span class="mb-thin">MEBODY</span>`;
+    title.innerHTML = `${escapeHtml(name)}님의 <span class="mb-thin">mebody</span>`;
   }
 }
 
 function updateAccountSection() {
   const loggedIn = Boolean(state.me && state.token);
-  const displayName = state.me?.name || state.me?.nickname || state.me?.email?.split('@')[0] || 'MEBODY';
+  const displayName = state.me?.name || state.me?.nickname || state.me?.email?.split('@')[0] || 'mebody';
 
   const kicker = $('#accountKicker');
   const title = $('#accountTitle');
@@ -149,11 +219,11 @@ function updateAccountSection() {
     if (loggedIn) {
       kicker.textContent = 'MY ACCOUNT';
       title.textContent = `${displayName}님, 다시 오신 것을 환영합니다.`;
-      if (lead) lead.textContent = '아래 내 MEBODY에서 체형 코드와 미션을 확인하고, 웹 진단을 이어서 진행할 수 있습니다.';
+      if (lead) lead.textContent = '아래 내 mebody에서 mebody Code와 미션을 확인하고, 웹 진단을 이어서 진행할 수 있습니다.';
     } else {
       kicker.textContent = 'ACCOUNT';
       title.textContent = '결과를 저장하고 다음 방문에서 바로 이어보세요.';
-      if (lead) lead.textContent = '회원가입 후 체형 코드, 코드 플랜, 오늘의 액션과 루틴을 계정 기준으로 관리할 수 있습니다. 일반 회원은 자동으로 BASIC 등급으로 시작합니다.';
+      if (lead) lead.textContent = '회원가입 후 mebody Code, 코드 플랜, 오늘의 액션과 루틴을 계정 기준으로 관리할 수 있습니다. 일반 회원은 자동으로 BASIC 등급으로 시작합니다.';
     }
   }
   $('#accountTags')?.classList.toggle('hidden', loggedIn);
@@ -357,7 +427,7 @@ function setText(id, value) {
 
 function renderMemberSummary(summary) {
   const profile = summary?.profile || state.me || {};
-  const displayName = profile.name || profile.nickname || 'MEBODY 회원';
+  const displayName = profile.name || profile.nickname || 'mebody 회원';
   const bodyCode = summary?.bodyBtiCode || profile.bodyBtiCode || '';
   const bodyTitle = summary?.bodyBtiTitle || profile.bodyBtiTitle || '';
   const bodyDescription = profile.bodyBtiDescription || '';
@@ -367,7 +437,7 @@ function renderMemberSummary(summary) {
   const missionSummaryText = `진행 중 미션 ${activeCount}개 · 완료 미션 ${completedCount}개`;
   const progressWidth = `${Math.max(0, Math.min(100, missionRate))}%`;
 
-  let bodyDescText = '아직 진단 결과가 없습니다. 웹에서 체형 코드 분석을 시작해보세요.';
+  let bodyDescText = '아직 진단 결과가 없습니다. 웹에서 mebody Code 분석을 시작해보세요.';
   if (bodyCode) {
     if (bodyTitle && bodyDescription) bodyDescText = `${bodyTitle} — ${bodyDescription}`;
     else if (bodyTitle) bodyDescText = bodyTitle;
@@ -488,11 +558,11 @@ function setDashboardTab(tab) {
   $('#storageSection').classList.toggle('hidden', nextTab !== 'storage');
 
   const meta = {
-    me: ['MY PAGE', '내 MEBODY', '계정 정보와 최근 체형 코드, 미션 상태를 확인합니다.'],
-    users: ['OPERATIONS', '회원·권한 관리', 'Supabase 사용자 프로필과 권한, 등급, 체형 코드를 관리합니다.'],
+    me: ['MY PAGE', '내 mebody', '계정 정보와 최근 mebody Code, 미션 상태를 확인합니다.'],
+    users: ['OPERATIONS', '회원·권한 관리', '회원 프로필과 권한, 등급, mebody Code를 관리합니다.'],
     products: ['MARKET', '상품 관리', '사진과 함께 상품을 등록합니다. 사진 없이는 등록되지 않고, 등록 즉시 앱 마켓 탭에 반영됩니다.'],
     orders: ['ORDERS', '주문 · 배송', '결제된 주문의 배송 상태를 관리합니다. 발송 처리에는 송장번호가 필요합니다.'],
-    storage: ['STORAGE', 'Storage 이미지 관리', 'Supabase Storage 이미지를 서버 권한으로 안전하게 관리합니다.'],
+    storage: ['STORAGE', '이미지 관리', '상품 이미지를 서버 권한으로 안전하게 관리합니다.'],
   }[nextTab];
   $('#dashboardKicker').textContent = meta[0];
   $('#dashboardTitle').textContent = meta[1];
@@ -554,10 +624,10 @@ async function bootstrap() {
       setMessage('서버에 연결하지 못해 로그인·회원가입은 지금 이용할 수 없습니다. 잠시 후 다시 시도해 주세요.', false);
     } else if (isMemberPath()) {
       setMessage('내 페이지는 로그인 후 이용할 수 있습니다.', true);
-      $('#authPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      scrollToEl('#authPanel');
     } else if (isAdminPath()) {
       setMessage('로그인하면 권한에 따라 내 페이지 또는 관리자 화면으로 이동합니다.', true);
-      $('#authPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      scrollToEl('#authPanel');
     }
     return;
   }
@@ -579,7 +649,7 @@ async function bootstrap() {
     state.me = null;
     showLanding();
     setMessage(error.message || '로그인이 필요합니다.', false);
-    if (isAdminPath()) $('#authPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (isAdminPath()) scrollToEl('#authPanel');
   }
 }
 
@@ -732,7 +802,12 @@ async function saveUser() {
 
 async function softDeleteUser() {
   if (!state.selectedUser) return;
-  if (!confirm(`${state.selectedUser.email} 회원을 삭제 처리할까요?`)) return;
+  const confirmed = await confirmAction({
+    title: '이 회원을 삭제 처리할까요?',
+    body: `${state.selectedUser.email} 계정이 삭제 처리됩니다.`,
+    confirmLabel: '회원 삭제',
+  });
+  if (!confirmed) return;
   await api(`/api/admin/users/${state.selectedUser.id}`, { method: 'DELETE' });
   state.selectedUser = null;
   $('#detailForm').classList.add('hidden');
@@ -752,7 +827,12 @@ async function loadImages() {
   `).join('') || '<div style="padding:20px;color:#64748b">이미지가 없습니다.</div>';
   document.querySelectorAll('[data-delete-image]').forEach((button) => {
     button.addEventListener('click', async () => {
-      if (!confirm(`${button.dataset.deleteImage} 이미지를 삭제할까요?`)) return;
+      const confirmed = await confirmAction({
+        title: '이 이미지를 삭제할까요?',
+        body: `${button.dataset.deleteImage} — 삭제하면 되돌릴 수 없습니다.`,
+        confirmLabel: '이미지 삭제',
+      });
+      if (!confirmed) return;
       await api(`/api/admin/storage/images?${new URLSearchParams({ path: button.dataset.deleteImage })}`, { method: 'DELETE' });
       await loadImages();
     });
@@ -828,7 +908,7 @@ function refreshProductImageState() {
     preview.classList.add('hidden');
     preview.removeAttribute('src');
     stateLabel.textContent = state.editingProductId ? '이 상품은 사진이 없습니다 — 사진을 올려야 저장됩니다' : '아직 선택 안 됨';
-    stateLabel.style.color = '#b91c1c';
+    stateLabel.style.color = '#8E3A32';
     box.style.borderColor = 'rgba(1,71,37,.28)';
   }
 
@@ -868,7 +948,7 @@ function editProduct(product) {
   $('#productStatus').value = product.status || 'ACTIVE';
   if (isAdmin() && product.sellerId) $('#productSeller').value = product.sellerId;
   refreshProductImageState();
-  $('#productsSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  scrollToEl('#productsSection', 'start');
 }
 
 /** 관리자만 판매자를 고릅니다. 판매자·관리자 프로필을 모아 옵니다. */
@@ -928,7 +1008,12 @@ async function deleteProduct() {
   const editing = state.editingProductId;
   if (!editing) return;
   const product = state.products.find((item) => item.id === editing);
-  if (!confirm(`${product?.name || '이 상품'}을(를) 삭제할까요? 사진도 함께 지워집니다.`)) return;
+  const confirmed = await confirmAction({
+    title: `${product?.name || '이 상품'}을(를) 삭제할까요?`,
+    body: '등록된 사진도 함께 지워집니다. 되돌릴 수 없습니다.',
+    confirmLabel: '상품 삭제',
+  });
+  if (!confirmed) return;
   await api(`${productBase()}/${encodeURIComponent(editing)}`, { method: 'DELETE' });
   setMessage('상품이 삭제되었습니다.', true);
   resetProductForm();
@@ -1004,7 +1089,7 @@ function orderNotice(text, ok = true) {
   const el = $('#orderNotice');
   if (!el) return;
   el.textContent = text || '';
-  el.style.color = ok ? '#014725' : '#b91c1c';
+  el.style.color = ok ? '#014725' : '#8E3A32';
 }
 
 async function loadOrders() {
@@ -1091,14 +1176,14 @@ function bindHome() {
   document.querySelectorAll('[data-login]').forEach((button) => {
     button.addEventListener('click', () => {
       setAuthMode('signin');
-      $('#authPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      scrollToEl('#authPanel');
     });
   });
 
   document.querySelectorAll('[data-signup]').forEach((button) => {
     button.addEventListener('click', () => {
       setAuthMode('signup');
-      $('#authPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      scrollToEl('#authPanel');
     });
   });
 
@@ -1125,7 +1210,7 @@ function bindHome() {
     setAuthMode('signin');
     clearMessage();
     setMessage('로그아웃되었습니다.', true);
-    $('#authPanel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    scrollToEl('#authPanel');
   }));
   $('#reloadMissions')?.addEventListener('click', () => loadMissions().catch((error) => setMessage(error.message, false)));
   $('#reloadUsers')?.addEventListener('click', () => Promise.all([loadSummary(), loadUsers()]));

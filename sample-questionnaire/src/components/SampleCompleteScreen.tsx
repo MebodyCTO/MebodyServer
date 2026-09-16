@@ -8,7 +8,6 @@ import { getSampleAxisScoreBreakdown } from '../utils/sampleAxisBreakdown'
 import type { AxisKey } from '../utils/sampleBodyCodeCalculator'
 import { SAMPLE_QUESTIONS_SNAPSHOT } from '../data/sampleQuestionsSnapshot'
 import { preloadResultCharacters } from '../utils/preloadResultCharacters'
-import { FadeSlidePanel } from './FadeSlidePanel'
 import { ResultCharacterHero } from './ResultCharacterHero'
 
 interface SampleCompleteScreenProps {
@@ -37,11 +36,11 @@ function AxisBar({
       <div className="mb-3 flex items-center justify-between gap-2">
         <p className="text-sm font-bold text-gray-800">{title}</p>
         {data.isUncertain ? (
-          <span className="shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-800">
+          <span className="shrink-0 rounded-full bg-amber-50 px-2.5 py-1 text-[0.6875rem] font-semibold text-amber-800">
             M · 방향 미확정
           </span>
         ) : (
-          <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
+          <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[0.6875rem] font-semibold text-emerald-700">
             예상
           </span>
         )}
@@ -70,7 +69,7 @@ function AxisBar({
         )}
       </div>
 
-      <div className="flex justify-between gap-2 text-[11px] leading-snug">
+      <div className="flex justify-between gap-2 text-[0.6875rem] leading-snug">
         <span className={data.isUncertain ? 'text-gray-500' : 'font-medium text-emerald-700'}>
           {data.labelLeft}
         </span>
@@ -127,10 +126,10 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
   }, [])
 
   return (
-    <FadeSlidePanel className="mebody-app-surface relative flex max-h-[min(90vh,820px)] flex-col overflow-hidden rounded-3xl shadow-xl">
+    <div className="mebody-app-surface relative flex max-h-[min(90vh,820px)] flex-col overflow-hidden rounded-3xl shadow-xl">
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto" onScroll={checkScrollPosition}>
-        <div className="relative bg-gradient-to-br from-teal-500 to-teal-600 px-6 pb-8 pt-6 text-white">
-          <p className="mb-5 text-center text-sm font-medium text-white/90">나의 MEBODY 코드</p>
+        <div className="relative bg-gradient-to-br from-emerald-600 to-emerald-500 px-6 pb-8 pt-6 text-white">
+          <p className="mb-5 text-center text-sm font-medium text-white/90">나의 mebody Code</p>
           <ResultCharacterHero resultCode={result.code} />
           <div className="mb-4 flex justify-center gap-3 sm:gap-4">
             {chars.map((char, index) => {
@@ -141,12 +140,12 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
                     className={`flex h-14 w-14 items-center justify-center rounded-full text-xl font-black sm:h-16 sm:w-16 sm:text-2xl ${
                       isUncertain
                         ? 'border-2 border-dashed border-white/70 bg-white/10 text-white'
-                        : 'bg-white text-teal-600 shadow-md'
+                        : 'bg-white text-emerald-600 shadow-md'
                     }`}
                   >
                     {char}
                   </div>
-                  <span className="text-[11px] font-medium text-white/85">
+                  <span className="text-[0.6875rem] font-medium text-white/85">
                     {AXIS_ORDER[index]?.label}
                   </span>
                 </div>
@@ -164,7 +163,7 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
               className="mt-5 flex w-full flex-col items-center gap-1 text-white/90 transition-colors hover:text-white"
               aria-label="아래로 스크롤하여 전체 결과 보기"
             >
-              <span className="text-[11px] font-medium">아래로 스크롤해 전체 결과를 확인해 보세요</span>
+              <span className="text-[0.6875rem] font-medium">아래로 스크롤해 전체 결과를 확인해 보세요</span>
               <ChevronDown className="h-6 w-6 animate-scroll-hint-bounce" strokeWidth={2.5} />
             </button>
           ) : null}
@@ -172,7 +171,7 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
 
         <div className="space-y-4 px-4 py-5">
           <div className="rounded-2xl bg-white p-5 shadow-sm">
-            <p className="mb-2 text-xs font-bold text-teal-600">한 줄 이해</p>
+            <p className="mb-2 text-xs font-bold text-emerald-600">한 줄 이해</p>
             <p className="text-sm leading-relaxed text-gray-800" style={{ wordBreak: 'keep-all' }}>
               {content?.shortSummary ??
                 '결과 설명을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'}
@@ -189,8 +188,8 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
           </div>
 
           {showUncertainCard ? (
-            <div className="rounded-2xl border border-dashed border-teal-300 bg-amber-50/60 p-4">
-              <p className="text-sm font-bold text-teal-800">
+            <div className="rounded-2xl border border-dashed border-emerald-300 bg-amber-50/60 p-4">
+              <p className="text-sm font-bold text-emerald-800">
                 {content?.uncertainAxes?.length
                   ? `${content.uncertainAxes
                       .map((axis) => AXIS_ORDER.find((item) => item.key === axis)?.label)
@@ -210,9 +209,9 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
               href={SAMPLE_RESULT_FORM_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded-2xl border border-teal-100 bg-white p-5 shadow-sm transition-all hover:border-teal-300 hover:shadow-md active:scale-[0.99]"
+              className="block rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm transition-all hover:border-emerald-300 hover:shadow-md active:scale-[0.99]"
             >
-              <p className="mb-2 text-xs font-bold text-teal-600">설문 남기고 이어서 확인하기</p>
+              <p className="mb-2 text-xs font-bold text-emerald-600">설문 남기고 이어서 확인하기</p>
               <p className="text-sm leading-relaxed text-gray-800" style={{ wordBreak: 'keep-all' }}>
                 {content.guideText}
               </p>
@@ -224,7 +223,7 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
                 참여해 주세요. 남겨주신 답변은 서비스를 개선하고, 앞으로 여러분의 건강과 웰니스를 더
                 세심하게 챙겨 드리는 데 정말 큰 도움이 됩니다.
               </p>
-              <span className="mt-4 block rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3.5 text-center text-sm font-semibold text-white shadow-lg shadow-emerald-500/20">
+              <span className="mt-4 block rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 py-3.5 text-center text-sm font-semibold text-white shadow-lg shadow-emerald-500/20">
                 지금 꼭 설문 참여하기
               </span>
             </a>
@@ -234,7 +233,7 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
 
       {!hasReachedBottom ? (
         <p
-          className="shrink-0 border-t border-amber-100 bg-amber-50/90 px-4 py-2 text-center text-[11px] leading-snug text-amber-800/80"
+          className="shrink-0 border-t border-amber-100 bg-amber-50/90 px-4 py-2 text-center text-[0.6875rem] leading-snug text-amber-800"
           style={{ wordBreak: 'keep-all' }}
         >
           아래까지 스크롤해서 더 많은 정보를 확인해 주세요
@@ -262,7 +261,7 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
           <button
             type="button"
             onClick={onRestart}
-            className="w-full rounded-2xl py-2 text-center text-sm font-medium text-gray-500 transition-colors hover:text-gray-700"
+            className="w-full min-h-11 rounded-2xl py-2 text-center text-sm font-medium text-gray-500 transition-colors hover:text-gray-700"
           >
             처음으로
           </button>
@@ -270,12 +269,12 @@ export function SampleCompleteScreen({ result, onRestart }: SampleCompleteScreen
           <button
             type="button"
             disabled
-            className="w-full cursor-not-allowed rounded-2xl py-2 text-center text-sm font-medium text-gray-300"
+            className="w-full min-h-11 cursor-not-allowed rounded-2xl py-2 text-center text-sm font-medium text-gray-300"
           >
             처음으로
           </button>
         )}
       </div>
-    </FadeSlidePanel>
+    </div>
   )
 }

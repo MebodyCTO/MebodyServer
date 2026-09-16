@@ -1,5 +1,5 @@
 /**
- * MEBODY 1차 문항 — 주관적 (생각만으로 체크 가능) v1
+ * mebody 1차 문항 — 주관적 (생각만으로 체크 가능) v1
  * Fallback when Supabase is unavailable or question_set not seeded yet.
  */
 export type SampleAxis = 'neck' | 'shoulder' | 'pelvis' | 'flexibility'

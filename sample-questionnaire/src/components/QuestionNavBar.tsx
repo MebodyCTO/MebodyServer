@@ -28,7 +28,7 @@ export function QuestionNavBar({
         <button
           type="button"
           onClick={onNext}
-          className="flex-1 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all hover:brightness-105 active:scale-[0.98]"
+          className="flex-1 rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-500 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all hover:brightness-105 active:scale-[0.98]"
         >
           {isLastQuestion ? '결과 보기' : '다음'}
         </button>
