@@ -26,10 +26,11 @@ export function QuestionnaireShell({ current, total, children }: QuestionnaireSh
           <button
             type="button"
             onClick={() => window.alert('앱 다운로드는 준비 중입니다.')}
-            className="mebody-hit inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 shadow-sm transition-all hover:border-emerald-300 hover:shadow-md active:scale-[0.98]"
+            className="mebody-hit inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-4 py-2 text-gray-900 shadow-sm transition-all hover:border-emerald-300 hover:shadow-md active:scale-[0.98]"
             aria-label="mebody 앱 다운로드"
           >
-            <BrandMark size={16} color="#014725" />
+            {/* color 를 생략하면 currentColor — 버튼의 text-gray-900 을 따라 다크에서도 보입니다 */}
+            <BrandMark size={16} />
             <span className="text-xs font-black tracking-wide text-gray-900">mebody</span>
           </button>
         </div>

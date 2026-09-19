@@ -55,7 +55,7 @@ function AxisBar({
             className="h-full w-full opacity-60"
             style={{
               backgroundImage:
-                'repeating-linear-gradient(90deg, #E8DCC8 0, #E8DCC8 6px, transparent 6px, transparent 12px)',
+                'repeating-linear-gradient(90deg, var(--sample-stripe, #E8DCC8) 0, var(--sample-stripe, #E8DCC8) 6px, transparent 6px, transparent 12px)',
             }}
           />
         ) : (

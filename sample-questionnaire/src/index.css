@@ -186,3 +186,71 @@ body {
   width: max(100%, 44px);
   height: max(100%, 44px);
 }
+
+/* ===== 다크 모드 ====================================================
+   /sample 은 라이트 전용이었습니다. 홈페이지는 다크를 지원하고 앱도 지금
+   지원하므로, 다크로 쓰는 사람이 세 화면을 오가면 여기서만 눈이 부셨습니다.
+
+   램프 변수(--color-gray-*)를 덮지 않는 이유: `bg-white` 와 `text-white` 가
+   같은 변수를 쓰는데 다크에서는 전자가 표면(어두워짐), 후자가 초록 채움 위
+   글씨(어두워짐)로 역할이 갈립니다. 한 변수로 둘을 동시에 맞출 수 없어
+   **실제로 쓰는 클래스만** 역할대로 덮습니다. 이 블록은 @layer 밖이라
+   Tailwind 유틸(@layer utilities)보다 항상 이깁니다.
+
+   값은 홈페이지 landing.css 의 다크 램프, 앱 index.css 의 토큰과 같습니다.
+--------------------------------------------------------------------------- */
+:root {
+  color-scheme: light dark;
+  --sample-stripe: #E8DCC8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sample-stripe: #2c4636;
+    /* 포커스 링 — 밝은 모드의 #016b38 은 어두운 배경에서 1.6:1 입니다 */
+    --mebody-focus-ring: #8fe0b3;
+    --mebody-focus-halo: #0b1f15;
+  }
+
+  body {
+    background-color: #0b1f15;
+    color: #e9efe4;
+  }
+  .mebody-desktop-backdrop { background-color: #07160f !important; }
+  .mebody-app-surface { background-color: #173523 !important; }
+
+  /* 표면 */
+  .bg-white { background-color: #173523; }
+  .bg-gray-50 { background-color: #0b1f15; }
+  .bg-gray-100 { background-color: #0f2619; }
+  .bg-emerald-50, .bg-emerald-50\/90 { background-color: #0f2619; }
+  .bg-emerald-100 { background-color: rgba(110, 207, 155, 0.14); }
+  .bg-amber-50, .bg-amber-50\/60, .bg-amber-50\/90 { background-color: rgba(224, 182, 103, 0.13); }
+
+  /* 글자 — 초록 채움 위 흰 글씨는 어두워집니다(채움이 밝아지므로) */
+  .text-white, .text-white\/85, .text-white\/90, .text-white\/95 { color: #0b1f15; }
+  .hover\:text-white:hover { color: #0b1f15; }
+  .text-gray-300, .disabled\:text-gray-300:disabled { color: #6c8a78; }
+  .text-gray-400 { color: #9bb0a2; }
+  .text-gray-500 { color: #9bb0a2; }
+  .text-gray-600 { color: #b6c6b8; }
+  .text-gray-700, .hover\:text-gray-700:hover { color: #c6d4c4; }
+  .text-gray-800, .hover\:text-gray-800:hover { color: #c6d4c4; }
+  .text-gray-900 { color: #e9efe4; }
+  .text-emerald-600, .text-emerald-700, .text-emerald-800, .text-emerald-900 { color: #6ecf9b; }
+  .text-amber-800 { color: #e0b667; }
+
+  /* 선 */
+  .border-gray-100, .border-gray-200,
+  .disabled\:border-gray-100:disabled,
+  .disabled\:hover\:border-gray-100:disabled:hover { border-color: rgba(233, 239, 228, 0.16); }
+  .border-emerald-100 { border-color: rgba(110, 207, 155, 0.34); }
+  .border-emerald-300, .hover\:border-emerald-300:hover { border-color: rgba(110, 207, 155, 0.5); }
+  .border-amber-100 { border-color: rgba(224, 182, 103, 0.34); }
+  .hover\:border-gray-400:hover { border-color: rgba(233, 239, 228, 0.34); }
+
+  /* 채움·그림자 */
+  .from-emerald-600 { --tw-gradient-from: #6ecf9b; }
+  .to-emerald-500 { --tw-gradient-to: #8fe0b3; }
+  .shadow-emerald-500\/20 { --tw-shadow-color: rgba(0, 0, 0, 0.34); }
+}
