@@ -12,15 +12,18 @@ import java.util.UUID;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CurrentUserService {
   private final UserProfileRepository userProfileRepository;
+  private final JdbcTemplate jdbcTemplate;
 
-  public CurrentUserService(UserProfileRepository userProfileRepository) {
+  public CurrentUserService(UserProfileRepository userProfileRepository, JdbcTemplate jdbcTemplate) {
     this.userProfileRepository = userProfileRepository;
+    this.jdbcTemplate = jdbcTemplate;
   }
 
   @Transactional
@@ -28,6 +31,12 @@ public class CurrentUserService {
     Jwt jwt = currentJwt();
     UUID authUserId = UUID.fromString(jwt.getSubject());
     String email = jwt.getClaimAsString("email");
+
+    // 탈퇴한 계정의 토큰은 만료될 때까지 서명이 유효합니다. 그대로 두면 아래에서
+    // 프로필을 새로 만들려다 외래키에 걸려 500 이 납니다. 없는 계정이면 여기서 끊습니다.
+    if (!authUserExists(authUserId)) {
+      throw new UnauthorizedException("이미 탈퇴했거나 사용할 수 없는 계정입니다.");
+    }
 
     UserProfile profile = userProfileRepository.findByAuthUserId(authUserId)
         .or(() -> userProfileRepository.findById(authUserId))
@@ -46,6 +55,13 @@ public class CurrentUserService {
     }
 
     return CurrentUser.from(profile);
+  }
+
+  /** auth.users 에 아직 있는 계정인지. 탈퇴 직후의 토큰을 걸러냅니다. */
+  private boolean authUserExists(UUID authUserId) {
+    Boolean exists = jdbcTemplate.queryForObject(
+        "SELECT EXISTS (SELECT 1 FROM auth.users WHERE id = ?)", Boolean.class, authUserId);
+    return Boolean.TRUE.equals(exists);
   }
 
   private Optional<UserProfile> findByEmail(String email) {

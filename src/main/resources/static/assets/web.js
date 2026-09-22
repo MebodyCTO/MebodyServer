@@ -105,6 +105,14 @@ const isAdmin = () => state.me?.role === 'ADMIN';
 const isSeller = () => state.me?.role === 'SELLER';
 /** 상품을 올릴 수 있는 역할 — 관리자는 전부, 판매자는 자기 것만. */
 const isManager = () => isAdmin() || isSeller();
+/** 전문가(트레이너·물리치료사). 관리자도 화면을 볼 수 있게 두면 확인이 쉽습니다. */
+const isProfessional = () => state.me?.role === 'PROFESSIONAL';
+/**
+ * 콘솔에 들어왔을 때 처음 열 탭. 역할마다 하는 일이 달라서 시작점도 달라야 합니다.
+ * 전에는 누구나 'users' 로 보냈는데, 관리자가 아니면 그 탭이 막혀 'me' 로 떨어졌습니다.
+ * 판매자·전문가는 자기 일이 있는 탭을 한 번 더 눌러야 했습니다.
+ */
+const defaultConsoleTab = () => (isAdmin() ? 'users' : isProfessional() ? 'clients' : isSeller() ? 'products' : 'me');
 /** 판매자는 /api/seller/products, 관리자는 /api/admin/products 로 나갑니다. */
 const productBase = () => (isAdmin() ? '/api/admin/products' : '/api/seller/products');
 
@@ -235,9 +243,14 @@ function updateAccountSection() {
   $('#navGuest')?.classList.toggle('hidden', loggedIn);
   $('#navMember')?.classList.toggle('hidden', !loggedIn);
 
-  const isAdminUser = state.me?.role === 'ADMIN';
-  $('#navAdmin')?.classList.toggle('hidden', !isAdminUser);
-  $('#sessionAdmin')?.classList.toggle('hidden', !isAdminUser);
+  // 콘솔에 볼 것이 있는 사람 모두에게 링크를 보입니다.
+  //
+  // 예전에는 관리자에게만 보였습니다. 그래서 판매자는 상품 관리를, 전문가는 고객 관리를
+  // 쓰려면 주소창에 /admin 을 직접 쳐야 했습니다 — 알려주지 않으면 있는 줄도 모르는 기능입니다.
+  // 콘솔 안에서 무엇을 볼 수 있는지는 setDashboardTab 이 역할별로 다시 거릅니다.
+  const hasConsole = isAdmin() || isSeller() || isProfessional();
+  $('#navAdmin')?.classList.toggle('hidden', !hasConsole);
+  $('#sessionAdmin')?.classList.toggle('hidden', !hasConsole);
 
   const memberHref = loggedIn ? '/me' : '/#authPanel';
   const memberLabel = loggedIn ? '내 페이지' : '회원';
@@ -296,7 +309,13 @@ async function serverSignUp(identifier, password, displayName) {
   const response = await fetch('/api/public/auth/signup', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ identifier, password, displayName: displayName || null }),
+    body: JSON.stringify({
+      identifier, password, displayName: displayName || null,
+      // 동의한 사실을 남기기 위해 함께 보냅니다(체크박스는 위에서 이미 검사했습니다).
+      agreedTerms: Boolean($('#consentTerms')?.checked),
+      agreedPrivacy: Boolean($('#consentPrivacy')?.checked),
+      agreedMarketing: false,
+    }),
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.message || payload.error || '회원가입에 실패했습니다.');
@@ -387,9 +406,12 @@ async function applySessionAndEnter(auth, successMessage) {
   localStorage.setItem('mebody.server.accessToken', auth.access_token);
   state.token = auth.access_token;
   if (isAdminPath()) {
-    await enterDashboard('users');
+    await enterDashboard();
   } else if (isMemberPath()) {
     await loadMeDashboard();
+    // 역할별 메뉴(판매자·전문가·관리자)는 state.me 를 읽어 켭니다. loadMeDashboard() 뒤에
+    // 불러야 합니다 — 먼저 부르면 role 을 모르는 채로 전부 숨긴 채 굳어집니다.
+    configureDashboardAccess();
     showMemberHome();
     if (successMessage) setMessage(successMessage, true);
   } else {
@@ -492,10 +514,13 @@ function renderMissionList(missionSummary) {
   list.innerHTML = items.map((item, index) => {
     const rate = Number(item.achievementRate ?? 0);
     const done = item.completedAt ? '완료' : '진행 중';
+    // 한 줄은 "미션 하나" 가 아니라 **14일 루틴의 하루** 입니다.
+    // 예전 데이터(user_mission_progress)를 그리던 때의 "미션 N" 라벨이 남아 있었습니다.
+    const label = item.dayNo ? `DAY ${item.dayNo}` : `미션 ${index + 1}`;
     return `
       <li>
         <div>
-          <div class="mb-mission-title">미션 ${index + 1}</div>
+          <div class="mb-mission-title">${escapeHtml(label)}</div>
           <div class="mb-mission-meta">${done} · ${Number(item.currentCount ?? 0)} / ${Number(item.targetCount ?? 0)}</div>
         </div>
         <div class="mb-mission-rate">${rate}%</div>
@@ -537,6 +562,9 @@ function configureDashboardAccess() {
   document.querySelectorAll('[data-manager-only]').forEach((element) => {
     element.classList.toggle('hidden', !isManager());
   });
+  document.querySelectorAll('[data-professional-only]').forEach((element) => {
+    element.classList.toggle('hidden', !isProfessional());
+  });
   // 판매자는 자기 상품만 올리므로 판매자 선택 칸이 필요 없습니다(서버가 본인으로 강제).
   $('#productSellerRow')?.classList.toggle('hidden', !isAdmin());
 }
@@ -544,7 +572,9 @@ function configureDashboardAccess() {
 function setDashboardTab(tab) {
   const requestedTab = tab || 'me';
   const managerTabs = ['products', 'orders'];
-  const allowed = requestedTab === 'me' || (managerTabs.includes(requestedTab) ? isManager() : isAdmin());
+  const allowed = requestedTab === 'me'
+    || (requestedTab === 'clients' ? isProfessional()
+      : managerTabs.includes(requestedTab) ? isManager() : isAdmin());
   const nextTab = allowed ? requestedTab : 'me';
   state.currentTab = nextTab;
 
@@ -556,6 +586,14 @@ function setDashboardTab(tab) {
   $('#productsSection').classList.toggle('hidden', nextTab !== 'products');
   $('#ordersSection').classList.toggle('hidden', nextTab !== 'orders');
   $('#storageSection').classList.toggle('hidden', nextTab !== 'storage');
+  $('#clientsSection').classList.toggle('hidden', nextTab !== 'clients');
+  $('#metricsSection').classList.toggle('hidden', nextTab !== 'metrics');
+  // 고객 상세는 목록에서 눌렀을 때만 열립니다. 탭을 옮기면 무조건 닫습니다 —
+  // 열어둔 채 다른 탭에 갔다 오면 남의 결과가 화면에 남아 있게 됩니다.
+  $('#clientDetailSection')?.classList.add('hidden');
+  // 초안도 비웁니다. 남겨 두면 다른 탭에 갔다 온 뒤 옛 고객의 초안이 그대로 보입니다.
+  const draftHost = $('#clientDraftBlock');
+  if (draftHost) draftHost.innerHTML = '';
 
   const meta = {
     me: ['MY PAGE', '내 mebody', '계정 정보와 최근 mebody Code, 미션 상태를 확인합니다.'],
@@ -563,6 +601,8 @@ function setDashboardTab(tab) {
     products: ['MARKET', '상품 관리', '사진과 함께 상품을 등록합니다. 사진 없이는 등록되지 않고, 등록 즉시 앱 마켓 탭에 반영됩니다.'],
     orders: ['ORDERS', '주문 · 배송', '결제된 주문의 배송 상태를 관리합니다. 발송 처리에는 송장번호가 필요합니다.'],
     storage: ['STORAGE', '이미지 관리', '상품 이미지를 서버 권한으로 안전하게 관리합니다.'],
+    metrics: ['METRICS', '운영 지표', '퍼널 각 칸의 비율은 바로 앞 칸 대비입니다. 어디서 떨어지는지 보려면 이웃과 비교해야 합니다.'],
+    clients: ['CLIENTS', '고객 관리', '초대 링크를 만들어 보내고, 동의한 고객의 체형 결과를 확인합니다. 동의 전에는 아무것도 보이지 않습니다.'],
   }[nextTab];
   $('#dashboardKicker').textContent = meta[0];
   $('#dashboardTitle').textContent = meta[1];
@@ -572,15 +612,18 @@ function setDashboardTab(tab) {
   if (nextTab === 'products') loadProducts().catch((error) => setMessage(error.message, false));
   if (nextTab === 'orders') loadOrders().catch((error) => setMessage(error.message, false));
   if (nextTab === 'storage') loadImages().catch((error) => setMessage(error.message, false));
+  if (nextTab === 'clients') loadClients().catch((error) => setMessage(error.message, false));
+  if (nextTab === 'metrics') loadMetrics().catch((error) => setMessage(error.message, false));
 }
 
-async function enterDashboard(preferredTab = 'me') {
+async function enterDashboard(preferredTab) {
   clearMessage();
   updateAccountSection();
   await loadMeDashboard();
   configureDashboardAccess();
   showDashboard();
-  setDashboardTab(preferredTab);
+  // 역할을 알아야 시작 탭을 고를 수 있으므로 loadMeDashboard() 뒤에서 정합니다.
+  setDashboardTab(preferredTab ?? defaultConsoleTab());
 }
 
 async function bootstrap() {
@@ -635,9 +678,10 @@ async function bootstrap() {
   try {
     // `/admin` 콘솔, `/me` 회원 화면, `/` 는 로그인 상태여도 랜딩.
     if (isAdminPath()) {
-      await enterDashboard('users');
+      await enterDashboard();
     } else if (isMemberPath()) {
       await loadMeDashboard();
+      configureDashboardAccess();
       showMemberHome();
     } else {
       await loadMeDashboard();
@@ -680,9 +724,20 @@ async function handleAuthSubmit(event) {
       return;
     }
 
-    // 회원가입: 서버를 거쳐 확인 절차 없이 그 자리에서 승인됩니다.
+    // 회원가입: 서버를 거칩니다. 확인 절차가 꺼져 있으면 그 자리에서 승인되고,
+    // 켜져 있으면(2026-09-21 부터 이메일은 ON) 확인 메일을 보내고 여기서 멈춥니다.
     try {
       const result = await serverSignUp(email, password, name);
+
+      // 확인 메일을 열기 전에는 로그인이 막힙니다. 그대로 로그인을 시도하면
+      // "확인되지 않았다" 오류가 나서, 가입이 된 건지 만 건지 알 수 없게 됩니다.
+      if (result.verificationRequired) {
+        setAuthMode('signin');
+        if ($('#password')) $('#password').value = '';
+        setMessage(result.verificationHint || '확인 메일을 보냈습니다. 메일함에서 링크를 열면 로그인할 수 있어요.', true);
+        return;
+      }
+
       const auth = await loginAllowingPending(result.loginEmail || email, password, email);
       await applySessionAndEnter(auth, result.alreadyRegistered
         ? '이미 가입된 계정으로 로그인되었습니다.'
@@ -1165,9 +1220,573 @@ async function loadOrders() {
   });
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * 전문가 확장 Phase 1 — 고객 관리
+ *
+ * 이 화면이 다루는 것은 남의 몸 상태입니다. 권한 판단은 전부 서버가 합니다
+ * (current_professional_id · get_client_response). 여기서 숨기는 것은 화면일 뿐이고,
+ * 화면을 뚫어도 서버가 403/404 를 돌려줍니다.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+const CLIENT_STATUS_LABEL = {
+  INVITED: '수락 대기',
+  ACTIVE: '연결됨',
+  REVOKED: '연결 끊김',
+};
+
+async function loadClients() {
+  const [me, clients] = await Promise.all([
+    api('/api/professional/me'),
+    api('/api/professional/clients'),
+  ]);
+  $('#professionalName').textContent = me?.displayName ? `${me.displayName} 님` : '';
+  renderClients(clients || []);
+}
+
+function renderClients(clients) {
+  const host = $('#clientsList');
+  if (!host) return;
+
+  if (!clients.length) {
+    host.innerHTML = '<p class="member-muted">아직 고객이 없습니다. 위에서 초대 링크를 만들어 보내세요.</p>';
+    return;
+  }
+
+  host.innerHTML = clients.map((client) => {
+    const status = client.expired ? '만료됨' : (CLIENT_STATUS_LABEL[client.status] || client.status);
+    // 동의 전에는 이름도 코드도 없습니다. 서버가 아예 내려주지 않습니다.
+    // 이름이 없을 수 있습니다. 수락 전이면 아직 누구인지 모르는 것이고, 수락 뒤라면
+    // 그 사람이 이름을 안 넣은 것입니다. 둘을 같은 말로 쓰면 화면이 거짓말을 합니다.
+    const pendingName = client.status === 'INVITED' && !client.clientUserId;
+    const name = client.displayName
+      ? escapeHtml(client.displayName)
+      : `<span class="member-muted">${pendingName ? '수락 전' : '이름 미등록'}</span>`;
+    const code = client.bodyCode
+      ? `<b>${escapeHtml(client.bodyCode)}</b>`
+      : '<span class="member-muted">—</span>';
+    const canOpen = client.status === 'ACTIVE' && client.consentedAt && client.clientUserId;
+    return `
+      <div class="panel" style="padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <div style="flex:1;min-width:180px;">
+          <div style="font-weight:700;">${name}</div>
+          <div class="member-muted" style="font-size:0.85rem;margin-top:2px;">
+            ${escapeHtml(status)} · 초대 ${formatDate(client.invitedAt)}
+          </div>
+        </div>
+        <div style="min-width:80px;">${code}</div>
+        ${client.inviteUrl ? `<button class="btn btn-soft" data-copy-invite="${escapeAttr(client.inviteUrl)}" type="button">링크 복사</button>` : ''}
+        ${canOpen ? `<button class="btn btn-primary" data-open-client="${escapeAttr(client.clientUserId)}" data-client-name="${escapeAttr(client.displayName || '고객')}" type="button">결과 보기</button>` : ''}
+        ${client.status !== 'REVOKED' ? `<button class="btn btn-soft" data-revoke-client="${escapeAttr(client.relationId)}" type="button">연결 끊기</button>` : ''}
+      </div>`;
+  }).join('');
+
+  host.querySelectorAll('[data-copy-invite]').forEach((button) => {
+    button.addEventListener('click', () => copyText(button.dataset.copyInvite, '초대 링크를 복사했습니다.'));
+  });
+  host.querySelectorAll('[data-open-client]').forEach((button) => {
+    button.addEventListener('click', () => openClient(button.dataset.openClient, button.dataset.clientName));
+  });
+  host.querySelectorAll('[data-revoke-client]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const ok = await confirmAction({
+        title: '이 고객과의 연결을 끊을까요?',
+        body: '끊으면 결과를 더 볼 수 없습니다. 다시 보려면 새 초대 링크를 보내고 고객이 다시 동의해야 합니다.',
+        confirmLabel: '연결 끊기',
+      });
+      if (!ok) return;
+      try {
+        await api(`/api/professional/clients/${button.dataset.revokeClient}`, { method: 'DELETE' });
+        await loadClients();
+        setMessage('연결을 끊었습니다.', true);
+      } catch (error) {
+        setMessage(error.message, false);
+      }
+    });
+  });
+}
+
+async function createInvite() {
+  try {
+    const invite = await api('/api/professional/clients/invite', { method: 'POST' });
+    $('#inviteUrl').value = invite.inviteUrl;
+    $('#inviteResult').classList.remove('hidden');
+    await loadClients();
+    setMessage('초대 링크를 만들었습니다. 7일 뒤 만료되고 한 번만 쓸 수 있습니다.', true);
+  } catch (error) {
+    setMessage(error.message, false);
+  }
+}
+
+const FEELING_LABEL = { BETTER: '나아짐', SAME: '비슷함', UNCOMFORTABLE: '불편함' };
+const DIFFICULTY_LABEL = { EASY: '쉬움', GOOD: '알맞음', HARD: '힘듦' };
+
+/**
+ * 고객 상세 — 체형 결과(Phase 1)와 수행 기록(Phase 2).
+ *
+ * 수행 기록은 따로 부릅니다. 결과는 있는데 루틴을 아직 시작하지 않은 고객이 있고,
+ * 한 번에 묶으면 그 경우에 화면 전체가 빈 채로 뜹니다.
+ */
+async function openClient(clientUserId, fallbackName) {
+  try {
+    const result = await api(`/api/professional/clients/${clientUserId}`);
+    $('#clientsSection').classList.add('hidden');
+    $('#clientDetailSection').classList.remove('hidden');
+    $('#clientDetailName').textContent = result.displayName || fallbackName || '고객';
+    $('#clientDetailBody').innerHTML = `
+      <div class="panel" style="padding:16px;">
+        <div class="kicker">mebody Code</div>
+        <h2 style="margin:6px 0 0;">${escapeHtml(result.calculatedCode || '—')}</h2>
+        <p class="member-muted" style="margin:6px 0 0;">
+          ${result.primaryIdentity ? escapeHtml(result.primaryIdentity) + ' · ' : ''}진단 완료 ${formatDate(result.completedAt)}
+        </p>
+      </div>
+      <div id="clientJourneyBlock" style="margin-top:14px;">
+        <p class="member-muted" style="font-size:0.85rem;">수행 기록을 불러오는 중…</p>
+      </div>
+      <div id="clientDraftBlock" style="margin-top:14px;"></div>
+      <div id="clientAssignBlock" style="margin-top:14px;"></div>
+      <p class="member-muted" style="margin-top:14px;font-size:0.85rem;line-height:1.7;">
+        문항별 답변은 제공하지 않습니다. 상담에 필요한 것은 코드와 축 경향이고,
+        답변 원문은 한 번 나가면 돌려받을 수 없습니다.<br />
+        고객은 언제든 동의를 거둘 수 있고, 거두면 이 화면도 더 이상 열리지 않습니다.
+      </p>`;
+    loadClientJourney(clientUserId);
+    // 초안은 배정 목록(assignableCache)이 있어야 이름을 보여줄 수 있어서 그 뒤에 부릅니다.
+    loadAssignBlock(clientUserId).then(() => loadPlanDraft(clientUserId));
+  } catch (error) {
+    setMessage(error.message, false);
+  }
+}
+
+async function loadClientJourney(clientUserId) {
+  const host = $('#clientJourneyBlock');
+  if (!host) return;
+  try {
+    const data = await api(`/api/professional/clients/${clientUserId}/journey`);
+    host.innerHTML = renderClientJourney(data);
+  } catch (error) {
+    // 못 불러온 것과 "아직 안 했다" 는 다릅니다. 같은 말로 쓰면 화면이 거짓말을 합니다.
+    host.innerHTML = `<p class="member-muted" style="font-size:0.85rem;color:#b3261e;">
+      수행 기록을 불러오지 못했습니다 (${escapeHtml(error.message)}). 기록이 없는 것과 다릅니다.</p>`;
+  }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Phase 3 — 미션 배정
+ *
+ * 전문가는 **라이브러리에 있는 동작만** 고를 수 있습니다. 새 동작이나 설명을 직접 써 넣는
+ * 입력칸이 없는 것이 요점입니다 — 검증되지 않은 지시를 남의 몸에 나르지 않기 위해서입니다.
+ * 덧붙일 수 있는 것은 짧은 메모 한 줄(200자)뿐이고, 하루 3개까지입니다.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+let assignableCache = null;
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Phase 4 — 규칙 엔진 초안
+ *
+ * "앱이 오늘 이 고객에게 무엇을 배정할까" 를 미리 보여주고, 전문가가 빼거나 메모를 붙여
+ * 한 번에 배정합니다. 하나씩 고르는 것보다 빠르고, 무엇보다 **앱이 하려던 것을 기준으로**
+ * 시작하므로 전문가가 앱과 다른 방향으로 가는 일이 줄어듭니다.
+ *
+ * ── 계산은 어디서 하는가
+ * **앱과 같은 코드**로 이 브라우저에서 합니다(journey-rules.js — 앱의 journeyRules.ts 를
+ * 변환한 것). 규칙을 서버나 SQL 로 옮겨 적지 않은 이유는, 그러면 같은 로직이 두 벌이 되고
+ * 112개 테스트는 한쪽만 지키기 때문입니다. 서버는 재료만 내려줍니다.
+ *
+ * ── 초안은 초안입니다
+ * 화면에 뜬 것은 아직 고객에게 배정되지 않았습니다. 전문가가 「이대로 배정」 을 눌러야
+ * 실제로 들어갑니다. 그때도 하루 3개 제한(059)은 그대로 걸립니다.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+let rulesEngine = null;
+/**
+ * 초안을 만들 때 쓰는 가용 시간.
+ *
+ * select 에서 읽으면 안 됩니다 — 초안을 다시 그릴 때 select 도 같이 새로 그려져서
+ * 고른 값이 사라집니다. 15분으로 바꿔 「다시 만들기」를 눌러도 화면은 5분으로 돌아갔습니다.
+ */
+let draftMinutes = 5;
+
+async function loadRulesEngine() {
+  if (rulesEngine) return rulesEngine;
+  rulesEngine = await import('/assets/journey-rules.js');
+  return rulesEngine;
+}
+
+async function loadPlanDraft(clientUserId) {
+  const host = $('#clientDraftBlock');
+  if (!host) return;
+  host.innerHTML = '<p class="member-muted" style="font-size:0.85rem;">초안을 만드는 중…</p>';
+  try {
+    const [engine, input] = await Promise.all([
+      loadRulesEngine(),
+      api(`/api/professional/clients/${clientUserId}/plan-input`),
+    ]);
+
+    if (!input?.has_journey) {
+      host.innerHTML = `<div class="panel" style="padding:16px;">
+        <div class="kicker">DRAFT</div>
+        <p class="member-muted" style="margin:6px 0 0;">
+          고객이 아직 14일 루틴을 시작하지 않아 초안을 만들 수 없습니다.</p>
+      </div>`;
+      return;
+    }
+
+    // 앱이 오늘 화면에서 쓰는 것과 같은 입력입니다.
+    const planned = engine.selectDailyMissions({
+      dayNo: input.day_no,
+      dayPlan: input.day_plan,
+      axisPriority: input.axis_priority,
+      contentTags: input.content_tags,
+      feedback: input.feedback,
+      recentContentKeys: input.recent_content_keys,
+      availableMinutes: draftMinutes,
+      lastActiveAt: input.last_active_at,
+    });
+
+    const already = new Set((input.today_missions || []).map((m) => m.content_key));
+    renderPlanDraft(clientUserId, input, planned, already);
+  } catch (error) {
+    host.innerHTML = `<p class="member-muted" style="font-size:0.85rem;color:#b3261e;">
+      초안을 만들지 못했습니다 (${escapeHtml(error.message)}).</p>`;
+  }
+}
+
+function renderPlanDraft(clientUserId, input, planned, already) {
+  const host = $('#clientDraftBlock');
+  // 이름·주의사항은 배정 목록에서 옵니다. 그게 없으면 키만 보이는데, 그 상태로
+  // 배정하라고 하면 전문가가 무엇을 주는지 모르고 누르게 됩니다.
+  const byKey = new Map((assignableCache || []).map((c) => [c.contentKey, c]));
+  const namesMissing = byKey.size === 0 && planned.length > 0;
+
+  const rows = planned.map((m, i) => {
+    const c = byKey.get(m.content_key);
+    const dup = already.has(m.content_key);
+    return `
+      <div style="border-top:1px solid #e8ede6;padding:10px 0;display:flex;gap:10px;align-items:flex-start;">
+        <input type="checkbox" class="draft-pick" data-key="${escapeAttr(m.content_key)}"
+               ${dup ? '' : 'checked'} style="margin-top:4px;" />
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:0.9rem;">
+            ${escapeHtml(c?.displayName || m.content_key)}
+            ${dup ? '<span class="member-muted" style="font-weight:400;"> · 이미 오늘 목록에 있음</span>' : ''}
+          </div>
+          <div class="member-muted" style="font-size:0.78rem;margin-top:2px;">
+            ${escapeHtml(c?.targetMuscle || '')} · ${Math.round((m.planned_duration_sec || 0) / 60)}분
+            · 규칙 ${escapeHtml(m.source_rule || '')}
+          </div>
+          ${c?.caution ? `<div class="member-muted" style="font-size:0.75rem;margin-top:3px;">주의: ${escapeHtml(c.caution)}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+
+  host.innerHTML = `
+    <div class="panel" style="padding:16px;">
+      <div class="kicker">DRAFT · ${input.day_no}일차</div>
+      <p class="member-muted" style="margin:6px 0 12px;font-size:0.85rem;line-height:1.7;">
+        앱이 오늘 이 고객에게 배정하려는 것입니다. <b>아직 배정되지 않았습니다</b> —
+        빼거나 메모를 붙인 뒤 아래 버튼을 눌러야 들어갑니다. 하루 3개까지입니다.
+      </p>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+        <span class="member-muted" style="font-size:0.8rem;">가용 시간</span>
+        <select class="input" id="draftMinutes" style="max-width:110px;">
+          <option value="5"${draftMinutes === 5 ? ' selected' : ''}>5분</option>
+          <option value="15"${draftMinutes === 15 ? ' selected' : ''}>15분</option>
+        </select>
+        <button class="btn btn-soft" id="redraft" type="button" data-client="${escapeAttr(clientUserId)}">다시 만들기</button>
+      </div>
+      ${namesMissing
+        ? '<p class="member-muted" style="font-size:0.85rem;color:#b3261e;">동작 이름을 불러오지 못했습니다. 새로고침한 뒤 배정하세요.</p>'
+        : planned.length === 0
+          ? '<p class="member-muted" style="font-size:0.85rem;">오늘은 규칙이 고른 동작이 없습니다.</p>'
+          : rows}
+      <input class="input" id="draftNote" maxlength="200" placeholder="배정에 붙일 메모 (선택, 200자)" style="margin-top:12px;" />
+      <button class="btn btn-primary" id="applyDraft" type="button"
+              data-client="${escapeAttr(clientUserId)}" style="margin-top:8px;"
+              ${namesMissing || planned.length === 0 ? 'disabled' : ''}>
+        고른 것만 배정
+      </button>
+    </div>`;
+
+  $('#draftMinutes')?.addEventListener('change', (event) => {
+    draftMinutes = Number(event.target.value) || 5;
+    loadPlanDraft(clientUserId);
+  });
+  $('#redraft')?.addEventListener('click', () => loadPlanDraft(clientUserId));
+  $('#applyDraft')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    const keys = [...document.querySelectorAll('.draft-pick')]
+      .filter((x) => x.checked).map((x) => x.dataset.key);
+    if (keys.length === 0) { setMessage('고른 동작이 없습니다.', false); return; }
+
+    button.disabled = true;
+    const note = $('#draftNote')?.value || null;
+    let done = 0;
+    let stopped = null;
+    for (const key of keys) {
+      try {
+        await api(`/api/professional/clients/${clientUserId}/missions`, {
+          method: 'POST', body: JSON.stringify({ contentKey: key, note }),
+        });
+        done += 1;
+      } catch (error) {
+        // 하루 3개 제한에 걸리면 거기서 멈춥니다. 몇 개가 들어갔는지 정확히 말해야
+        // 전문가가 다시 누를지 말지 판단할 수 있습니다.
+        stopped = error.message;
+        break;
+      }
+    }
+    button.disabled = false;
+    setMessage(stopped
+      ? `${done}개 배정하고 멈췄습니다 — ${stopped}`
+      : `${done}개를 배정했습니다. 고객의 오늘 목록에 표시됩니다.`, !stopped);
+    loadClientJourney(clientUserId);
+    loadPlanDraft(clientUserId);
+  });
+}
+
+async function loadAssignBlock(clientUserId) {
+  const host = $('#clientAssignBlock');
+  if (!host) return;
+  try {
+    if (!assignableCache) assignableCache = await api('/api/professional/contents');
+    const options = assignableCache.map((c) =>
+      `<option value="${escapeAttr(c.contentKey)}">${escapeHtml(c.displayName || c.contentKey)}${c.targetMuscle ? ' — ' + escapeHtml(c.targetMuscle) : ''}</option>`).join('');
+    host.innerHTML = `
+      <div class="panel" style="padding:16px;">
+        <div class="kicker">ASSIGN</div>
+        <p class="member-muted" style="margin:6px 0 12px;font-size:0.85rem;line-height:1.7;">
+          고객의 오늘 미션에 동작을 하나 추가합니다. <b>하루 3개까지</b>이고, 고객이 아직
+          시작하지 않은 것만 거둘 수 있습니다.<br />
+          동작은 MEBODY 라이브러리에서만 고릅니다. 새 동작이나 설명을 직접 쓸 수는 없습니다.
+        </p>
+        <div style="display:grid;gap:8px;">
+          <select class="input" id="assignContent">${options}</select>
+          <input class="input" id="assignNote" maxlength="200" placeholder="짧은 메모 (선택, 200자)" />
+          <div id="assignCaution" class="member-muted" style="font-size:0.8rem;line-height:1.6;"></div>
+          <button class="btn btn-primary" id="assignSubmit" type="button" data-client="${escapeAttr(clientUserId)}">미션 추가</button>
+        </div>
+      </div>`;
+
+    // 고른 동작의 주의사항을 바로 보여줍니다. 배정 전에 읽어야 의미가 있습니다.
+    const showCaution = () => {
+      const key = $('#assignContent')?.value;
+      const c = assignableCache.find((x) => x.contentKey === key);
+      $('#assignCaution').textContent = c?.caution ? `주의: ${c.caution}` : '';
+    };
+    $('#assignContent')?.addEventListener('change', showCaution);
+    showCaution();
+
+    $('#assignSubmit')?.addEventListener('click', async (event) => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      try {
+        await api(`/api/professional/clients/${button.dataset.client}/missions`, {
+          method: 'POST',
+          body: JSON.stringify({ contentKey: $('#assignContent').value, note: $('#assignNote').value || null }),
+        });
+        $('#assignNote').value = '';
+        setMessage('미션을 추가했습니다. 고객의 오늘 목록에 표시됩니다.', true);
+        loadClientJourney(button.dataset.client);
+      } catch (error) {
+        setMessage(error.message, false);
+      } finally {
+        button.disabled = false;
+      }
+    });
+  } catch (error) {
+    host.innerHTML = `<p class="member-muted" style="font-size:0.85rem;">미션 배정을 불러오지 못했습니다 (${escapeHtml(error.message)}).</p>`;
+  }
+}
+
+function renderClientJourney(data) {
+  if (!data?.hasJourney) {
+    return `<div class="panel" style="padding:16px;">
+      <div class="kicker">ROUTINE</div>
+      <p class="member-muted" style="margin:6px 0 0;">아직 14일 루틴을 시작하지 않았습니다.</p>
+    </div>`;
+  }
+
+  const s = data.summary || {};
+  const j = s.journey || {};
+  const p = s.progress || {};
+  const days = Array.isArray(s.days) ? s.days : [];
+  const feedback = Array.isArray(s.feedback) ? s.feedback : [];
+  const rate = p.rate == null ? 0 : Number(p.rate);
+
+  // 일자별 막대. 한 눈에 "어디서 멈췄는지" 가 보여야 합니다.
+  const timeline = days.map((d) => {
+    const planned = Number(d.planned || 0);
+    const done = Number(d.completed || 0);
+    const skipped = Number(d.skipped || 0);
+    const tone = done === planned && planned > 0 ? 'var(--mb-green, #016B38)'
+      : done > 0 ? '#9ac3a8'
+      : skipped > 0 ? '#e0b4b0'
+      : '#e4e9e1';
+    return `<div title="${d.day_no}일차 — 배정 ${planned} · 완료 ${done} · 건너뜀 ${skipped}"
+      style="flex:1;min-width:14px;">
+      <div style="height:${planned > 0 ? 8 + (done / planned) * 30 : 8}px;background:${tone};border-radius:4px;"></div>
+      <div style="font-size:0.62rem;color:#7b8a7f;text-align:center;margin-top:3px;">${d.day_no}</div>
+    </div>`;
+  }).join('');
+
+  const feedbackRows = feedback.length === 0
+    ? '<p class="member-muted" style="margin:8px 0 0;font-size:0.85rem;">아직 남긴 피드백이 없습니다.</p>'
+    : feedback.map((f) => `
+      <div style="border-top:1px solid #e8ede6;padding:10px 0;">
+        <div style="font-size:0.78rem;color:#7b8a7f;">
+          ${f.day_no}일차 · ${escapeHtml(FEELING_LABEL[f.feeling] || f.feeling || '')}
+          · ${escapeHtml(DIFFICULTY_LABEL[f.difficulty] || f.difficulty || '')}
+          · ${formatDate(f.created_at)}
+        </div>
+        ${f.note ? `<div style="margin-top:4px;font-size:0.88rem;">${escapeHtml(f.note)}</div>` : ''}
+      </div>`).join('');
+
+  return `
+    <div class="panel" style="padding:16px;">
+      <div class="kicker">ROUTINE</div>
+      <div style="display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;margin-top:6px;">
+        <h2 style="margin:0;">${rate}%</h2>
+        <span class="member-muted" style="font-size:0.85rem;">
+          ${j.current_day || 0} / ${j.total_days || 14}일차 ·
+          완료 ${p.completed || 0} · 건너뜀 ${p.skipped || 0} · 남음 ${p.scheduled || 0}
+        </span>
+      </div>
+      <p class="member-muted" style="margin:6px 0 0;font-size:0.82rem;">
+        마지막 활동 ${s.last_activity_at ? formatDate(s.last_activity_at) : '없음'}
+      </p>
+      <div style="display:flex;gap:4px;align-items:flex-end;margin-top:14px;">${timeline}</div>
+      <p class="member-muted" style="margin:10px 0 0;font-size:0.75rem;">일자별 수행 (최근 14일)</p>
+    </div>
+
+    <div class="panel" style="padding:16px;margin-top:12px;">
+      <div class="kicker">FEEDBACK</div>
+      <p class="member-muted" style="margin:6px 0 0;font-size:0.82rem;">고객이 미션 뒤에 직접 남긴 말입니다.</p>
+      ${feedbackRows}
+    </div>`;
+}
+
+function copyText(text, okMessage) {
+  const done = () => setMessage(okMessage, true);
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => {
+      $('#inviteUrl').value = text;
+      $('#inviteUrl').select();
+      setMessage('복사하지 못했습니다. 주소창의 값을 직접 복사해주세요.', false);
+    });
+    return;
+  }
+  $('#inviteUrl').value = text;
+  $('#inviteUrl').select();
+  done();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * 운영 지표
+ *
+ * 퍼널은 "어디서 떨어지는가" 를 보는 도구입니다. 그래서 각 칸의 비율을 **바로 앞 칸 대비**로
+ * 보여줍니다. 첫 칸 대비로 그리면 뒤로 갈수록 다 같이 작아져서 어느 칸이 문제인지 안 보입니다.
+ *
+ * 앞 칸이 0이면 비율을 그리지 않습니다("—"). 0으로 나눈 값을 0%로 적으면
+ * "아무도 안 넘어갔다" 로 읽히는데, 사실은 "잴 수 없다" 입니다.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+async function loadMetrics() {
+  const host = $('#metricsBody');
+  if (!host) return;
+  const days = Number($('#metricsDays')?.value || 30);
+  host.innerHTML = '<p class="member-muted" style="font-size:0.85rem;">불러오는 중…</p>';
+  try {
+    const m = await api(`/api/admin/metrics/funnels?days=${days}`);
+    const proRate = m.professional?.find((s) => s.event === 'professional_result_viewed')?.rate;
+    const weekly = m.totalPros > 0 ? Math.round((m.weeklyActivePros / m.totalPros) * 1000) / 10 : null;
+
+    $('#metricsNote').textContent = `최근 ${m.days}일`;
+    host.innerHTML = `
+      <div class="grid summary-grid" style="margin-bottom:16px;">
+        ${statCard('전문가 주지표', proRate == null ? '—' : `${proRate}%`,
+          '결과 열람 / 고객 동의 · 30% 미만이면 Phase 2 이후 보류')}
+        ${statCard('주간 활성 전문가', weekly == null ? '—' : `${weekly}%`,
+          `${m.weeklyActivePros} / ${m.totalPros}명 · 4주간 40% 미만이면 Phase 3 보류`)}
+      </div>
+      ${funnelTable('진단 퍼널', m.diagnosis)}
+      ${funnelTable('저니 퍼널', m.journey)}
+      ${funnelTable('수익 퍼널', m.revenue)}
+      ${funnelTable('전문가 퍼널', m.professional)}
+      <p class="member-muted" style="margin-top:14px;font-size:0.78rem;line-height:1.7;">
+        앱 이벤트는 개인을 식별하지 않습니다(analytics_events). 전문가 퍼널의 초대·열람은
+        전문가를 구분해야 세므로 별도 기록(professional_activity_log)에서 읽습니다.
+      </p>`;
+  } catch (error) {
+    host.innerHTML = `<p class="member-muted" style="font-size:0.85rem;color:#b3261e;">
+      지표를 불러오지 못했습니다 (${escapeHtml(error.message)}). 숫자가 0인 것과 다릅니다.</p>`;
+  }
+}
+
+function statCard(label, value, hint) {
+  return `<div class="panel" style="padding:14px;">
+    <div class="kicker">${escapeHtml(label)}</div>
+    <h2 style="margin:6px 0 0;">${escapeHtml(value)}</h2>
+    <p class="member-muted" style="margin:6px 0 0;font-size:0.78rem;line-height:1.6;">${escapeHtml(hint)}</p>
+  </div>`;
+}
+
+function funnelTable(title, steps) {
+  if (!Array.isArray(steps) || steps.length === 0) return '';
+  const max = Math.max(...steps.map((s) => Number(s.count) || 0), 1);
+  const rows = steps.map((s) => {
+    const n = Number(s.count) || 0;
+    const width = Math.max(2, Math.round((n / max) * 100));
+    // 앞 칸보다 절반 아래로 떨어지면 눈에 띄게 합니다 — 거기가 볼 곳입니다.
+    const drop = s.rate != null && s.rate < 50;
+    return `
+      <div style="display:flex;align-items:center;gap:10px;padding:5px 0;">
+        <div style="width:110px;flex-shrink:0;font-size:0.82rem;">${escapeHtml(s.label)}</div>
+        <div style="flex:1;min-width:60px;background:#eef3ec;border-radius:5px;overflow:hidden;">
+          <div style="width:${width}%;height:16px;background:${drop ? '#d9a7a2' : 'var(--mb-green, #016B38)'};"></div>
+        </div>
+        <div style="width:52px;text-align:right;font-size:0.82rem;font-weight:700;">${n}</div>
+        <div style="width:58px;text-align:right;font-size:0.8rem;color:${drop ? '#b3261e' : '#7b8a7f'};">
+          ${s.rate == null ? '—' : s.rate + '%'}
+        </div>
+      </div>`;
+  }).join('');
+  return `<div class="panel" style="padding:16px;margin-bottom:12px;">
+    <div class="kicker">${escapeHtml(title)}</div>
+    <div style="margin-top:10px;">${rows}</div>
+  </div>`;
+}
+
+function bindMetrics() {
+  $('#reloadMetrics')?.addEventListener('click', () => {
+    loadMetrics().catch((error) => setMessage(error.message, false));
+  });
+  $('#metricsDays')?.addEventListener('change', () => {
+    loadMetrics().catch((error) => setMessage(error.message, false));
+  });
+}
+
+function bindClients() {
+  $('#createInvite')?.addEventListener('click', createInvite);
+  $('#reloadClients')?.addEventListener('click', () => {
+    loadClients().catch((error) => setMessage(error.message, false));
+  });
+  $('#copyInvite')?.addEventListener('click', () => copyText($('#inviteUrl').value, '초대 링크를 복사했습니다.'));
+  $('#backToClients')?.addEventListener('click', () => {
+    $('#clientDetailSection').classList.add('hidden');
+    $('#clientsSection').classList.remove('hidden');
+  });
+}
+
 function bindHome() {
   if (homeBound) return;
   homeBound = true;
+
+  // 고객 관리 탭의 버튼들. 가드 뒤에 둡니다 — 앞에 두면 bindHome 이 두 번 불릴 때
+  // 초대 링크가 두 번 만들어집니다.
+  bindClients();
+  bindMetrics();
 
   document.querySelectorAll('[data-auth-tab]').forEach((button) => {
     button.addEventListener('click', () => setAuthMode(button.dataset.authTab));

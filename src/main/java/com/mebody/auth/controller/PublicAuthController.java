@@ -4,6 +4,9 @@ import com.mebody.auth.config.AuthSignupProperties;
 import com.mebody.auth.dto.AccountApprovalRequest;
 import com.mebody.auth.dto.AccountApprovalResponse;
 import com.mebody.auth.dto.AuthConfigResponse;
+import com.mebody.auth.dto.PhoneLoginRequest;
+import com.mebody.auth.dto.PhoneResetRequest;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.mebody.auth.dto.PublicSignupRequest;
 import com.mebody.auth.dto.PublicSignupResponse;
 import com.mebody.auth.service.PublicAuthService;
@@ -41,6 +44,28 @@ public class PublicAuthController {
   @PostMapping("/approve")
   public ApiResponse<AccountApprovalResponse> approve(@Valid @RequestBody AccountApprovalRequest request) {
     return ApiResponse.ok(publicAuthService.approve(request.identifier()));
+  }
+
+  /**
+   * 번호로 로그인. 비밀번호가 맞을 때만 세션이 나갑니다.
+   *
+   * <p>복구 이메일을 적고 가입한 계정은 이메일이 별칭이 아니라서, 앱이 번호를 별칭으로
+   * 바꿔 보내는 방식만으로는 로그인할 수 없습니다. 그 경우를 서버가 대신 찾아 줍니다.
+   */
+  @PostMapping("/login")
+  public ApiResponse<JsonNode> loginByPhone(@Valid @RequestBody PhoneLoginRequest request) {
+    return ApiResponse.ok(publicAuthService.loginByPhone(request.identifier(), request.password()));
+  }
+
+  /**
+   * 번호로 비밀번호 재설정 요청.
+   *
+   * <p>계정이 있든 없든 항상 같은 응답입니다. 응답이 갈리면 번호만으로 가입 여부를 알아낼 수 있습니다.
+   */
+  @PostMapping("/reset")
+  public ApiResponse<Void> requestReset(@Valid @RequestBody PhoneResetRequest request) {
+    publicAuthService.requestPhonePasswordReset(request.identifier(), request.redirectTo());
+    return ApiResponse.ok(null);
   }
 
   /** 지금 확인 절차가 켜져 있는지, 휴대폰 별칭 도메인이 무엇인지. */

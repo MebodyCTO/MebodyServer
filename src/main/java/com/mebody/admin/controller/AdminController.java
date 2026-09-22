@@ -6,6 +6,9 @@ import com.mebody.admin.dto.AdminUpdateUserRequest;
 import com.mebody.admin.dto.AdminUserSearchRequest;
 import com.mebody.admin.service.AdminService;
 import com.mebody.common.response.ApiResponse;
+import com.mebody.professional.dto.IssueProfessionalRequest;
+import com.mebody.professional.dto.ProfessionalProfileResponse;
+import com.mebody.professional.service.ProfessionalService;
 import com.mebody.user.domain.UserGrade;
 import com.mebody.user.domain.UserRole;
 import com.mebody.user.domain.UserStatus;
@@ -27,10 +30,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin")
 public class AdminController {
   private final AdminService adminService;
+  private final ProfessionalService professionalService;
 
-  public AdminController(AdminService adminService) {
+  public AdminController(AdminService adminService, ProfessionalService professionalService) {
     this.adminService = adminService;
+    this.professionalService = professionalService;
   }
+
 
   @GetMapping("/dashboard/summary")
   public ApiResponse<AdminDashboardSummary> dashboardSummary() {
@@ -58,6 +64,18 @@ public class AdminController {
   @GetMapping("/users/{id}")
   public ApiResponse<UserProfileDto> user(@PathVariable UUID id) {
     return ApiResponse.ok(adminService.user(id));
+  }
+
+  /**
+   * 전문가 계정 발급. 이미 가입된 계정의 역할을 올립니다.
+   *
+   * <p>여기서 계정을 새로 만들지 않습니다. 만드는 일까지 겸하면 "전문가 승인은 사람이 한다"
+   * 는 전제가 사라집니다(`db/journey/052` 의 professionals_admin_write 와 같은 이유).
+   */
+  @PostMapping("/professionals")
+  public ApiResponse<ProfessionalProfileResponse> issueProfessional(
+      @Valid @RequestBody IssueProfessionalRequest request) {
+    return ApiResponse.ok(professionalService.issueProfessional(request));
   }
 
   @PostMapping("/users")

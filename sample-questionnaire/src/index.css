@@ -249,6 +249,20 @@ body {
   .border-amber-100 { border-color: rgba(224, 182, 103, 0.34); }
   .hover\:border-gray-400:hover { border-color: rgba(233, 239, 228, 0.34); }
 
+  /* 문항 선택지에 마우스를 올렸을 때.
+     hover:bg-emerald-50 이 이 목록에 없어서 원래의 밝은 민트가 그대로 깔렸고,
+     글씨는 밝은 잉크라 배경과 겹쳐 읽을 수 없었습니다.
+     초록으로 채우고 글씨를 짙게 뒤집습니다. 앱(mebody-jjh)과 같은 색을 씁니다. */
+  .hover\:bg-emerald-50:hover {
+    background-color: #6ecf9b;
+    color: #0b1f15;
+  }
+  .hover\:border-emerald-500:hover { border-color: #6ecf9b; }
+  /* 오른쪽 동그라미와 체크도 같이 뒤집습니다 */
+  .group-hover\:bg-emerald-500:is(:where(.group):hover *) { background-color: #0b1f15; }
+  .group-hover\:border-emerald-500:is(:where(.group):hover *) { border-color: #0b1f15; }
+  .group-hover\:text-white:is(:where(.group):hover *) { color: #6ecf9b; }
+
   /* 채움·그림자 */
   .from-emerald-600 { --tw-gradient-from: #6ecf9b; }
   .to-emerald-500 { --tw-gradient-to: #8fe0b3; }

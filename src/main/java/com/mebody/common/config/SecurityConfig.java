@@ -55,10 +55,15 @@ public class SecurityConfig {
         .cors(Customizer.withDefaults())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
+            .requestMatchers(HttpMethod.GET, "/api/public/health").permitAll()
+            // 초대 링크 미리보기. 로그인 전에 "누가 불렀는지" 만 보여줍니다.
+            // 수락(/api/invites/**)은 로그인이 필요합니다 — 로그인한 본인만 자기를 묶습니다.
+            .requestMatchers(HttpMethod.GET, "/api/public/professional/invite/*").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/public/config").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/public/auth/signup").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/public/auth/config").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/public/auth/approve").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/public/auth/login", "/api/public/auth/reset").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll()
             // AdMob 이 부르는 콜백. 로그인 토큰이 없고, 신뢰의 근거는 요청에 붙은 ECDSA 서명이다.
             // (서명 검증은 AdMobSsvVerifier 가 한다 — 여기서 뚫는 건 인증뿐이다)

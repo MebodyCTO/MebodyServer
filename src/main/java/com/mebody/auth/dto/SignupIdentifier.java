@@ -26,6 +26,22 @@ public record SignupIdentifier(String channel, String loginEmail, String phoneLo
   }
 
   /**
+   * 휴대폰 가입에 복구 이메일을 붙입니다.
+   *
+   * <p>별칭 주소(01012345678@phone.mebody.net)에는 메일함이 없어 재설정 메일을 보낼 수 없습니다.
+   * 그래서 복구 이메일을 적으면 **그 주소를 계정의 이메일로 씁니다.** 번호는 auth.users.phone 에
+   * 그대로 남으므로, 번호로 로그인하는 경로는 서버가 번호로 계정을 찾아 처리합니다.
+   */
+  public SignupIdentifier withRecoveryEmail(String raw) {
+    String value = raw == null ? "" : raw.trim().toLowerCase();
+    if (!isPhone() || value.isEmpty()) return this;
+    if (!EMAIL.matcher(value).matches()) {
+      throw new ApiException(HttpStatus.BAD_REQUEST, "복구용 이메일 형식이 올바르지 않습니다.");
+    }
+    return new SignupIdentifier(channel, value, phoneLocal, phoneE164);
+  }
+
+  /**
    * 입력 한 줄을 이메일 또는 휴대폰으로 판별합니다.
    *
    * <p>판별 기준은 단순합니다. {@code @} 가 있으면 이메일, 숫자와 구분기호만 있으면 휴대폰입니다.

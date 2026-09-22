@@ -5,12 +5,19 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * 회원가입 확인 절차 스위치.
  *
- * <p>지금은 이메일·휴대폰 둘 다 <b>가입 즉시 이용</b>입니다. 확인 절차 코드는 만들어 두었고
- * 아래 값만 바꾸면 바로 켜집니다. 앱 코드는 손대지 않아도 됩니다.
+ * <p><b>2026-09-21 부터 이메일 확인은 ON, 휴대폰은 OFF 입니다.</b>
+ * 되돌리려면 {@code MEBODY_AUTH_REQUIRE_EMAIL_VERIFICATION=false} 하나만 주면 됩니다.
+ * 앱 코드는 손대지 않아도 됩니다.
  *
- * <p><b>이메일 확인을 켤 때</b>
- * {@code MEBODY_AUTH_REQUIRE_EMAIL_VERIFICATION=true}. Supabase 프로젝트의 Confirm email 이
- * 이미 켜져 있으므로(실측 확인) 이 값만 바꾸면 확인 메일이 나가고, 확인 전에는 로그인이 막힙니다.
+ * <p><b>이메일 확인이 켜져 있을 때</b> 가입하면 Supabase 가 확인 메일을 보내고
+ * ({@code mailer_autoconfirm=false} 실측 확인), 링크를 열기 전에는 로그인이 막힙니다.
+ * 공개 승인 경로({@code /api/public/auth/approve})는 이때 409 로 거절합니다 — 그쪽으로 풀리면
+ * 확인 절차를 켠 의미가 없기 때문입니다.
+ *
+ * <p><b>전제</b>: 확인 메일이 실제로 도착해야 합니다. Supabase 기본 SMTP 는 시간당 몇 통으로
+ * 제한되고 프로젝트에 따라 팀 멤버 주소로만 나갑니다. 외부 가입자를 받기 전에
+ * Authentication → Emails 에서 자체 SMTP 를 붙이세요. 확인 링크가 돌아올 주소는
+ * {@code mebody.app-url} 이며, Supabase 의 Redirect URLs 허용 목록에 있어야 합니다.
  *
  * <p><b>휴대폰 인증을 켤 때</b>는 준비가 하나 더 필요합니다. Supabase 의 전화 제공자가 꺼져 있어서
  * 지금은 휴대폰 가입도 로그인도 Supabase 가 거부합니다(실측: {@code phone_provider_disabled}).
