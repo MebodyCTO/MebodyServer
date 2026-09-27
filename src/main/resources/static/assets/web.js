@@ -160,12 +160,70 @@ function applyAppUrl() {
   });
 }
 
+/**
+ * 서버의 가입 조건. 화면이 조건을 말할 때는 박아 둔 문구가 아니라 이 값을 씁니다.
+ *
+ * 2026-09-22 감사에서 이 문구가 **실제 설정과 반대**였습니다. "가입하면 확인 메일이 갑니다" 인데
+ * 확인은 꺼져 있었고, "휴대폰 번호로 가입하면 바로 이용" 인데 이 폼에는 이메일 칸 하나뿐입니다.
+ * 문구가 코드에 박혀 있어서 설정을 바꿀 때 아무도 같이 못 바꿨습니다.
+ *
+ * 못 읽으면 보수적인 쪽(확인 ON · 8자)으로 둡니다 — 실제보다 느슨하게 안내해서 거부당하는 것보다 낫습니다.
+ */
+const AUTH_CONFIG_FALLBACK = {
+  emailVerificationRequired: true, minPasswordLength: 8,
+  phoneSignupEnabled: false, phoneRecoveryEmailRequired: true,
+};
+let authConfigCache = null;
+
+async function loadAuthConfig() {
+  if (authConfigCache) return authConfigCache;
+  try {
+    const r = await fetch('/api/public/auth/config');
+    const body = await r.json();
+    const d = body?.data;
+    authConfigCache = (d && typeof d.minPasswordLength === 'number') ? d : AUTH_CONFIG_FALLBACK;
+  } catch {
+    authConfigCache = AUTH_CONFIG_FALLBACK;
+  }
+  return authConfigCache;
+}
+
+/**
+ * 가입 안내 문구를 설정에서 만듭니다.
+ *
+ * 이 폼은 **이메일 전용**입니다(입력칸이 type=email 하나). 그래서 휴대폰 이야기를 하지 않습니다.
+ * 휴대폰으로 가입하려면 앱을 쓰게 안내합니다.
+ */
+function signupHintText(cfg) {
+  const parts = [];
+  parts.push(cfg.emailVerificationRequired
+    ? '가입하면 확인 메일이 갑니다. 메일함의 링크를 열면 로그인할 수 있어요.'
+    : '확인 절차 없이 바로 가입됩니다.');
+  parts.push(`비밀번호는 ${cfg.minPasswordLength}자 이상으로 만들어주세요.`);
+  return parts.join(' ');
+}
+
+async function applyAuthConfigToForm() {
+  const cfg = await loadAuthConfig();
+  const hint = $('#signupHint');
+  if (hint) hint.textContent = signupHintText(cfg);
+  const pw = $('#password');
+  if (pw) {
+    pw.setAttribute('minlength', String(cfg.minPasswordLength));
+    if (state.mode === 'signup') pw.placeholder = `${cfg.minPasswordLength}자 이상 비밀번호`;
+  }
+}
+
 function setAuthMode(mode) {
   state.mode = mode;
   $('#authTitle').textContent = mode === 'signin' ? '로그인' : '회원가입';
   $('#authSubmit').textContent = mode === 'signin' ? '로그인하고 시작' : '회원가입하고 시작';
   $('#name').classList.toggle('hidden', mode === 'signin');
   $('#password').setAttribute('autocomplete', mode === 'signin' ? 'current-password' : 'new-password');
+  // 로그인 칸에 "원하는 비밀번호" 는 새로 만드는 칸처럼 보입니다(2026-09-22 감사 P0-4).
+  $('#password').placeholder = mode === 'signin'
+    ? '비밀번호 입력'
+    : `${(authConfigCache ?? AUTH_CONFIG_FALLBACK).minPasswordLength}자 이상 비밀번호`;
   $('#signupOnlyFields')?.classList.toggle('hidden', mode === 'signin');
   $('#forgotPassword')?.classList.toggle('hidden', mode !== 'signin');
   $('#signupHint')?.classList.toggle('hidden', mode !== 'signup');
@@ -178,6 +236,8 @@ function setAuthMode(mode) {
   document.querySelectorAll('[data-auth-tab]').forEach((button) => {
     button.classList.toggle('active', button.dataset.authTab === mode);
   });
+  // 설정은 한 번만 읽고 캐시합니다. 실패해도 폼은 그대로 씁니다.
+  applyAuthConfigToForm().catch(() => {});
 }
 
 function showLanding() {
@@ -1241,6 +1301,99 @@ async function loadClients() {
   ]);
   $('#professionalName').textContent = me?.displayName ? `${me.displayName} 님` : '';
   renderClients(clients || []);
+  // 주의 목록은 따로 부릅니다. 이게 실패해도 고객 목록은 떠야 합니다 —
+  // 070 을 아직 적용하지 않은 서버에서도 Phase 1~4 는 그대로 돌아가야 합니다.
+  loadAttention().catch(() => {});
+}
+
+/**
+ * 오늘 볼 사람 (전문가 확장 Phase 5).
+ *
+ * 여기서 말하는 "확인" 은 운영 신호입니다 — 연락이 끊겼다, 수행이 밀렸다.
+ * 몸 상태에 대한 판단이 아닙니다. 문구도 그 선을 넘지 않게 씁니다.
+ */
+const ATTENTION_LABEL = {
+  inactive: ['연락 끊김', '며칠째 앱을 열지 않았습니다.'],
+  not_started: ['아직 시작 안 함', '동의는 했는데 루틴을 시작하지 않았습니다.'],
+  low_completion: ['수행이 밀림', '최근 받은 동작을 대부분 하지 않았습니다.'],
+  hard_streak: ['어렵다는 말 반복', '최근에 "힘들었다" 가 여러 번입니다.'],
+  ending_soon: ['곧 끝남', '14일 루틴이 곧 끝납니다. 다음 이야기를 할 때입니다.'],
+};
+
+async function loadAttention() {
+  const host = $('#attentionBlock');
+  if (!host) return;
+  let data;
+  try {
+    data = await api('/api/professional/attention');
+  } catch (error) {
+    // 숫자가 0인 것과 못 불러온 것은 다릅니다. 섞으면 화면이 거짓말을 합니다.
+    host.innerHTML = `<p class="member-muted" style="margin:8px 0;">주의 목록을 불러오지 못했습니다 (${escapeHtml(error.message)}).</p>`;
+    return;
+  }
+  renderAttention(data || {});
+}
+
+function renderAttention(data) {
+  const host = $('#attentionBlock');
+  if (!host) return;
+  const list = Array.isArray(data.clients) ? data.clients : [];
+  const total = Number(data.total || 0);
+
+  if (total === 0) {
+    host.innerHTML = '';   // 고객이 없으면 이 블록 자체가 할 말이 없습니다.
+    return;
+  }
+
+  if (!list.length) {
+    host.innerHTML = `
+      <div class="panel" style="padding:14px;margin:10px 0;">
+        <div class="kicker">오늘 볼 사람</div>
+        <p class="member-muted" style="margin:6px 0 0;">
+          없습니다. 고객 ${total}명 모두 잘 따라오고 있습니다.
+        </p>
+      </div>`;
+    return;
+  }
+
+  const rows = list.map((c) => {
+    const flags = Array.isArray(c.flags) ? c.flags : [];
+    const chips = flags.map((f) => {
+      const [label] = ATTENTION_LABEL[f] || [f];
+      return `<span class="pill" style="margin-right:6px;">${escapeHtml(label)}</span>`;
+    }).join('');
+    // 왜 떴는지를 숫자로 같이 보여줍니다. 근거 없는 목록은 신뢰를 못 얻습니다.
+    const why = [];
+    if (flags.includes('inactive')) why.push(`${c.days_inactive}일째 안 열었습니다`);
+    if (flags.includes('low_completion')) why.push(`최근 ${c.planned}개 중 ${c.completed}개 완료`);
+    if (flags.includes('hard_streak')) why.push(`"힘들었다" ${c.hard_count}회`);
+    if (flags.includes('ending_soon') && c.day_no) why.push(`${c.duration_days}일 중 ${c.day_no}일차`);
+    if (flags.includes('not_started')) why.push('진행 중인 루틴 없음');
+
+    return `
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 0;border-top:1px solid rgba(1,71,37,0.08);">
+        <div style="flex:1;min-width:180px;">
+          <div style="font-weight:700;">${escapeHtml(c.display_name || '(이름 없음)')}</div>
+          <div style="margin-top:4px;">${chips}</div>
+          <div class="member-muted" style="font-size:0.85rem;margin-top:4px;">${escapeHtml(why.join(' · '))}</div>
+        </div>
+        <button class="btn btn-primary" data-open-client="${escapeAttr(c.client_user_id)}"
+                data-client-name="${escapeAttr(c.display_name || '고객')}" type="button">결과 보기</button>
+      </div>`;
+  }).join('');
+
+  host.innerHTML = `
+    <div class="panel" style="padding:14px;margin:10px 0;">
+      <div class="kicker">오늘 볼 사람 · 고객 ${total}명 중 ${list.length}명</div>
+      <p class="member-muted" style="margin:6px 0 2px;font-size:0.85rem;">
+        수행 기록에서 나온 운영 신호입니다. 몸 상태에 대한 판단이 아닙니다.
+      </p>
+      ${rows}
+    </div>`;
+
+  host.querySelectorAll('[data-open-client]').forEach((button) => {
+    button.addEventListener('click', () => openClient(button.dataset.openClient, button.dataset.clientName));
+  });
 }
 
 function renderClients(clients) {

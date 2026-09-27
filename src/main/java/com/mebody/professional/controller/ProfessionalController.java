@@ -63,6 +63,16 @@ public class ProfessionalController {
     return ApiResponse.ok(professionalService.clientJourney(clientUserId));
   }
 
+  /**
+   * 오늘 확인할 고객만 (Phase 5).
+   *
+   * <p>경로에 고객 id 가 없습니다 — 누구를 볼지는 DB 가 {@code auth.uid()} 로만 정합니다.
+   */
+  @GetMapping("/attention")
+  public ApiResponse<JsonNode> attention() {
+    return ApiResponse.ok(professionalService.clientAttention());
+  }
+
   /** 배정할 수 있는 동작 목록. 라이브러리에 있는 것이 전부입니다. */
   @GetMapping("/contents")
   public ApiResponse<List<AssignableContent>> contents() {

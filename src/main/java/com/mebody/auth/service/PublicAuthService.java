@@ -65,17 +65,42 @@ public class PublicAuthService {
     this.jdbcTemplate = jdbcTemplate;
   }
 
+  /**
+   * 동의를 받은 약관·개인정보처리방침의 판.
+   *
+   * <p>값은 두 문서에 적힌 <b>시행일</b>입니다(static/terms.html · static/privacy.html).
+   * <b>문서 본문을 고치면 이 값도 같이 올려야 합니다.</b> 안 올리면 새 문서에 대한 동의가
+   * 옛 판으로 기록되어 증적이 틀어집니다.
+   */
+  private static final String LEGAL_POLICY_VERSION = "2026-07-22";
+
   @Transactional
   public PublicSignupResponse signup(PublicSignupRequest request) {
     SignupIdentifier id = SignupIdentifier.parse(request.resolvedIdentifier(), authSignupProperties.aliasDomain())
         .withRecoveryEmail(request.recoveryEmail());
     String displayName = normalize(request.displayName());
 
-    // 지금은 최소 1자입니다. 조건을 올리려면 mebody.auth.min-password-length 만 바꾸면 됩니다.
+    // 기본 8자입니다. 되돌리려면 mebody.auth.min-password-length 만 바꾸면 됩니다.
+    // **로그인에는 걸지 않습니다.** 걸면 기준을 올린 순간 기존 짧은 비밀번호 계정이 전부 잠깁니다.
     int minLength = authSignupProperties.minPasswordLengthOrDefault();
     if (request.password() == null || request.password().length() < minLength) {
       throw new ApiException(HttpStatus.BAD_REQUEST,
           minLength <= 1 ? "비밀번호를 입력해주세요." : "비밀번호는 " + minLength + "자 이상이어야 합니다.");
+    }
+
+    if (id.isPhone() && !authSignupProperties.phoneSignupAllowed()) {
+      // 지금 휴대폰 가입은 SMS 가 아니라 이메일 별칭이라 번호 소유를 증명하지 못합니다.
+      // 공개 모집 전에 이 길을 닫아 두기 위한 스위치입니다.
+      throw new ApiException(HttpStatus.BAD_REQUEST,
+          "지금은 이메일로만 가입할 수 있습니다. 이메일 주소를 입력해주세요.");
+    }
+    if (id.isPhone() && authSignupProperties.phoneRecoveryEmailRequired()
+        && (request.recoveryEmail() == null || request.recoveryEmail().isBlank())) {
+      // 별칭 주소로는 재설정 메일을 받을 수 없습니다. 복구용 이메일이 없으면
+      // 비밀번호를 잊는 순간 계정을 되찾을 방법이 아예 없습니다.
+      throw new ApiException(HttpStatus.BAD_REQUEST,
+          "휴대폰으로 가입하려면 복구용 이메일이 필요합니다. "
+              + "비밀번호를 잊었을 때 재설정 메일을 받을 주소입니다.");
     }
 
     if (id.isPhone() && authSignupProperties.phoneNativeMode()) {
@@ -289,6 +314,51 @@ public class PublicAuthService {
         return;
       }
       throw e;
+    }
+
+    // 원장에도 남깁니다(071). 컬럼은 "지금 동의 상태" 고 원장은 "무엇에 언제 동의했나" 입니다.
+    // 문서를 고치면 컬럼의 시각만으로는 어느 판에 대한 동의였는지 알 수 없습니다.
+    recordConsentLedger(authUserId, terms, privacy, marketing);
+  }
+
+  /**
+   * 동의 원장 한 줄씩 (071 · 2026-09-22 감사 P1-1).
+   *
+   * <p>원장에 직접 INSERT 하지 않고 {@code record_consent()} 를 거칩니다 — 테이블에는
+   * 아무에게도 INSERT 권한이 없습니다. 앱이 직접 쓸 수 있으면 받지 않은 동의를 남길 수 있고,
+   * 그러면 증적의 의미가 없어집니다.
+   *
+   * <p><b>실패해도 가입을 막지 않습니다.</b> 071 미적용 서버에서도 가입은 되어야 합니다.
+   * 대신 표준 오류로 남겨 적용을 잊지 않게 합니다.
+   */
+  private void recordConsentLedger(UUID authUserId, boolean terms, boolean privacy, boolean marketing) {
+    // SAVEPOINT 로 감쌉니다. **Java 에서 예외를 잡아도 Postgres 트랜잭션은 이미 abort 입니다.**
+    // 그대로 두면 이 실패가 위의 동의 시각 UPDATE 까지 되돌려 버립니다(실제로 그랬습니다).
+    // 071 미적용 서버에서도 가입과 동의 시각은 정상이어야 합니다.
+    try {
+      jdbcTemplate.execute("SAVEPOINT consent_ledger");
+    } catch (org.springframework.dao.DataAccessException e) {
+      return;  // 세이브포인트를 못 잡으면 시도하지 않습니다. 위 기록을 지킵니다.
+    }
+
+    UUID profileId = userProfileRepository.findByAuthUserId(authUserId)
+        .map(UserProfile::getId).orElse(authUserId);
+    record Item(boolean agreed, String type) {}
+    try {
+      for (Item item : new Item[]{
+          new Item(terms, "terms"),
+          new Item(privacy, "privacy"),
+          new Item(marketing, "marketing")}) {
+        if (!item.agreed()) continue;
+        jdbcTemplate.queryForObject(
+            "SELECT public.record_consent(?, NULL, ?, ?, 'server')",
+            UUID.class, profileId, item.type(), LEGAL_POLICY_VERSION);
+      }
+      jdbcTemplate.execute("RELEASE SAVEPOINT consent_ledger");
+    } catch (org.springframework.dao.DataAccessException e) {
+      jdbcTemplate.execute("ROLLBACK TO SAVEPOINT consent_ledger");
+      System.err.println("[auth] 동의 원장 기록 실패(071 미적용일 수 있음): "
+          + e.getMostSpecificCause().getMessage());
     }
   }
 

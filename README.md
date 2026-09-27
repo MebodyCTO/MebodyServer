@@ -3,7 +3,7 @@
 MEBODY Server는 웹 홈페이지, 웹 관리자, 운영 API를 담당하는 Spring Boot 서버입니다. 고객용 모바일 진단 앱은 `../mebody`에서 별도로 실행하고 Vercel에 배포합니다.
 
 - 로컬 서버: http://localhost:8080
-- 배포 서버: https://mebody-server-production.up.railway.app
+- 배포 서버: https://mebodyserver-production.up.railway.app
 - 모바일 앱 배포: https://mebody-jjh.vercel.app/
 
 ## Repositories

@@ -69,10 +69,21 @@ mebody:
     phone-mode: ${MEBODY_AUTH_PHONE_MODE:alias}
     # 앱의 VITE_PHONE_ALIAS_DOMAIN 과 같아야 합니다.
     phone-alias-domain: ${MEBODY_AUTH_PHONE_ALIAS_DOMAIN:phone.mebody.net}
-    # 비밀번호 최소 길이. 우리 쪽 제한입니다(1 = 제한 없음).
+    # 비밀번호 최소 길이. 우리 쪽 제한입니다.
+    # 2026-09-22 감사까지 1(=제한 없음)이었습니다. 출시 기준으로 8 로 올렸습니다.
+    # **가입과 재설정에만 걸립니다.** 로그인에는 걸지 않습니다 — 걸면 기준을 올린 순간
+    # 기존 짧은 비밀번호 계정이 전부 잠깁니다. 그 사람들은 다음 재설정에서 새 기준을 맞춥니다.
     # 실제 하한은 Supabase 프로젝트 설정이 더 높으면 그쪽이 이깁니다(실측 시점 6자).
     # Supabase → Authentication → Policies 에서 바꿉니다.
-    min-password-length: ${MEBODY_AUTH_MIN_PASSWORD_LENGTH:1}
+    min-password-length: ${MEBODY_AUTH_MIN_PASSWORD_LENGTH:8}
+    # 휴대폰 가입 허용 여부. 지금 휴대폰 가입은 SMS 인증이 아니라 이메일 별칭이라
+    # **번호 소유를 증명하지 못합니다.** 남의 번호를 먼저 적어 선점하는 것을 막을 방법이 없습니다.
+    # 공개 모집 전에 SMS 제공자를 붙이거나 이 값을 false 로 두세요.
+    # false 로 두면 앱과 홈페이지가 설정을 읽어 휴대폰 안내를 함께 감춥니다.
+    phone-signup-enabled: ${MEBODY_AUTH_PHONE_SIGNUP_ENABLED:true}
+    # 휴대폰 가입에 복구용 이메일을 반드시 받을지. 별칭 주소(010…@phone.mebody.net)로는
+    # 재설정 메일을 받을 수 없어서, 이게 없으면 비밀번호를 잊는 순간 계정을 되찾을 수 없습니다.
+    require-phone-recovery-email: ${MEBODY_AUTH_REQUIRE_PHONE_RECOVERY_EMAIL:true}
   ads:
     # 보상형 광고 서버 검증(SSV). AdMob 콘솔의 광고 단위에 콜백 URL 을 등록한 뒤 켜세요.
     #   콜백 URL 예: https://<배포주소>/api/ads/admob/ssv

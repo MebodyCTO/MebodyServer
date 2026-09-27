@@ -99,14 +99,14 @@ SUPABASE_SERVICE_ROLE_KEY=...
 
 ```bash
 # 1) 푸터에 샘플 코드
-curl -sL https://mebody-server-production.up.railway.app/ | grep "샘플 코드"
+curl -sL https://mebodyserver-production.up.railway.app/ | grep "샘플 코드"
 
 # 2) /sample 200 (401 아님)
-curl -sI https://mebody-server-production.up.railway.app/sample | head -1
+curl -sI https://mebodyserver-production.up.railway.app/sample | head -1
 # HTTP/2 200
 
 # 3) 샘플 HTML
-curl -sI https://mebody-server-production.up.railway.app/sample/index.html | head -1
+curl -sI https://mebodyserver-production.up.railway.app/sample/index.html | head -1
 ```
 
 ## 로컬에서 Spring Boot 없이 static만

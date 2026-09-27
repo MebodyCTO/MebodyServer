@@ -372,6 +372,48 @@ public class ProfessionalService {
   }
 
   /**
+   * 오늘 확인이 필요한 고객만 (Phase 5).
+   *
+   * <p>인자가 없습니다. 어떤 고객을 볼지는 DB 함수가 {@code auth.uid()} 로만 정합니다.
+   * 전문가 id 를 파라미터로 받으면 남의 id 를 넣어 보는 길이 생깁니다. 권한 판단은
+   * {@code get_client_attention_list()} 안에 한 벌만 있고 여기서 다시 쓰지 않습니다.
+   *
+   * <p>전문가가 아니면 함수가 NULL 을 돌려줍니다. 그때도 404 가 아니라 **빈 목록**입니다 —
+   * 고객이 0명인 전문가와 구분이 되면 관계 유무를 떠볼 수 있습니다.
+   */
+  public JsonNode clientAttention() {
+    CurrentUser me = currentUserService.requireCurrentUser();
+    UUID proId = requireProfessionalId(me);
+    UUID authUserId = me.authUserId() != null ? me.authUserId() : me.id();
+
+    String json = userScopedDb.as(authUserId, con -> {
+      try (PreparedStatement ps = con.prepareStatement(
+          "SELECT public.get_client_attention_list()::text")) {
+        try (ResultSet rs = ps.executeQuery()) {
+          return rs.next() ? rs.getString(1) : null;
+        }
+      }
+    });
+
+    if (json == null) {
+      return objectMapper.createObjectNode()
+          .put("total", 0).put("attention", 0)
+          .set("clients", objectMapper.createArrayNode());
+    }
+
+    JsonNode node;
+    try {
+      node = objectMapper.readTree(json);
+    } catch (Exception e) {
+      throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "주의 목록을 읽지 못했습니다.");
+    }
+
+    // 목록을 열었다는 사실만 남깁니다. 고객 한 명이 아니라 목록 전체라 client_user_id 는 없습니다.
+    recordActivity(proId, null, "attention_viewed");
+    return node;
+  }
+
+  /**
    * 전문가가 고객 화면을 열었다는 사실만 남깁니다. 본 내용은 남기지 않습니다.
    *
    * <p>"주간 활성 전문가 비율" 을 세려면 전문가별 행이 필요합니다. {@code analytics_events}(054)는

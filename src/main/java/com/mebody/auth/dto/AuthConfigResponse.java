@@ -12,6 +12,10 @@ public record AuthConfigResponse(
     boolean phoneVerificationRequired,
     String phoneMode,
     String phoneAliasDomain,
-    int minPasswordLength
+    int minPasswordLength,
+    /** 휴대폰으로 가입할 수 있는지. false 면 앱·홈페이지가 휴대폰 입력과 안내를 함께 감춥니다. */
+    boolean phoneSignupEnabled,
+    /** 휴대폰 가입에 복구용 이메일이 필수인지. 별칭 주소로는 재설정 메일을 받을 수 없습니다. */
+    boolean phoneRecoveryEmailRequired
 ) {
 }

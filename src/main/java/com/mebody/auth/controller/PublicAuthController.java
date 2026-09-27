@@ -76,6 +76,8 @@ public class PublicAuthController {
         authSignupProperties.phoneVerificationRequired(),
         authSignupProperties.phoneNativeMode() ? "native" : "alias",
         authSignupProperties.aliasDomain(),
-        authSignupProperties.minPasswordLengthOrDefault()));
+        authSignupProperties.minPasswordLengthOrDefault(),
+        authSignupProperties.phoneSignupAllowed(),
+        authSignupProperties.phoneRecoveryEmailRequired()));
   }
 }

@@ -31,17 +31,51 @@ public record AuthSignupProperties(
     Boolean requirePhoneVerification,
     String phoneMode,
     String phoneAliasDomain,
-    Integer minPasswordLength
+    Integer minPasswordLength,
+    Boolean phoneSignupEnabled,
+    Boolean requirePhoneRecoveryEmail
 ) {
+  /** 출시 기준 최소 길이. 값을 주지 않으면 이 값이 쓰입니다. */
+  private static final int DEFAULT_MIN_PASSWORD_LENGTH = 8;
+
   /**
-   * 비밀번호 최소 길이. 기본 1 — 사실상 제한이 없습니다.
+   * 비밀번호 최소 길이. <b>기본 8자입니다.</b>
    *
-   * <p>Supabase 는 관리자 생성 경로에서 길이를 보지 않습니다(실측: 1자도 생성·로그인 됨).
-   * 그래서 지금 걸려 있는 제한은 전부 우리가 건 것이고, 값 하나로 다시 올릴 수 있습니다.
-   * 예: {@code MEBODY_AUTH_MIN_PASSWORD_LENGTH=8}
+   * <p>2026-09-22 감사까지는 기본 1자였습니다. Supabase 는 관리자 생성 경로에서 길이를 보지 않으므로
+   * (실측: 1자도 생성·로그인 됨) 제한은 전부 우리가 거는 것이고, 1자면 사실상 제한이 없었습니다.
+   *
+   * <p><b>이 값은 가입과 비밀번호 재설정에만 걸립니다.</b> 로그인에는 걸지 않습니다 —
+   * 걸면 기준을 올린 순간 기존 짧은 비밀번호 계정이 전부 잠깁니다. 그 사람들은 다음 재설정에서
+   * 새 기준을 맞추게 됩니다.
+   *
+   * <p>되돌리려면 {@code MEBODY_AUTH_MIN_PASSWORD_LENGTH=1}. 1 미만은 1로 봅니다.
    */
   public int minPasswordLengthOrDefault() {
-    return minPasswordLength == null || minPasswordLength < 1 ? 1 : minPasswordLength;
+    if (minPasswordLength == null) return DEFAULT_MIN_PASSWORD_LENGTH;
+    return minPasswordLength < 1 ? 1 : minPasswordLength;
+  }
+
+  /**
+   * 휴대폰으로 가입할 수 있는지. 기본 허용.
+   *
+   * <p>지금 휴대폰 가입은 SMS 인증이 아니라 이메일 별칭이므로 <b>번호 소유를 증명하지 못합니다.</b>
+   * 남의 번호를 먼저 적어 선점하는 것을 막을 방법이 코드에는 없습니다. 공개 모집 전에
+   * SMS 제공자를 붙이거나, {@code MEBODY_AUTH_PHONE_SIGNUP_ENABLED=false} 로 이 길을 닫으세요.
+   * 닫으면 앱과 홈페이지가 설정을 읽어 휴대폰 안내를 함께 감춥니다.
+   */
+  public boolean phoneSignupAllowed() {
+    return !Boolean.FALSE.equals(phoneSignupEnabled);
+  }
+
+  /**
+   * 휴대폰 가입에 복구용 이메일을 반드시 받을지. <b>기본 요구합니다.</b>
+   *
+   * <p>별칭 주소({@code 010…@phone.mebody.net})는 실제로 메일을 받지 못합니다. 복구용 이메일이
+   * 없으면 비밀번호를 잊은 순간 <b>계정을 되찾을 방법이 아예 없습니다</b>(재설정 메일을 보낼 곳이 없음).
+   * 2026-09-22 감사의 "복구 수단이 없는 휴대폰 계정 생성을 허용하지 않는다" 가 이것입니다.
+   */
+  public boolean phoneRecoveryEmailRequired() {
+    return !Boolean.FALSE.equals(requirePhoneRecoveryEmail);
   }
   /** 이메일 가입에 확인 메일을 요구할지. 기본은 요구하지 않음(가입 즉시 이용). */
   public boolean emailVerificationRequired() {

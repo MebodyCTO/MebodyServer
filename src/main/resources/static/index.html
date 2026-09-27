@@ -38,7 +38,7 @@
         <div class="mb-navact" id="navGuest">
           <button class="mb-btn mb-btn-ghost" type="button" data-login>로그인</button>
           <button class="mb-btn mb-btn-soft" type="button" data-signup>회원가입</button>
-          <a class="mb-btn mb-btn-primary" href="/#download">앱 다운로드</a>
+          <a class="mb-btn mb-btn-primary" href="/#download">웹에서 시작</a>
         </div>
         <div class="mb-navact hidden" id="navMember">
           <a class="mb-btn mb-btn-ghost" href="/me">내 페이지</a>
@@ -68,7 +68,16 @@
             <a class="mb-btn mb-btn-primary mb-btn-lg" data-app-url href="https://mebody-jjh.vercel.app">mebody Code 분석 시작</a>
             <a class="mb-btn mb-btn-ghost mb-btn-lg" href="/#why">어떻게 작동하나요</a>
           </div>
-          <p class="mb-fineprint">의료 진단이 아닌 웰니스 셀프 체크입니다 · 소요 약 3분</p>
+          <!--
+            "약 3분" 은 지킬 수 없는 약속이었습니다(2026-09-22 감사 P1-4).
+            32문항 중 9개가 실제로 몸을 움직여야 합니다 — 의자에서 10회 일어서기(A10),
+            한 발로 15초씩 양쪽(C3), 턱 당기고 10초 유지(C7), 20~30초 앉아 보기(C9),
+            누워서 무릎 당기기(D5), 맨발로 벽에 서기(C2). 유지 시간만 합쳐도 90초가 넘고
+            자세를 잡는 시간은 그 밖입니다. 3분이면 문항당 5.6초입니다.
+            **실사용 측정으로 이 범위를 대체해야 합니다.** 지금 값은 문항 내용에서 계산한 하한입니다.
+          -->
+          <p class="mb-fineprint">의료 진단이 아닌 웰니스 셀프 체크입니다 · 소요 약 6~10분</p>
+          <p class="mb-fineprint">직접 움직여 확인하는 문항이 있습니다 · 등받이 있는 의자, 벽, 누울 수 있는 공간, 맨발</p>
         </div>
 
         <div class="mb-hero-media">
@@ -278,7 +287,7 @@
                    placeholder="you@example.com" autocomplete="email" />
             <label class="mb-sronly" for="password">비밀번호</label>
             <input class="mb-input" id="password" type="password" required
-                   placeholder="원하는 비밀번호" autocomplete="current-password" />
+                   placeholder="비밀번호 입력" autocomplete="current-password" />
             <div id="signupOnlyFields" class="hidden">
               <div class="mb-consent" role="group" aria-label="필수 동의">
                 <label class="mb-consent-row">
@@ -293,7 +302,8 @@
             </div>
             <button class="mb-btn mb-btn-primary mb-btn-block" id="authSubmit" type="submit">로그인하고 시작</button>
             <button class="mb-linkbtn" id="forgotPassword" type="button">비밀번호를 잊으셨나요?</button>
-            <p class="mb-auth-hint hidden" id="signupHint">가입하면 확인 메일이 갑니다. 메일함의 링크를 열면 로그인할 수 있어요. 휴대폰 번호로 가입하면 바로 이용됩니다.</p>
+            <!-- 문구는 /api/public/auth/config 를 읽어 web.js 가 채웁니다. 여기 값은 JS 가 못 돌 때의 안전한 기본입니다. -->
+            <p class="mb-auth-hint hidden" id="signupHint">이메일로 가입합니다. 비밀번호는 8자 이상으로 만들어주세요.</p>
           </form>
           <div class="message" id="authMessage" role="status" aria-live="polite" aria-atomic="true"></div>
         </div>
@@ -315,15 +325,20 @@
         </div>
       </section>
 
-      <section id="download" class="mb-download" aria-label="앱 다운로드">
+      <!--
+        스토어 링크가 아직 없습니다. 그래서 이 구역을 "앱 다운로드" 라고 부르지 않습니다(2026-09-22 감사 P1-5).
+        누르면 자기 자신으로 가는 앵커는 눌렀는데 아무 일도 안 일어나는 버튼이라 <span> 으로 바꿨습니다.
+        스토어가 열리면 <span> 두 개를 <a href="스토어 주소"> 로 되돌리면 됩니다.
+      -->
+      <section id="download" class="mb-download" aria-label="모바일에서 이용하기">
         <div>
-          <div class="mb-kicker">APP DOWNLOAD</div>
+          <div class="mb-kicker">MOBILE</div>
           <h2 class="mb-h2">모바일에서도 내 코드를 <span class="mb-thin">이어서</span> 확인하세요</h2>
-          <p class="mb-lead">앱 다운로드 링크는 출시 일정에 맞춰 연결됩니다. 지금은 웹에서 진단하고 결과를 저장할 수 있습니다.</p>
+          <p class="mb-lead">지금은 웹에서 바로 진단하고 결과를 저장할 수 있습니다. 앱은 스토어 심사 뒤에 공개됩니다.</p>
         </div>
         <div class="mb-stores">
-          <a class="mb-store-btn" href="/#download"><span>App Store</span><span class="mb-store-note">출시 준비 중</span></a>
-          <a class="mb-store-btn" href="/#download"><span>Google Play</span><span class="mb-store-note">곧 공개</span></a>
+          <span class="mb-store-btn" aria-disabled="true"><span>App Store</span><span class="mb-store-note">출시 준비 중</span></span>
+          <span class="mb-store-btn" aria-disabled="true"><span>Google Play</span><span class="mb-store-note">출시 준비 중</span></span>
           <a class="mb-store-btn mb-store-btn-last" data-app-url href="https://mebody-jjh.vercel.app"><span>웹에서 바로 진단</span><span>→</span></a>
         </div>
       </section>
@@ -392,7 +407,7 @@
             <h2 class="mb-footer-colhead">서비스</h2>
             <a href="/sample">샘플 코드</a>
             <a data-app-url href="https://mebody-jjh.vercel.app">오늘의 미션</a>
-            <a href="/#download">앱 다운로드</a>
+            <a href="/#download">모바일에서 이용하기</a>
           </div>
           <div class="mb-footer-col">
             <h2 class="mb-footer-colhead">회사</h2>
@@ -618,6 +633,12 @@
               </div>
             </div>
           </div>
+          <!--
+            오늘 볼 사람 (전문가 확장 Phase 5).
+            고객이 늘면 전부 들여다볼 수 없습니다. 신호가 잡힌 사람만 위에 올립니다.
+            비어 있으면 "아무도 없음" 이 아니라 "다 잘 굴러가고 있음" 입니다.
+          -->
+          <div id="attentionBlock" style="padding:0 18px 4px;"></div>
           <div id="clientsList" style="padding:0 18px 18px;"></div>
         </section>
 
