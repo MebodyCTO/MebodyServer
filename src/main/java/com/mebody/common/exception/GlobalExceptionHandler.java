@@ -10,6 +10,8 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
@@ -62,8 +64,27 @@ public class GlobalExceptionHandler {
         .body(ApiResponse.error("상품 사진은 8MB 이하만 올릴 수 있습니다."));
   }
 
+  /**
+   * 없는 경로. <b>404 여야 합니다.</b>
+   *
+   * <p>예전에는 아래 {@code Exception.class} 핸들러가 이것까지 삼켜 <b>500</b> 을 돌려줬습니다.
+   * {@code /app-ads.txt} 도, 아무 오타 경로도 전부 500 이었습니다. 500 은 "서버가 고장났다" 는
+   * 뜻이라 크롤러·업타임 모니터·AdMob 의 app-ads.txt 검사가 장애로 읽습니다.
+   * 없는 것은 없다고 답해야 합니다.
+   *
+   * <p>{@code NoResourceFoundException} 은 정적 파일이 없을 때(Spring Boot 3.2+),
+   * {@code NoHandlerFoundException} 은 매핑된 컨트롤러가 없을 때 납니다.
+   */
+  @ExceptionHandler({NoResourceFoundException.class, NoHandlerFoundException.class})
+  public ResponseEntity<ApiResponse<Void>> handleNotFound(Exception ex) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(ApiResponse.error("요청하신 경로를 찾을 수 없습니다."));
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiResponse<Void>> handleUnexpected(Exception ex) {
+    // 진짜 예상 못 한 오류만 여기로 옵니다. 원인을 남기지 않으면 배포 환경에서 추적이 안 됩니다.
+    System.err.println("[error] 처리하지 못한 예외: " + ex.getClass().getName() + " — " + ex.getMessage());
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(ApiResponse.error("서버 처리 중 오류가 발생했습니다."));
   }
