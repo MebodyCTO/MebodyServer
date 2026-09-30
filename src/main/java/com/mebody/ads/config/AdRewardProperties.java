@@ -16,7 +16,7 @@ public record AdRewardProperties(
 ) {
   public String verifierKeysUrlOrDefault() {
     return verifierKeysUrl == null || verifierKeysUrl.isBlank()
-        ? "https://gstatic.com/admob/reward/verifier-keys.json"
+        ? "https://www.gstatic.com/admob/reward/verifier-keys.json"
         : verifierKeysUrl;
   }
 

@@ -89,7 +89,7 @@ mebody:
     #   콜백 URL 예: https://<배포주소>/api/ads/admob/ssv
     # 꺼져 있으면 앱이 직접 보너스를 청구하는 기존 방식이 그대로 동작합니다.
     ssv-enabled: ${MEBODY_ADS_SSV_ENABLED:false}
-    verifier-keys-url: ${MEBODY_ADS_VERIFIER_KEYS_URL:https://gstatic.com/admob/reward/verifier-keys.json}
+    verifier-keys-url: ${MEBODY_ADS_VERIFIER_KEYS_URL:https://www.gstatic.com/admob/reward/verifier-keys.json}
     max-age-seconds: ${MEBODY_ADS_MAX_AGE_SECONDS:3600}
   supabase:
     url: ${SUPABASE_URL:}

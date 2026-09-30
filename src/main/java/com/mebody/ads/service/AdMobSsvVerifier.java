@@ -43,7 +43,21 @@ public class AdMobSsvVerifier {
 
   private final AdRewardProperties properties;
   private final ObjectMapper objectMapper;
-  private final HttpClient httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
+  /**
+   * 리다이렉트를 따라갑니다.
+   *
+   * 기본값(NEVER)이면 301 에서 멈춥니다. 실제로 기본 주소가
+   * {@code https://gstatic.com/...} 였고 구글이 {@code https://www.gstatic.com/...} 으로
+   * 301 을 주고 있어서 **공개키를 하나도 못 받았습니다.** 그 상태로 SSV 를 켜면
+   * 모든 콜백이 서명 불일치로 거부되고 보상이 조용히 안 나갑니다.
+   *
+   * 주소는 www 로 바로잡았지만, 구글이 나중에 또 옮길 수 있으니 따라가게 둡니다.
+   * NORMAL 은 https→http 강등은 따라가지 않으므로 안전합니다.
+   */
+  private final HttpClient httpClient = HttpClient.newBuilder()
+      .connectTimeout(Duration.ofSeconds(5))
+      .followRedirects(HttpClient.Redirect.NORMAL)
+      .build();
   private final AtomicReference<Keys> cache = new AtomicReference<>(null);
 
   private record Keys(Map<String, PublicKey> byId, Instant fetchedAt) {}
@@ -135,7 +149,10 @@ public class AdMobSsvVerifier {
           .build();
       HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
       if (response.statusCode() / 100 != 2) {
-        log.warn("AdMob SSV: 공개키 목록 응답 {}", response.statusCode());
+        // 키가 없으면 **모든 콜백이 거부**됩니다. 주소가 틀렸을 때 조용히 지나가면
+        // "보상이 안 나간다" 는 현상만 보이고 원인을 못 찾습니다. 주소를 같이 남깁니다.
+        log.warn("AdMob SSV: 공개키 목록 응답 {} — {} (이 상태로는 보상이 하나도 지급되지 않습니다)",
+            response.statusCode(), properties.verifierKeysUrlOrDefault());
         return null;
       }
 
