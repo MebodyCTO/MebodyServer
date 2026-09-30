@@ -80,10 +80,27 @@ public class MetricsService {
         totalPros());
   }
 
+  /**
+   * 퍼널의 각 칸을 <b>이벤트 횟수가 아니라 고유 세션 수</b>로 셉니다.
+   *
+   * <p>횟수로 세면 퍼널이 뒤집힙니다. 뒤 칸 중에 <b>여러 번 일어날 수 있는 것</b>이 있기
+   * 때문입니다 — 문항 완료는 한 번이지만 결과 화면은 몇 번이고 다시 열 수 있습니다.
+   * 실제로 「문항 완료 360 → 결과 확인 369」가 나왔습니다. 결과를 두 번 연 사람이 있으면
+   * 언제든 다시 납니다.
+   *
+   * <p>세션으로 세면 "몇 번의 방문이 이 단계까지 왔나"가 되어 뜻이 분명해지고,
+   * 뒤 칸은 앞 칸의 부분집합이라 단조가 보장됩니다.
+   *
+   * <p>session_id 가 없는 행(동의 전 수집 — lib/analytics.ts 참고)은 서로 이을 수 없으므로
+   * 한 건을 한 세션으로 셉니다. COUNT(DISTINCT) 는 NULL 을 빼므로 따로 더합니다.
+   */
   private Map<String, Long> countAppEvents(int days) {
     Map<String, Long> out = new HashMap<>();
     jdbcTemplate.query(
-        "SELECT event, count(*) AS n FROM public.analytics_events"
+        "SELECT event,"
+            + "       count(DISTINCT session_id)"
+            + "     + count(*) FILTER (WHERE session_id IS NULL) AS n"
+            + "  FROM public.analytics_events"
             + " WHERE created_at > now() - make_interval(days => ?) GROUP BY event",
         rs -> { out.put(rs.getString("event"), rs.getLong("n")); },
         days);
