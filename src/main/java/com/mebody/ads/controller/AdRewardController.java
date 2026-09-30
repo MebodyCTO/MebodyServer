@@ -7,7 +7,6 @@ import com.mebody.common.security.CurrentUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +38,13 @@ public class AdRewardController {
   @GetMapping("/admob/ssv")
   public ResponseEntity<String> admobSsv(HttpServletRequest request) {
     if (!adRewardService.ssvEnabled()) {
-      return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("ssv disabled");
+      // **200 으로 답합니다.** 예전에는 503 이었는데, AdMob 콘솔은 콜백 URL 을 등록하기 전에
+      // 이 주소를 직접 호출해 보고 2xx 가 아니면 **등록 자체를 거부합니다.**
+      // 그래서 "SSV 를 켜야 URL 이 등록되고, URL 을 등록해야 SSV 가 의미가 있는" 교착이 났습니다.
+      //
+      // 꺼져 있을 때 200 을 주는 것은 안전합니다 — 아무것도 지급하지 않고 그렇게 말할 뿐입니다.
+      // 실제 지급은 아래 handleAdMobCallback 이 서명을 확인한 뒤에만 합니다.
+      return ResponseEntity.ok("ssv disabled");
     }
 
     Map<String, String> params = new HashMap<>();
