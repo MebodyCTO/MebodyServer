@@ -71,6 +71,24 @@ public class AdMobSsvVerifier {
    * @param rawQuery 서블릿이 준 원본 쿼리스트링 (디코딩·정렬하지 않은 것)
    * @return 서명이 맞으면 true
    */
+  /**
+   * 지금 들고 있는 구글 공개키 개수. 0 이면 <b>모든 콜백이 거부됩니다.</b>
+   *
+   * SSV 가 켜져 있어도 키를 못 받으면 겉으로는 멀쩡해 보이고 보상만 조용히 안 나갑니다.
+   * 실제로 그 상태였습니다 — 키 주소가 301 이라 하나도 못 받고 있었습니다.
+   * 그래서 health 에서 이 숫자를 함께 보여 줍니다. 안 보이면 못 찾습니다.
+   *
+   * 아직 한 번도 받아 본 적이 없으면 여기서 받아 봅니다(캐시는 10분 유지).
+   */
+  public int loadedKeyCount() {
+    Keys current = cache.get();
+    if (current == null) {
+      current = fetchKeys();
+      if (current != null) cache.set(current);
+    }
+    return current == null ? 0 : current.byId().size();
+  }
+
   public boolean verify(String rawQuery) {
     if (rawQuery == null || rawQuery.isBlank()) return false;
 

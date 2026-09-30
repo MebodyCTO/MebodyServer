@@ -41,6 +41,11 @@ public class AdRewardService {
     return properties.ssvEnabled();
   }
 
+  /** 검증기가 들고 있는 구글 공개키 개수. 0 이면 모든 콜백이 거부됩니다. */
+  public int loadedKeyCount() {
+    return verifier.loadedKeyCount();
+  }
+
   /** 처리 결과. AdMob 에는 재전송이 의미 있을 때만 실패로 답합니다. */
   public enum Outcome { GRANTED, ALREADY, REJECTED }
 

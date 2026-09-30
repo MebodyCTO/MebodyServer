@@ -63,9 +63,23 @@ public class AdRewardController {
     return ApiResponse.ok(new AdRewardConfigResponse(adRewardService.ssvEnabled()));
   }
 
-  /** 콜백 URL 이 살아 있는지 확인용(AdMob 콘솔 등록 전에 눌러 보기). */
+  /**
+   * 콜백 URL 이 살아 있는지 확인용(AdMob 콘솔 등록 전후로 눌러 보기).
+   *
+   * <p><b>켜짐/꺼짐만으로는 부족합니다.</b> SSV 가 켜져 있어도 구글 공개키를 못 받으면
+   * 모든 콜백이 서명 불일치로 거부되고 보상이 조용히 안 나갑니다. 겉으로는 멀쩡해 보입니다.
+   * 실제로 그 상태였습니다(키 주소가 301 이었음). 그래서 키 개수를 함께 보여 줍니다.
+   *
+   * <p>기대하는 값: {@code enabled (keys: 1)}. keys 가 0 이면 지급이 되지 않는 상태입니다.
+   */
   @GetMapping("/admob/ssv/health")
   public ResponseEntity<String> health(@RequestParam(required = false) String ping) {
-    return ResponseEntity.ok(adRewardService.ssvEnabled() ? "enabled" : "disabled");
+    if (!adRewardService.ssvEnabled()) {
+      return ResponseEntity.ok("disabled");
+    }
+    int keys = adRewardService.loadedKeyCount();
+    return ResponseEntity.ok(keys > 0
+        ? "enabled (keys: " + keys + ")"
+        : "enabled but NO KEYS — 보상이 지급되지 않습니다. 서버 로그의 '공개키 목록 응답' 을 확인하세요.");
   }
 }
