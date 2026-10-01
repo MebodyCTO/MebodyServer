@@ -72,9 +72,9 @@ public class MetricsService {
 
     return new MetricsResponse(
         window,
-        build(DIAGNOSIS, app),
-        build(JOURNEY, app),
-        build(REVENUE, app),
+        build(DIAGNOSIS, chainedCounts(DIAGNOSIS, window)),
+        build(JOURNEY, chainedCounts(JOURNEY, window)),
+        build(REVENUE, chainedCounts(REVENUE, window)),
         professionalFunnel(app, pro),
         weeklyActivePros(),
         totalPros());
@@ -144,14 +144,64 @@ public class MetricsService {
     return out;
   }
 
-  private List<FunnelStep> build(List<Step> steps, Map<String, Long> counts) {
+  private List<FunnelStep> build(List<Step> steps, long[] counts) {
     List<FunnelStep> out = new ArrayList<>();
     Long previous = null;
-    for (Step s : steps) {
-      long n = counts.getOrDefault(s.event(), 0L);
+    for (int i = 0; i < steps.size(); i++) {
+      Step s = steps.get(i);
+      long n = counts[i];
       out.add(new FunnelStep(s.event(), s.label(), n, previous == null ? null : rate(n, previous)));
       previous = n;
     }
+    return out;
+  }
+
+  /**
+   * 퍼널의 각 칸을 <b>앞 칸을 전부 거친 세션 수</b>로 셉니다.
+   *
+   * <p>이벤트마다 따로 세면 안 됩니다. 처음에는 횟수로 셌다가 「문항 완료 360 → 결과 확인 369」
+   * 로 뒤집혀서 <b>이벤트별 고유 세션 수</b>로 바꿨는데, 그래도 「문항 완료 358 → 결과 확인 385」
+   * 로 또 뒤집혔습니다. 당시 주석에 "뒤 칸은 앞 칸의 부분집합이라 단조가 보장된다" 고 적었는데
+   * <b>그 전제가 틀렸습니다.</b> 문항을 풀지 않고 결과만 다시 여는 세션이 있습니다
+   * (내 상태 → 결과 자세히 보기). 그런 세션은 「결과 확인」에만 잡힙니다.
+   *
+   * <p>그래서 칸마다 조건을 쌓습니다. i 번째 칸은 e1..ei 를 <b>모두</b> 가진 세션만 셉니다.
+   * 이러면 부분집합이 정의상 보장되어 숫자가 다시는 뒤집히지 않습니다.
+   *
+   * <p>session_id 가 없는 행은 <b>퍼널에서 뺍니다.</b> 동의 전 수집이라 일부러 비워 둔 값이고
+   * (lib/analytics.ts), 이을 수 없는 행을 칸마다 한 세션으로 세면 그 칸만 부풀어 오릅니다.
+   * 전체 건수는 원래대로 countAppEvents 로 볼 수 있습니다.
+   */
+  private long[] chainedCounts(List<Step> steps, int days) {
+    StringBuilder inner = new StringBuilder("SELECT session_id");
+    for (int i = 0; i < steps.size(); i++) {
+      inner.append(", bool_or(event = ?) AS c").append(i);
+    }
+    inner.append(" FROM public.analytics_events")
+        .append(" WHERE created_at > now() - make_interval(days => ?)")
+        .append("   AND session_id IS NOT NULL")
+        .append(" GROUP BY session_id");
+
+    StringBuilder sql = new StringBuilder("SELECT ");
+    for (int i = 0; i < steps.size(); i++) {
+      if (i > 0) sql.append(", ");
+      sql.append("count(*) FILTER (WHERE ");
+      for (int j = 0; j <= i; j++) {
+        if (j > 0) sql.append(" AND ");
+        sql.append("c").append(j);
+      }
+      sql.append(") AS n").append(i);
+    }
+    sql.append(" FROM (").append(inner).append(") t");
+
+    Object[] args = new Object[steps.size() + 1];
+    for (int i = 0; i < steps.size(); i++) args[i] = steps.get(i).event();
+    args[steps.size()] = days;
+
+    long[] out = new long[steps.size()];
+    jdbcTemplate.query(sql.toString(), rs -> {
+      for (int i = 0; i < out.length; i++) out[i] = rs.getLong("n" + i);
+    }, args);
     return out;
   }
 
