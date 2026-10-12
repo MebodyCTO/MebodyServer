@@ -414,6 +414,87 @@ public class ProfessionalService {
   }
 
   /**
+   * 고객의 몸 기록과 그 요약.
+   *
+   * <p>074 의 {@code get_client_body_notes} · {@code get_client_body_note_summary} 를 그대로
+   * 부릅니다. 통과 조건은 함수 안에 한 벌만 있고(관계가 ACTIVE 이고 고객이 동의했는가)
+   * 여기서 다시 판단하지 않습니다 — 조건이 두 곳에 있으면 반드시 어긋납니다.
+   *
+   * <p>관계가 없으면 함수가 NULL 을 돌려줍니다. 그때는 <b>빈 결과</b>로 답합니다.
+   * 404 로 구분해 주면 "그런 고객이 있긴 하다" 를 흘리게 됩니다(053 · 070 과 같은 규칙).
+   */
+  public JsonNode clientBodyNotes(UUID clientUserId, int days) {
+    CurrentUser me = currentUserService.requireCurrentUser();
+    UUID proId = requireProfessionalId(me);
+    UUID authUserId = me.authUserId() != null ? me.authUserId() : me.id();
+    int window = Math.min(Math.max(days, 1), 180);
+
+    String[] json = userScopedDb.as(authUserId, con -> {
+      String[] out = new String[2];
+      try (PreparedStatement ps = con.prepareStatement(
+          "SELECT public.get_client_body_notes(?::uuid, ?)::text,"
+              + "       public.get_client_body_note_summary(?::uuid, ?)::text")) {
+        ps.setObject(1, clientUserId);
+        ps.setInt(2, window);
+        ps.setObject(3, clientUserId);
+        ps.setInt(4, window);
+        try (ResultSet rs = ps.executeQuery()) {
+          if (rs.next()) { out[0] = rs.getString(1); out[1] = rs.getString(2); }
+        }
+      }
+      return out;
+    });
+
+    var root = objectMapper.createObjectNode();
+    root.put("days", window);
+    try {
+      root.set("notes", json[0] == null
+          ? objectMapper.createArrayNode()
+          : objectMapper.readTree(json[0]).path("notes"));
+      root.set("summary", json[1] == null
+          ? objectMapper.createObjectNode()
+          : objectMapper.readTree(json[1]));
+    } catch (Exception e) {
+      throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "몸 기록을 읽지 못했습니다.");
+    }
+
+    // 열었다는 사실만 남깁니다. **기록 내용은 남기지 않습니다** — 로그가 또 하나의 사본이 됩니다.
+    if (json[0] != null) recordActivity(proId, clientUserId, "body_note_viewed");
+    return root;
+  }
+
+  /**
+   * 고객의 몸 기록을 보고 남기는 안내.
+   *
+   * <p>사용자 기록을 고치지 않습니다. 따로 쌓이고, 철회는 지우지 않고 시각을 찍습니다(074).
+   * 관계가 끊겨 있으면 함수가 NULL 을 주고, 여기서는 403 으로 알립니다 —
+   * 읽기와 달리 <b>쓰기는 실패를 알려야</b> 전문가가 헛글을 쓰지 않습니다.
+   */
+  public UUID createBodyNoteGuidance(UUID clientUserId, UUID bodyNoteId, String type, String message) {
+    CurrentUser me = currentUserService.requireCurrentUser();
+    requireProfessionalId(me);
+    UUID authUserId = me.authUserId() != null ? me.authUserId() : me.id();
+
+    UUID created = userScopedDb.as(authUserId, con -> {
+      try (PreparedStatement ps = con.prepareStatement(
+          "SELECT public.create_body_note_guidance(?::uuid, ?::uuid, ?, ?)")) {
+        ps.setObject(1, clientUserId);
+        ps.setObject(2, bodyNoteId);
+        ps.setString(3, type);
+        ps.setString(4, message);
+        try (ResultSet rs = ps.executeQuery()) {
+          return rs.next() ? (UUID) rs.getObject(1) : null;
+        }
+      }
+    });
+
+    if (created == null) {
+      throw new ApiException(HttpStatus.FORBIDDEN, "내 고객이 아니거나 아직 동의하지 않았습니다.");
+    }
+    return created;
+  }
+
+  /**
    * 전문가가 고객 화면을 열었다는 사실만 남깁니다. 본 내용은 남기지 않습니다.
    *
    * <p>"주간 활성 전문가 비율" 을 세려면 전문가별 행이 필요합니다. {@code analytics_events}(054)는

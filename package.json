@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build:sample": "npm install --prefix sample-questionnaire && npm run build --prefix sample-questionnaire",
-    "vercel-build": "npm run build:sample && node scripts/vercel-inject-api-base.js"
+    "vercel-build": "npm run build:sample && node scripts/vercel-inject-api-base.js && npm run build:seo",
+    "build:seo": "node scripts/build-seo.js"
   }
 }

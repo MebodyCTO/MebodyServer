@@ -4,6 +4,7 @@ import com.mebody.common.response.ApiResponse;
 import com.mebody.professional.dto.ClientListItem;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.mebody.professional.dto.AssignMissionRequest;
+import com.mebody.professional.dto.BodyNoteGuidanceRequest;
 import com.mebody.professional.dto.AssignableContent;
 import com.mebody.professional.dto.ClientJourneyResponse;
 import com.mebody.professional.dto.ClientResultResponse;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import jakarta.validation.Valid;
 import java.util.Map;
@@ -68,6 +70,23 @@ public class ProfessionalController {
    *
    * <p>경로에 고객 id 가 없습니다 — 누구를 볼지는 DB 가 {@code auth.uid()} 로만 정합니다.
    */
+  /** 고객의 몸 기록 + 요약. 관계가 없으면 빈 결과(존재 여부를 흘리지 않습니다). */
+  @GetMapping("/clients/{clientUserId}/body-notes")
+  public ApiResponse<JsonNode> clientBodyNotes(@PathVariable UUID clientUserId,
+                                               @RequestParam(defaultValue = "30") int days) {
+    return ApiResponse.ok(professionalService.clientBodyNotes(clientUserId, days));
+  }
+
+  /** 몸 기록을 보고 남기는 안내. 사용자 기록을 고치지 않고 따로 쌓입니다. */
+  @PostMapping("/clients/{clientUserId}/body-notes/guidance")
+  public ApiResponse<Map<String, Object>> createBodyNoteGuidance(
+      @PathVariable UUID clientUserId,
+      @RequestBody BodyNoteGuidanceRequest request) {
+    UUID id = professionalService.createBodyNoteGuidance(
+        clientUserId, request.bodyNoteId(), request.guidanceType(), request.message());
+    return ApiResponse.ok(Map.of("id", id));
+  }
+
   @GetMapping("/attention")
   public ApiResponse<JsonNode> attention() {
     return ApiResponse.ok(professionalService.clientAttention());

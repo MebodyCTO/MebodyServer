@@ -1496,6 +1496,9 @@ async function openClient(clientUserId, fallbackName) {
       <div id="clientJourneyBlock" style="margin-top:14px;">
         <p class="member-muted" style="font-size:0.85rem;">수행 기록을 불러오는 중…</p>
       </div>
+      <div id="clientBodyNoteBlock" style="margin-top:14px;">
+        <p class="member-muted" style="font-size:0.85rem;">몸 기록을 불러오는 중…</p>
+      </div>
       <div id="clientDraftBlock" style="margin-top:14px;"></div>
       <div id="clientAssignBlock" style="margin-top:14px;"></div>
       <p class="member-muted" style="margin-top:14px;font-size:0.85rem;line-height:1.7;">
@@ -1504,6 +1507,7 @@ async function openClient(clientUserId, fallbackName) {
         고객은 언제든 동의를 거둘 수 있고, 거두면 이 화면도 더 이상 열리지 않습니다.
       </p>`;
     loadClientJourney(clientUserId);
+    loadClientBodyNotes(clientUserId);
     // 초안은 배정 목록(assignableCache)이 있어야 이름을 보여줄 수 있어서 그 뒤에 부릅니다.
     loadAssignBlock(clientUserId).then(() => loadPlanDraft(clientUserId));
   } catch (error) {
@@ -1524,6 +1528,90 @@ async function loadClientJourney(clientUserId) {
   }
 }
 
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * 몸 기록 (074)
+ *
+ * 고객이 직접 남긴 하루 기록입니다. 전문가는 **읽기만** 합니다 —
+ * 고칠 경로를 서버에도 DB 에도 만들지 않았습니다. 원본은 고객 것입니다.
+ *
+ * 무엇이 반복되는지를 위에 세워 둡니다. 날짜별 목록만 주면 전문가가 20줄을 눈으로 세야 합니다.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+const BODY_PART_LABEL = {
+  none: '없음', neck: '목', shoulder: '어깨', back: '등', waist: '허리',
+  pelvis: '골반', knee: '무릎', ankle: '발목', other: '기타',
+};
+const BODY_SIDE_LABEL = {
+  left: '왼쪽', right: '오른쪽', both: '양쪽', similar: '비슷함', unsure: '모르겠음',
+};
+const BODY_ACTIVITY_LABEL = {
+  sitting_long: '오래 앉기', standing_long: '오래 서기', walking: '걷기', exercise: '운동',
+  driving: '운전', screen: '화면 보기', rest: '쉼', other: '기타',
+};
+const BODY_CONDITION_LABEL = {
+  comfortable: '좋음', usual: '보통', slightly_uncomfortable: '조금 불편', very_uncomfortable: '많이 불편',
+};
+
+async function loadClientBodyNotes(clientUserId) {
+  const host = $('#clientBodyNoteBlock');
+  if (!host) return;
+  try {
+    const data = await api(`/api/professional/clients/${clientUserId}/body-notes?days=30`);
+    host.innerHTML = renderClientBodyNotes(data);
+  } catch (error) {
+    // 못 불러온 것과 "아직 안 적었다" 는 다릅니다.
+    host.innerHTML = `<p class="member-muted" style="font-size:0.85rem;color:#b3261e;">
+      몸 기록을 불러오지 못했습니다 (${escapeHtml(error.message)}). 기록이 없는 것과 다릅니다.</p>`;
+  }
+}
+
+function renderClientBodyNotes(data) {
+  const notes = Array.isArray(data?.notes) ? data.notes : [];
+  const days = data?.days ?? 30;
+  if (notes.length === 0) {
+    return `<div class="panel" style="padding:16px;">
+      <div class="kicker">BODY NOTE</div>
+      <p class="member-muted" style="margin:8px 0 0;font-size:0.9rem;">
+        최근 ${days}일 동안 남긴 기록이 없습니다. 고객이 적어야 보입니다.</p>
+    </div>`;
+  }
+
+  // 반복되는 부위 — 전문가가 가장 먼저 보고 싶은 값입니다.
+  const partCount = data?.summary?.parts || {};
+  const repeats = Object.entries(partCount)
+    .filter(([, n]) => n >= 2)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([k, n]) => `${BODY_PART_LABEL[k] || k} ${n}번`)
+    .join(' · ');
+
+  const rows = notes.map((n) => {
+    const parts = (n.discomfort_parts || []).map((p) => BODY_PART_LABEL[p] || p).join('·') || '없음';
+    const acts = (n.activity_tags || []).map((a) => BODY_ACTIVITY_LABEL[a] || a).join('·');
+    const bits = [parts];
+    if (n.side) bits.push(BODY_SIDE_LABEL[n.side] || n.side);
+    if (acts) bits.push(acts);
+    bits.push(BODY_CONDITION_LABEL[n.condition] || n.condition);
+    return `<tr>
+      <td style="white-space:nowrap;padding:6px 10px 6px 0;font-weight:700;">${escapeHtml(String(n.record_date))}</td>
+      <td style="padding:6px 0;">${escapeHtml(bits.join(' · '))}</td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="panel" style="padding:16px;">
+    <div class="kicker">BODY NOTE</div>
+    <h3 style="margin:6px 0 0;font-size:1rem;">최근 ${days}일 · ${notes.length}건</h3>
+    ${repeats ? `<p style="margin:8px 0 0;font-weight:800;">반복: ${escapeHtml(repeats)}</p>` : ''}
+    <table style="width:100%;margin-top:10px;font-size:0.875rem;border-collapse:collapse;">
+      <tbody>${rows}</tbody>
+    </table>
+    <p class="member-muted" style="margin:12px 0 0;font-size:0.8rem;line-height:1.7;">
+      고객이 스스로 느낀 것을 적은 기록입니다. 진단이 아닙니다.<br />
+      전문가는 읽기만 할 수 있고 고치거나 지울 수 없습니다. 동의를 거두면 이 블록도 비어집니다.
+    </p>
+  </div>`;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────
  * Phase 3 — 미션 배정

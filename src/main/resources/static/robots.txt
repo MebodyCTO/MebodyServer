@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 Disallow: /me
 Disallow: /admin
+
+Sitemap: https://www.mebody.net/sitemap.xml
