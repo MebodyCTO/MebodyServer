@@ -38,6 +38,62 @@ const PAGES = [
     description: 'mebody 서비스의 이용 조건, 회원의 권리와 의무, 유료 서비스와 환불 기준을 안내합니다.' },
 ];
 
+/**
+ * FAQ — AEO(답변 엔진) · GEO(생성형 검색) 대비.
+ *
+ * ── 쓰는 규칙
+ * 1. **첫 문장만 떼어가도 답이 되게** 씁니다. AI 는 보통 한 문단만 인용합니다.
+ *    "그것은 ~입니다" 처럼 앞을 받아야 뜻이 통하는 문장을 쓰지 않습니다.
+ * 2. 질문은 **사람이 실제로 치는 말**로 적습니다. "mebody Code 산출 방식" 이 아니라
+ *    "mebody Code가 뭔가요".
+ * 3. 2~4문장. 길면 인용되지 않고, 짧으면 근거가 없어 보입니다.
+ * 4. **의료 표현을 쓰지 않습니다.** 이 서비스는 진단하지 않습니다.
+ *    AI 가 "진단해준다" 고 요약하면 그게 곧 우리 책임이 됩니다.
+ * 5. **금액·확률을 적지 않습니다.** 바뀌면 AI 가 옛 숫자를 계속 퍼뜨립니다.
+ *
+ * ── 본문과 스키마가 같아야 합니다
+ * FAQPage 구조화 데이터의 답이 화면에 없으면 구글이 위반으로 봅니다.
+ * 그래서 이 배열 하나에서 **보이는 HTML 과 JSON-LD 를 같이** 만듭니다.
+ */
+const FAQ = [
+  {
+    q: 'mebody Code가 뭔가요?',
+    a: 'mebody Code는 목·어깨·골반·하체 네 축의 자세 경향을 네 글자로 정리한 분류입니다. 32문항 셀프 체크의 답변으로 계산하며 모두 16가지가 있습니다. 질병을 가려내는 검사가 아니라, 지금 내 몸이 어느 방향을 자주 쓰는지 알아보는 분류입니다.',
+  },
+  {
+    q: '검사하는 데 얼마나 걸리나요?',
+    a: '32문항이고 보통 4분 안팎이 걸립니다. 사진을 보며 더 가깝게 느끼는 쪽을 고르는 방식이라 따로 준비할 것이 없습니다. 중간에 나가도 답한 곳까지 남아 있어 이어서 할 수 있습니다.',
+  },
+  {
+    q: '무료인가요?',
+    a: '32문항 셀프 체크와 mebody Code 결과는 무료입니다. 매일 하는 공통 스트레칭과 기록도 계속 무료로 쓸 수 있습니다. 14일 루틴은 첫 회차가 무료이고, 그 뒤로 이어서 하려면 멤버십이 필요합니다.',
+  },
+  {
+    q: '병원 진단이나 물리치료와 어떻게 다른가요?',
+    a: 'mebody는 의료행위가 아닌 웰니스 셀프 체크입니다. 질병을 진단하거나 통증을 판독하지 않고, 치료나 교정을 처방하지도 않습니다. 통증이나 이상이 있다면 먼저 의료 전문가의 상담을 받으시기를 권합니다.',
+  },
+  {
+    q: '16가지 코드는 어떻게 정해지나요?',
+    a: '목·어깨·골반·하체 네 축을 각각 두 방향으로 나눠 조합하면 16가지가 됩니다. 각 코드에는 캐릭터와 한 줄 해석, 네 축 그래프, 오늘 바로 할 수 있는 액션이 함께 붙습니다. 생활 습관과 컨디션에 따라 결과는 달라질 수 있습니다.',
+  },
+  {
+    q: '결과가 나오면 매일 뭘 하나요?',
+    a: '매일 하는 공통 스트레칭은 총 15분, 5단계로 목에서 하체 순서입니다. 네 축을 같은 순서로 전부 거치고, 코드에 따라 달라지는 것은 순서가 아니라 세부 구성입니다. 끝까지 마치면 그날의 기록이 쌓이고 적립금을 받습니다.',
+  },
+  {
+    q: '몸 기록은 어떤 기능인가요?',
+    a: '몸 기록은 오늘 불편했던 부위, 더 편했던 쪽, 많이 한 활동, 컨디션을 고르기만 하면 되는 하루 기록입니다. 30초면 끝나고, 쌓이면 어떤 날 어디가 반복해서 불편했는지 보입니다. 본인이 느낀 것을 적어두는 기록이며 시스템이 이를 질환으로 해석하지 않습니다.',
+  },
+  {
+    q: '전문가와 연결하면 무엇이 달라지나요?',
+    a: '연결에 동의하면 담당 전문가가 내 mebody Code와 몸 기록을 함께 보고, 나에게 맞는 동작을 오늘 할 일에 추가해 줍니다. 전문가가 추가한 동작은 앱에 출처와 메모가 함께 표시됩니다. 전문가는 기록을 읽을 수만 있고 고치거나 지울 수 없으며, 동의를 거두면 그 즉시 열람이 중단됩니다.',
+  },
+  {
+    q: '내 기록은 안전한가요?',
+    a: '32문항 답변 원문은 전문가에게도 제공하지 않습니다. 몸 기록은 연결에 동의한 전문가만 볼 수 있고, 동의를 거두면 바로 막힙니다. 탈퇴하면 체크 결과와 몸 기록이 함께 삭제됩니다.',
+  },
+]
+
 const today = new Date().toISOString().slice(0, 10);
 
 /* ── sitemap ───────────────────────────────────────────────────────────── */
@@ -61,8 +117,15 @@ robots = `${robots.trimEnd()}\n\nSitemap: ${ORIGIN}/sitemap.xml\n`;
 fs.writeFileSync(robotsPath, robots, 'utf8');
 
 /* ── 페이지마다 canonical · OG · 트위터 카드 ────────────────────────────── */
+/** 속성·본문에 그대로 넣기 전에 감쌉니다. 따옴표 하나로 태그가 깨집니다. */
+const esc = (v) => String(v)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
 const MARK_OPEN = '<!-- seo:start (build-seo.js) -->';
 const MARK_CLOSE = '<!-- seo:end -->';
+const FAQ_OPEN = '<!-- faq:start (build-seo.js) -->';
+const FAQ_CLOSE = '<!-- faq:end -->';
 
 function seoBlock(page) {
   const url = `${ORIGIN}${page.path}`;
@@ -108,9 +171,36 @@ function jsonLd() {
       description: PAGES[0].description,
     },
   ];
+  // FAQPage — 답이 화면에 **그대로** 있어야 합니다. 같은 FAQ 배열에서 만들므로 어긋날 수 없습니다.
+  data.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQ.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  });
   return `${MARK_OPEN}
     <script type="application/ld+json">${JSON.stringify(data)}</script>
     ${MARK_CLOSE}`;
+}
+
+/** 화면에 보이는 FAQ. 스키마와 **같은 배열**에서 만듭니다. */
+function faqSection() {
+  const items = FAQ.map((f) => `        <details class="mb-faq-item">
+          <summary><h3>${esc(f.q)}</h3></summary>
+          <p>${esc(f.a)}</p>
+        </details>`).join('\n');
+  return `${FAQ_OPEN}
+      <section id="faq" class="mb-faq" aria-label="자주 묻는 질문">
+        <div class="mb-faq-inner">
+          <div class="mb-kicker">FAQ</div>
+          <h2 class="mb-h2">자주 묻는 질문</h2>
+${items}
+        </div>
+      </section>
+      ${FAQ_CLOSE}`;
 }
 
 let touched = 0;
@@ -124,6 +214,13 @@ for (const page of PAGES) {
 
   const block = page.path === '/' ? `${seoBlock(page)}\n    ${jsonLd()}` : seoBlock(page);
   html = html.replace('</head>', `    ${block}\n  </head>`);
+
+  // 랜딩에만 FAQ 섹션을 넣습니다. 두 번 돌려도 쌓이지 않게 먼저 걷어냅니다.
+  if (page.path === '/') {
+    const faqRe = new RegExp(`\\s*${FAQ_OPEN.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?${FAQ_CLOSE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g');
+    html = html.replace(faqRe, '');
+    html = html.replace('<section id="download"', `${faqSection()}\n      <section id="download"`);
+  }
   fs.writeFileSync(file, html, 'utf8');
   touched += 1;
 }

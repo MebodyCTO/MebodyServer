@@ -1634,3 +1634,67 @@ body.v2 {
     color: #2a0808; /* 9.05:1 */
   }
 }
+
+/* --- FAQ ----------------------------------------------------------------
+   scripts/build-seo.js 가 본문과 FAQPage 스키마를 **같은 배열**에서 만듭니다.
+   스키마의 답이 화면에 없으면 구글이 위반으로 보므로 이 섹션을 숨기지 마세요.
+   details/summary 를 쓰는 이유: 자바스크립트 없이 접히고, 크롤러는 접혀 있어도
+   안의 글을 그대로 읽습니다. 접힌 글을 못 읽는 것은 사람뿐입니다. */
+.v2 .mb-faq {
+  padding: clamp(56px, 7vw, 110px) clamp(20px, 5vw, 64px);
+  border-bottom: 1px solid var(--mb-line);
+}
+.v2 .mb-faq-inner {
+  max-width: 820px;
+  margin: 0 auto;
+}
+.v2 .mb-faq .mb-h2 {
+  margin: 10px 0 clamp(24px, 3vw, 40px);
+}
+.v2 .mb-faq-item {
+  border-top: 1px solid var(--mb-line);
+  padding: 18px 0;
+}
+.v2 .mb-faq-item:last-child {
+  border-bottom: 1px solid var(--mb-line);
+}
+.v2 .mb-faq-item > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.v2 .mb-faq-item > summary::-webkit-details-marker {
+  display: none;
+}
+/* 펼침 표시는 CSS 로 그립니다 — 아이콘 파일을 하나 더 들이지 않습니다. */
+.v2 .mb-faq-item > summary::after {
+  content: '+';
+  flex: 0 0 auto;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--mb-green);
+}
+.v2 .mb-faq-item[open] > summary::after {
+  content: '\2212';
+}
+.v2 .mb-faq-item > summary h3 {
+  margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.1875rem);
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--mb-green);
+  word-break: keep-all;
+}
+.v2 .mb-faq-item > p {
+  margin: 12px 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  /* 질문과 답의 색이 같으면 위계가 없습니다. 어두운 배경 위에서는 --mb-content-muted 가
+     질문과 같은 값으로 풀려서(둘 다 크림) 구분이 사라졌습니다. 답만 살짝 낮춥니다. */
+  color: var(--mb-on-dark-70, var(--mb-content-muted));
+  word-break: keep-all;
+}
