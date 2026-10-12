@@ -90,6 +90,12 @@ public class SecurityConfig {
     throw new IllegalStateException("SUPABASE_JWT_SECRET or SUPABASE_JWKS_URL must be configured");
   }
 
+  /**
+   * 앱 웹뷰가 쓰는 주소. 기기 안에서만 나오는 값이라 운영 환경변수에 넣을 수 없습니다.
+   * iOS 를 내게 되면 capacitor://localhost 를 여기에 더합니다.
+   */
+  private static final List<String> APP_WEBVIEW_ORIGINS = List.of("https://localhost");
+
   @Bean
   public CorsConfigurationSource corsConfigurationSource(@Value("${mebody.frontend-origin}") String frontendOrigin) {
     CorsConfiguration configuration = new CorsConfiguration();
@@ -103,6 +109,17 @@ public class SecurityConfig {
     }
     if (!allowedOrigins.contains("http://127.0.0.1:3000")) {
       allowedOrigins.add("http://127.0.0.1:3000");
+    }
+    // 안드로이드 앱의 웹뷰 주소. 설정값이 아니라 **고정값**이라 코드에 둡니다
+    // (Capacitor 안드로이드는 번들을 https://localhost 로 서빙합니다).
+    //
+    // 이게 빠져 있어서 APK 안에서 회원가입·로그인·비밀번호 재설정·탈퇴·전문가 초대가
+    // 전부 CORS 403 이었습니다(실측 2026-10-12). 브라우저에서만 테스트하면 안 보입니다 —
+    // 웹은 FRONTEND_ORIGIN 에 들어 있으니까요.
+    for (String appOrigin : APP_WEBVIEW_ORIGINS) {
+      if (!allowedOrigins.contains(appOrigin)) {
+        allowedOrigins.add(appOrigin);
+      }
     }
     configuration.setAllowedOrigins(allowedOrigins);
     configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
