@@ -7,7 +7,7 @@
  * 정작 서빙되는 쪽이 색인에서 밀립니다.
  *
  * ── 주소를 어디로 잡나
- * `MEBODY_SITE_ORIGIN` 하나만 봅니다. 기본값은 브랜드 도메인입니다.
+ * `MEBODY_SITE_ORIGIN` 하나만 봅니다. 기본값은 **지금 서빙 중인 주소**입니다.
  *
  *   **그 도메인이 실제로 이 사이트를 서빙할 때까지 검색엔진에 제출하지 마세요.**
  *   2026-10 기준 mebody.net 은 스퀘어스페이스 「공사 중」 페이지입니다. 그 상태에서
@@ -22,7 +22,20 @@
 const fs = require('fs');
 const path = require('path');
 
-const ORIGIN = (process.env.MEBODY_SITE_ORIGIN || 'https://www.mebody.net').trim().replace(/\/+$/, '');
+/**
+ * 기준 주소. **지금 실제로 서빙하는 곳**이어야 합니다.
+ *
+ * 브랜드 도메인(www.mebody.net)을 기본값으로 두었더니, 아직 연결 전이라 스퀘어스페이스
+ * 주차 페이지가 응답했습니다. 그래서 `og:image` 를 긁어간 카카오톡이 이미지 대신 HTML 을
+ * 받아서 **홈페이지를 공유해도 카드가 안 떴습니다**(실측 2026-10-13).
+ * canonical 도 빈 페이지를 가리켜, 그대로 제출하면 글이 있는 쪽이 색인에서 밀립니다.
+ *
+ * 도메인을 붙인 뒤에는 이렇게 다시 생성합니다.
+ *   MEBODY_SITE_ORIGIN=https://www.mebody.net node scripts/build-seo.js
+ *
+ * 바뀐 주소가 실제로 우리 사이트를 서빙하는지는 `npm run verify:seo` 가 접속해서 봅니다.
+ */
+const ORIGIN = (process.env.MEBODY_SITE_ORIGIN || 'https://mebodyserver-production.up.railway.app').trim().replace(/\/+$/, '');
 const STATIC = path.join(__dirname, '..', 'src', 'main', 'resources', 'static');
 
 /** 공개 페이지만 넣습니다. /admin · /me 는 robots.txt 가 막고 있어 sitemap 에도 넣지 않습니다. */
