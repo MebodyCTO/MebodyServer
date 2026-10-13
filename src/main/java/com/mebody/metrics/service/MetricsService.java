@@ -76,6 +76,7 @@ public class MetricsService {
         build(JOURNEY, chainedCounts(JOURNEY, window)),
         build(REVENUE, chainedCounts(REVENUE, window)),
         professionalFunnel(app, pro),
+        viralFunnel(app),
         weeklyActivePros(),
         totalPros());
   }
@@ -141,6 +142,42 @@ public class MetricsService {
     out.add(new FunnelStep("professional_result_viewed", "결과 열람", viewed, rate(viewed, accepted)));
     out.add(new FunnelStep("professional_activity_viewed", "수행 기록 열람", activity, rate(activity, viewed)));
     out.add(new FunnelStep("professional_assignment_created", "미션 배정", assigned, rate(assigned, activity)));
+    return out;
+  }
+
+  /**
+   * 바이럴 퍼널 — 공유에서 <b>새 사용자의 결과</b>까지.
+   *
+   * <p><b>체인으로 셀 수 없습니다.</b> 보내는 사람과 받는 사람이 서로 다른 세션이기 때문입니다.
+   * {@code chainedCounts} 를 쓰면 "공유도 하고 그 링크를 자기가 열기도 한 세션" 만 세어
+   * 2번째 칸부터 0 이 나옵니다. 전문가 퍼널이 같은 이유로 따로 세고 있습니다.
+   *
+   * <p>그래서 두 토막을 이어 붙입니다.
+   * <ul>
+   *   <li>보내는 쪽 — 결과 확인 → 공유 눌름 → 공유 성공 (한 세션 안)</li>
+   *   <li>받는 쪽 — 링크 열림 → 문항 시작 → 문항 완료 (다른 세션 안)</li>
+   * </ul>
+   *
+   * <p><b>「링크 열림 / 공유 성공」이 이 제품의 핵심 숫자입니다.</b> 한 번 공유가 몇 명을
+   * 데려오는가입니다. 이 값이 1 을 넘으면 제품이 스스로 퍼집니다. 다만 공유를 받은 사람이
+   * 며칠 뒤에 열 수 있으므로, 기간을 짧게 자르면 실제보다 낮게 보입니다.
+   */
+  private List<FunnelStep> viralFunnel(Map<String, Long> app) {
+    List<FunnelStep> out = new ArrayList<>();
+    long resultViewed = app.getOrDefault("result_viewed", 0L);
+    long shareOpened = app.getOrDefault("result_share_opened", 0L);
+    long shared = app.getOrDefault("result_share_succeeded", 0L);
+    long linkOpened = app.getOrDefault("shared_link_opened", 0L);
+    long started = app.getOrDefault("shared_questionnaire_started", 0L);
+    long completed = app.getOrDefault("shared_questionnaire_completed", 0L);
+
+    out.add(new FunnelStep("result_viewed", "결과 확인", resultViewed, null));
+    out.add(new FunnelStep("result_share_opened", "공유 화면 염", shareOpened, rate(shareOpened, resultViewed)));
+    out.add(new FunnelStep("result_share_succeeded", "공유 보냄", shared, rate(shared, shareOpened)));
+    // 여기서부터는 **다른 사람의 세션**입니다. 비율은 "공유 하나가 몇 명을 데려왔나" 입니다.
+    out.add(new FunnelStep("shared_link_opened", "받은 사람이 링크 엶", linkOpened, rate(linkOpened, shared)));
+    out.add(new FunnelStep("shared_questionnaire_started", "받은 사람이 문항 시작", started, rate(started, linkOpened)));
+    out.add(new FunnelStep("shared_questionnaire_completed", "받은 사람이 결과 받음", completed, rate(completed, started)));
     return out;
   }
 

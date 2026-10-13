@@ -1941,6 +1941,10 @@ async function loadMetrics() {
   try {
     const m = await api(`/api/admin/metrics/funnels?days=${days}`);
     const proRate = m.professional?.find((s) => s.event === 'professional_result_viewed')?.rate;
+    // 바이럴 주지표 — 공유 하나가 몇 명을 데려오는가.
+    // 1 을 넘으면 제품이 스스로 퍼집니다. 비율(%)로 오므로 100% 가 기준선입니다.
+    const viralRate = m.viral?.find((s) => s.event === 'shared_link_opened')?.rate;
+    const shareRate = m.viral?.find((s) => s.event === 'result_share_succeeded')?.rate;
     const weekly = m.totalPros > 0 ? Math.round((m.weeklyActivePros / m.totalPros) * 1000) / 10 : null;
 
     $('#metricsNote').textContent = `최근 ${m.days}일`;
@@ -1950,14 +1954,21 @@ async function loadMetrics() {
           '결과 열람 / 고객 동의 · 30% 미만이면 Phase 2 이후 보류')}
         ${statCard('주간 활성 전문가', weekly == null ? '—' : `${weekly}%`,
           `${m.weeklyActivePros} / ${m.totalPros}명 · 4주간 40% 미만이면 Phase 3 보류`)}
+        ${statCard('바이럴 계수', viralRate == null ? '—' : `${viralRate}%`,
+          '링크 열림 / 공유 보냄 · 100%를 넘으면 스스로 퍼집니다')}
+        ${statCard('공유 전환', shareRate == null ? '—' : `${shareRate}%`,
+          '공유 보냄 / 공유 화면 염 · 공유 버튼이 실제로 눌리는 비율')}
       </div>
       ${funnelTable('진단 퍼널', m.diagnosis)}
       ${funnelTable('저니 퍼널', m.journey)}
       ${funnelTable('수익 퍼널', m.revenue)}
+      ${funnelTable('바이럴 퍼널', m.viral)}
       ${funnelTable('전문가 퍼널', m.professional)}
       <p class="member-muted" style="margin-top:14px;font-size:0.78rem;line-height:1.7;">
         앱 이벤트는 개인을 식별하지 않습니다(analytics_events). 전문가 퍼널의 초대·열람은
         전문가를 구분해야 세므로 별도 기록(professional_activity_log)에서 읽습니다.
+        <br>바이럴 퍼널의 「받은 사람이 링크 엶」부터는 <strong>다른 사람의 방문</strong>입니다.
+        공유를 받고 며칠 뒤에 여는 경우가 있어, 기간을 짧게 자르면 실제보다 낮게 보입니다.
       </p>`;
   } catch (error) {
     host.innerHTML = `<p class="member-muted" style="font-size:0.85rem;color:#b3261e;">
